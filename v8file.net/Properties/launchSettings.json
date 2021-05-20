@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "v8file.net": {
+      "commandName": "Project",
+      "commandLineArgs": "GISData.dgn GISData.dgn.out"
+    }
+  }
+}

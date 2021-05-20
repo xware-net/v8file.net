@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="DotNetZip" Version="1.15.0" />
+    <PackageReference Include="NLog" Version="4.7.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\openmcdf-master\sources\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj" />
+    <ProjectReference Include="..\..\openmcdf-master\sources\OpenMcdf\OpenMcdf.csproj" />
+  </ItemGroup>
+
+</Project>
