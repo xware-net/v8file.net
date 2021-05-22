@@ -177,14 +177,17 @@ namespace v8file.net
             if (treeNode.Name == "0")
             {
                 nodeName = "Root";
+                sw.WriteLine($"{ident}{nodeName} > ");
             }
             else if (treeNode.Name == "-1")
             {
                 nodeName = "NonModel";
+                sw.WriteLine($"{ident}{nodeName} > ");
             }
             else if (treeNode.Name == "-2")
             {
                 nodeName = "Models";
+                sw.WriteLine($"{ident}{nodeName} > ");
             }
             else if (treeNode.Name.StartsWith("-"))
             {
@@ -194,33 +197,38 @@ namespace v8file.net
                 {
                     nodeName = "Model: " + V8GetModelName((n / 3) - 1);
                     modelId = (uint)((n / 3) - 1);
+                    sw.WriteLine($"{ident}{nodeName} > ");
                 }
                 else if (m == 1)
                 {
                     nodeName = "Graphics";
+                    sw.WriteLine($"{ident}{nodeName} > ");
                 }
                 else if (m == 2)
                 {
                     nodeName = "Control";
+                    sw.WriteLine($"{ident}{nodeName} > ");
                 }
             }
             else
             {
                 if (treeNode.Tag is ElementTag tag1)
                 {
-                    ident = treeNode.Parent.Text == "NonModel" ? ident1 : ident2;
-                    lvl = treeNode.Parent.Text == "NonModel" ? level : level + 2;
+                    ident = /*treeNode.Parent.Text == "NonModel"*/treeNode.Parent.FullPath.Contains("NonModel") ? ident1 : ident2;
+                    lvl = treeNode.Parent.FullPath.Contains("NonModel") ? level : level + 2;
                     nodeName = $"{tag1.ElementId:X16} - {Utils.V8GetElmType(tag1.ElementHeader)} - {tag1.CachePos:X}";
+                    sw.WriteLine($"{ident}{nodeName} > ");
                 }
                 else
                 {
                     ident = ident1;
                     lvl = level;
                     nodeName = treeNode.Name;
+                    sw.WriteLine($"{ident}{nodeName} > ");
                 }
             }
 
-            sw.WriteLine($"{ident}{nodeName} > ");
+            //sw.WriteLine($"{ident}{nodeName} > ");
             if (modelId != 0xffffffff)
             {
                 V8Models.V8GetModelInfoFromCache(V8FileManipulation.CMFileInfo.Files[0].Caches[modelId]).Dump(sw, lvl + 1);
@@ -278,10 +286,19 @@ namespace v8file.net
                         case ReferenceFileElm t:
                             t.Dump(sw, lvl);
                             break;
+                        case Shape_2d t:
+                            t.Dump(sw, lvl);
+                            break;
+                        case Shape_3d t:
+                            t.Dump(sw, lvl);
+                            break;
                         case Surface t:
                             t.Dump(sw, lvl);
                             break;
                         case Table t:
+                            t.Dump(sw, lvl);
+                            break;
+                        case TableHdr t:
                             t.Dump(sw, lvl);
                             break;
                         case Text_2d t:
@@ -297,6 +314,9 @@ namespace v8file.net
                             t.Dump(sw, lvl);
                             break;
                         case ViewElm t:
+                            t.Dump(sw, lvl);
+                            break;
+                        case ViewGroupElm t:
                             t.Dump(sw, lvl);
                             break;
                         case Elm_hdr t:
@@ -472,11 +492,10 @@ namespace v8file.net
                         return null;
                     case 95:    // table entry
                         return new Table().Read(br);
-                        //return null;
                     case 96:    // table header
-                        return ehdr;
+                        return new TableHdr().Read(br);
                     case 97:    // view group element
-                        return null;
+                        return new ViewGroupElm().Read(br);
                     case 98:    // view element
                         return new ViewElm().Read(br);
                     case 99:    // level mask element

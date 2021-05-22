@@ -74,6 +74,18 @@ namespace v8file.net
         BUDBC_ID = 0x5834, // DB Linkage - BUDBC
     };
 
+    public enum FilterMemberType : int
+    {
+        TypeNull = 0,
+        TypeShort = 1,
+        TypeInt = 2,
+        TypeBool = 3,
+        TypeChar = 4,
+        TypeWChar = 5,
+        TypeDouble = 6,
+        TypeTime = 7,
+    }
+
     public enum LinkageKeyValuesString : int
     {
         STRING_LINKAGE_KEY_Generic = 0,
@@ -345,8 +357,74 @@ namespace v8file.net
                         linkage.Dump(sw, level);
                     }
                     break;
+                case LinkageIds.LINKAGEID_ByteArray:
+                    {
+                        ByteArrayLinkage linkage = new(Data);
+                        linkage.Dump(sw, level);
+                    }
+                    break;
+                case LinkageIds.LINKAGEID_FilterMember:
+                    {
+                        FilterMemberLinkage linkage = new(Data);
+                        linkage.Dump(sw, level);
+                    }
+                    break;
             }
             sw.WriteLine();
+        }
+    }
+
+    public class FilterMemberLinkage
+    {
+        public UInt32 MemberId;
+        public UInt32 MemberType;
+        public UInt32 Size1;
+        public UInt32 Size2;
+        public Int32 Length;
+        public string NameString;
+        public string ExpressionString;
+
+        public FilterMemberLinkage(byte[] data)
+        {
+            BinaryReader br = new BinaryReader(new MemoryStream(data));
+            MemberId = br.ReadUInt32();
+            MemberType = br.ReadUInt32();
+            Size1 = br.ReadUInt32();    // 0x12
+            Size2 = br.ReadUInt32();    // 0x00
+            Length = br.ReadInt32();
+            if ((data[0x14] == 0xff) && (data[0x15] == 0xfe) && (data[0x16] == 0x01) && (data[0x17] == 0x00))
+            {
+                // skip UTF32 LE BOM
+                br.ReadInt32();
+                Length -= 4;
+            }
+            NameString = System.Text.Encoding.UTF8.GetString(br.ReadBytes(Length));
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            sw.Write($" (Filter Member Linkage, MemberId={MemberId}, MemberType={(FilterMemberType)MemberType}, NameString=\"{NameString}\", ExpressionString=\"{ExpressionString}\" )");
+        }
+    }
+
+    public class ByteArrayLinkage
+    {
+        public UInt32 ByteArrayId;
+        public Int32 ByteArraySize;
+        public byte[] ByteArrayData;
+
+        public ByteArrayLinkage(byte[] data)
+        {
+            BinaryReader br = new BinaryReader(new MemoryStream(data));
+            ByteArrayId = br.ReadUInt32();
+            ByteArraySize = br.ReadInt32();
+            ByteArrayData = new byte[ByteArraySize];
+            ByteArrayData = br.ReadBytes(ByteArraySize);
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            sw.Write($" (Byte Array Linkage, ByteArrayId=0x{ByteArrayId:X}, ByteArraySize={ByteArraySize} )");
         }
     }
 

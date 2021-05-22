@@ -355,6 +355,38 @@ namespace v8file.net
         }
     }
 
+    public class TableHdr
+    {
+        public Elm_hdr Ehdr;
+        public UInt32 ComponentCount;
+        public Linkage[] Linkages;
+
+        public TableHdr Read(BinaryReader br)
+        {
+            // read each field
+            Ehdr = new Elm_hdr().Read(br);
+            ComponentCount = br.ReadUInt32();
+            Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Ehdr >");
+            Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].Dump(sw, level + 1);
+                }
+            }
+        }
+    }
+
     public class LevelTableEntry
     {
         public Elm_hdr Ehdr;
@@ -505,7 +537,7 @@ namespace v8file.net
             Origin = new DPoint3d().Read(br);
             Delta = new DPoint3d().Read(br);
             Y = new double[5];
-            for (int i=0; i<5; i++)
+            for (int i = 0; i < 5; i++)
             {
                 Y[i] = br.ReadDouble();
             }
@@ -557,6 +589,59 @@ namespace v8file.net
             {
                 sw.WriteLine($"{ident}Z[{i}]={Z[i]}");
             }
+            if (!string.IsNullOrEmpty(Name))
+                sw.WriteLine($"{ident}Name={Name}");
+            if (!string.IsNullOrEmpty(Name))
+                sw.WriteLine($"{ident}Description={Description}");
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].Dump(sw, level + 1);
+                }
+                //sw.WriteLine($"{ident}Attribute Linkages <");
+            }
+        }
+
+        public bool IsNamed => !string.IsNullOrEmpty(Name) && ViewNumber >= 0 && ViewNumber <= 7;
+    }
+
+    public struct ViewGroupElm
+    {
+        public Elm_hdr Ehdr;
+        public UInt32 ComponentCount;
+        //public ViewElm[] Views;
+        //public Bitmask[] ViewLevelsMasks;
+        public ModelId ModelId;
+        
+        // extras
+        public string Name;
+        public string Description;
+        public Linkage[] Linkages;
+
+        public ViewGroupElm Read(BinaryReader br)
+        {
+            // read each field
+            Ehdr = new Elm_hdr().Read(br);
+            ComponentCount = br.ReadUInt32();
+            //Views = new 
+
+
+            Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
+            Name = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Name);
+            Description = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Description);
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Ehdr >");
+            Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
+
+
             if (!string.IsNullOrEmpty(Name))
                 sw.WriteLine($"{ident}Name={Name}");
             if (!string.IsNullOrEmpty(Name))

@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "v8file.net", "v8file.net\v8file.net.csproj", "{C217FA61-5739-4AAF-83D1-BCBE30C48DB8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf", "..\openmcdf-master\sources\OpenMcdf\OpenMcdf.csproj", "{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf", "OpenMcdf\OpenMcdf.csproj", "{56E15D4A-8A37-4C7C-BB44-FD59AFF220C1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Extensions", "..\openmcdf-master\sources\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj", "{DB748C1D-D71C-442B-832D-2E33BE816CBB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Extensions", "OpenMcdf.Extensions\OpenMcdf.Extensions.csproj", "{DB748C1D-D71C-442B-832D-2E33BE816CBB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
