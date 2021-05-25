@@ -112,40 +112,36 @@ namespace v8file.net
         private static void V8ParseDgnHeader()
         {
             // parse Dgn~H
-            using (Stream stream = new StreamReader("Dgn~H").BaseStream)
-            {
-                using (BinaryReader br = new BinaryReader(stream))
-                {
-                    // at 0x114 we have the 
-                    // at 0x118 we have the 
-                    // at 0x11c we have the 
+            using Stream stream = new StreamReader("Dgn~H").BaseStream;
+            using BinaryReader br = new(stream);
+            // at 0x114 we have the 
+            // at 0x118 we have the 
+            // at 0x11c we have the 
 
-                    // at 0x120 we have the max model id
-                    br.BaseStream.Seek(0x120, SeekOrigin.Begin);
-                    CMFileInfo.Files[0].HighestModelId = br.ReadInt32();
+            // at 0x120 we have the max model id
+            br.BaseStream.Seek(0x120, SeekOrigin.Begin);
+            CMFileInfo.Files[0].HighestModelId = br.ReadInt32();
 
-                    // at 0x124 we have the default model id
-                    br.BaseStream.Seek(0x124, SeekOrigin.Begin);
-                    CMFileInfo.Files[0].DefaultModelId = br.ReadInt32();
+            // at 0x124 we have the default model id
+            br.BaseStream.Seek(0x124, SeekOrigin.Begin);
+            CMFileInfo.Files[0].DefaultModelId = br.ReadInt32();
 
-                    // at 0x128 we have max element id
-                    br.BaseStream.Seek(0x128, SeekOrigin.Begin);
-                    CMFileInfo.Files[0].HighestElementId = br.ReadUInt64();
+            // at 0x128 we have max element id
+            br.BaseStream.Seek(0x128, SeekOrigin.Begin);
+            CMFileInfo.Files[0].HighestElementId = br.ReadUInt64();
 
-                    // at 0x130 we have last saved ti,e
-                    br.BaseStream.Seek(0x130, SeekOrigin.Begin);
-                    CMFileInfo.Files[0].LastSavedTime = br.ReadDouble();
+            // at 0x130 we have last saved ti,e
+            br.BaseStream.Seek(0x130, SeekOrigin.Begin);
+            CMFileInfo.Files[0].LastSavedTime = br.ReadDouble();
 
-                    // at 0x138 we have
-                    // at 0x13c we have
-                    // at 0x140 we have
-                    // at 0x308 we have
-                    // at 0x310 we have
-                    // at 0x314 we have
+            // at 0x138 we have
+            // at 0x13c we have
+            // at 0x140 we have
+            // at 0x308 we have
+            // at 0x310 we have
+            // at 0x314 we have
 
-                    // at 0x388 we have
-                }
-            }
+            // at 0x388 we have
         }
 
         private static void V8DumpCaches(StreamWriter sw)
@@ -397,13 +393,13 @@ namespace v8file.net
                     cache = CMFileInfo.Files[0].Caches[tag.ModelNum].ControlCaches[tag.CacheNum];
                     break;
                 default:
-                    cache = new Cache();
+                    _ = new Cache();
                     Debugger.Break();
                     return null;
             }
 
-            using MemoryStream ms = new MemoryStream(cache.Bytes);
-            using BinaryReader br = new BinaryReader(ms);
+            using MemoryStream ms = new(cache.Bytes);
+            using BinaryReader br = new(ms);
             br.BaseStream.Seek(tag.CachePos, SeekOrigin.Begin);
             Elm_hdr ehdr = tag.ElementHeader;
             Disp_hdr dhdr = tag.DisplayHeader;
@@ -517,49 +513,44 @@ namespace v8file.net
             else
             {
                 // non graphic elements
-                switch (ehdr.Type)
+                return ehdr.Type switch
                 {
-                    case 5:     // color table
-                        return null;
-                    case 9:
-                        return new Dgn_header().Read(br);
-                    case 25:
-                        return new Bsurf_boundary().Read(br);
-                    case 26:
-                        return new Bspline_knot().Read(br);
-                    case 28:
-                        return new Bspline_weight().Read(br);
-                    case 38:    // dgnstore component
-                        return null;
-                    case 39:    // dgnstore header
-                        return null;
-                    case 66:    // microstation application element
-                        return null;
-                    case 90:    // raster reference attachment
-                        return null;
-                    case 91:    // raster reference component
-                        return null;
-                    case 92:    // raster hierarchy element
-                        return null;
-                    case 93:    // raster hierarchy component
-                        return null;
-                    case 95:    // table entry
-                        return new Table().Read(br);
-                    case 96:    // table header
-                        return new TableHdr().Read(br);
-                    case 97:    // view group element
-                        return new ViewGroupElm().Read(br);
-                    case 98:    // view element
-                        return new ViewElm().Read(br);
-                    case 99:    // level mask element
-                        return null;
-                    case 100:   // reference file element
-                        return new ReferenceFileElm().Read(br);
-                    case 107:   // extended element (non-graphic) (complex)
-                        return new ExtendedNonGraphicElm().Read(br);
-                    default:
-                        return null;
-                }
+                    // color table
+                    5 => null,
+                    9 => new Dgn_header().Read(br),
+                    25 => new Bsurf_boundary().Read(br),
+                    26 => new Bspline_knot().Read(br),
+                    28 => new Bspline_weight().Read(br),
+                    // dgnstore component
+                    38 => null,
+                    // dgnstore header
+                    39 => null,
+                    // microstation application element
+                    66 => null,
+                    // raster reference attachment
+                    90 => null,
+                    // raster reference component
+                    91 => null,
+                    // raster hierarchy element
+                    92 => null,
+                    // raster hierarchy component
+                    93 => null,
+                    // table entry
+                    95 => new Table().Read(br),
+                    // table header
+                    96 => new TableHdr().Read(br),
+                    // view group element
+                    97 => new ViewGroupElm().Read(br),
+                    // view element
+                    98 => new ViewElm().Read(br),
+                    // level mask element
+                    99 => null,
+                    // reference file element
+                    100 => new ReferenceFileElm().Read(br),
+                    // extended element (non-graphic) (complex)
+                    107 => new ExtendedNonGraphicElm().Read(br),
+                    _ => null,
+                };
             }
         }
 

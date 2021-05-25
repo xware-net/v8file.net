@@ -11,7 +11,7 @@ namespace v8file.net
     {
         public static Linkage[] V8GetLinkages(BinaryReader br, Elm_hdr ehdr)
         {
-            Linkage[] linkages = new Linkage[0];
+            Linkage[] linkages = Array.Empty<Linkage>();
 
             // saves/restores current reader position
             // so we can call it whenever we want
@@ -28,7 +28,7 @@ namespace v8file.net
             {
                 Array.Resize(ref linkages, linkages.Length + 1);
                 var linkage = new Linkage().Read(br);
-                linkages[linkages.Length - 1] = linkage;
+                linkages[^1] = linkage;
                 int exponent = 0; // linkage.LinkageHeader.WdExponent;
                 int length = linkage.LinkageHeader.WdMantissa * Utils.V8Power2(exponent);
                 if (exponent == 0)

@@ -389,7 +389,7 @@ namespace v8file.net
 
         public FilterMemberLinkage(byte[] data)
         {
-            BinaryReader br = new BinaryReader(new MemoryStream(data));
+            BinaryReader br = new(new MemoryStream(data));
             MemberId = br.ReadUInt32();
             MemberType = br.ReadUInt32();
             Size1 = br.ReadUInt32();    // 0x12
@@ -418,7 +418,7 @@ namespace v8file.net
 
         public ByteArrayLinkage(byte[] data)
         {
-            BinaryReader br = new BinaryReader(new MemoryStream(data));
+            BinaryReader br = new(new MemoryStream(data));
             ByteArrayId = br.ReadUInt32();
             ByteArraySize = br.ReadInt32();
             ByteArrayData = new byte[ByteArraySize];
@@ -439,7 +439,7 @@ namespace v8file.net
 
         public StringLinkage(byte[] data)
         {
-            BinaryReader br = new BinaryReader(new MemoryStream(data), Encoding.UTF8);
+            BinaryReader br = new(new MemoryStream(data), Encoding.UTF8);
             Key = (LinkageKeyValuesString)br.ReadInt32();
             Length = br.ReadInt32();
             if ((data[8] == 0xff) && (data[9] == 0xfe) && (data[10] == 0x01) && (data[11] == 0x00))
@@ -464,7 +464,7 @@ namespace v8file.net
 
         public DepLinkage(byte[] data)
         {
-            BinaryReader br = new BinaryReader(new MemoryStream(data));
+            BinaryReader br = new(new MemoryStream(data));
             DependencyLinkage = new DependencyLinkage().Read(br);
         }
 
@@ -495,7 +495,7 @@ namespace v8file.net
 
         public TextAnnotationScaleLinkage(byte[] data)
         {
-            BinaryReader br = new BinaryReader(new MemoryStream(data));
+            BinaryReader br = new(new MemoryStream(data));
             // skip 4 bytes
             br.ReadInt32();
             Scale = br.ReadDouble();
@@ -516,7 +516,7 @@ namespace v8file.net
 
         public ThicknessLinkage(byte[] data)
         {
-            BinaryReader br = new BinaryReader(new MemoryStream(data), Encoding.UTF8);
+            BinaryReader br = new(new MemoryStream(data), Encoding.UTF8);
             Key = (LinkageKeyValuesString)br.ReadInt32();
             Length = br.ReadInt32();
             String = System.Text.Encoding.UTF8.GetString(br.ReadBytes(Length));
