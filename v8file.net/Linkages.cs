@@ -84,6 +84,9 @@ namespace v8file.net
         TypeWChar = 5,
         TypeDouble = 6,
         TypeTime = 7,
+        TypeUInt = 8,
+        TypeColor = 9,
+        TypeStyle = 10,
     }
 
     public enum LinkageKeyValuesString : int

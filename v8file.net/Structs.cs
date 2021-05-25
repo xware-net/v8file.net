@@ -3368,7 +3368,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -3492,7 +3491,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -3527,6 +3525,14 @@ namespace v8file.net
             Start.Dump(sw, level + 1);
             sw.WriteLine($"{ident}End >");
             End.Dump(sw, level + 1);
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].Dump(sw, level + 1);
+                }
+            }
         }
     }
 
@@ -3560,6 +3566,14 @@ namespace v8file.net
             Start.Dump(sw, level + 1);
             sw.WriteLine($"{ident}End >");
             End.Dump(sw, level + 1);
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].Dump(sw, level + 1);
+                }
+            }
         }
     }
 
@@ -3609,7 +3623,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -3660,7 +3673,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -3711,7 +3723,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -3762,7 +3773,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -3827,7 +3837,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -3899,7 +3908,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -3950,7 +3958,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4001,7 +4008,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4041,7 +4047,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4092,7 +4097,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4143,7 +4147,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4183,7 +4186,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4230,7 +4232,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4284,7 +4285,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4337,7 +4337,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4397,7 +4396,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4472,7 +4470,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4554,7 +4551,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4605,7 +4601,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4656,7 +4651,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4766,7 +4760,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4819,7 +4812,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4872,7 +4864,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4923,7 +4914,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -4974,7 +4964,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -5142,7 +5131,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -5258,7 +5246,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -5299,7 +5286,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -5340,7 +5326,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -5387,7 +5372,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -5592,7 +5576,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -5654,7 +5637,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -5697,7 +5679,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -5740,7 +5721,6 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
@@ -6277,146 +6257,9 @@ namespace v8file.net
                 {
                     Linkages[i].Dump(sw, level + 1);
                 }
-                //sw.WriteLine($"{ident}Attribute Linkages <");
             }
         }
     }
-
-    //public struct MSElement
-    //{
-    //    public Elm_hdr Ehdr;
-    //    public Header Hdr;
-    //    public Cell_2d Cell_2d;
-    //    public Cell_3d Cell_3d;
-    //    public Line_2d Line_2d;
-    //    public Line_3d Line_3d;
-    //    public Line_String_2d Line_string_2d;
-    //    public Line_String_3d Line_string_3d;
-    //    public Text_node_2d Text_node_2d;
-    //    public Text_node_3d Text_node_3d;
-    //    public Complex_string Complex_string;
-    //    public Ellipse_2d Ellipse_2d;
-    //    public Ellipse_3d Ellipse_3d;
-    //    public Arc_2d Arc_2d;
-    //    public Arc_3d Arc_3d;
-    //    public Text_2d Text_2d;
-    //    public Text_3d Text_3d;
-    //    public Point_string_2d Point_string_2d;
-    //    public Point_string_3d Point_string_3d;
-    //    public Cone_3d Cone_3d;
-    //    public Surface Surf;
-    //    public Bspline_pole_2d Bspline_pole_2d;
-    //    public Bspline_pole_3d Bspline_pole_3d;
-    //    public Bspline_curve Bspline_curve;
-    //    public Bspline_surface Bspline_surface;
-    //    public Bspline_weight Bspline_weight;
-    //    public Bspline_knot Bspline_knot;
-    //    public Bsurf_boundary Bsurf_boundary;
-    //    public Raster_hdr Raster_hdr;
-    //    public Raster_comp Raster_comp;
-    //    public ApplicationElm ApplicationElm;
-    //    public ColorTable ColorTable;
-    //    public ReferenceFileElm ReferenceFileElm;
-    //    public Int16[] Tmp;
-    //    public Int16[] Buf;
-
-    //    public MSElement Read(BinaryReader br)
-    //    {
-    //        // read each field
-    //        Ehdr = new Elm_hdr().Read(br);
-    //        Hdr = new Header().Read(br);
-    //        Cell_2d = new Cell_2d().Read(br);
-    //        Cell_3d = new Cell_3d().Read(br);
-    //        Line_2d = new Line_2d().Read(br);
-    //        Line_3d = new Line_3d().Read(br);
-    //        Line_string_2d = new Line_String_2d().Read(br);
-    //        Line_string_3d = new Line_String_3d().Read(br);
-    //        Text_node_2d = new Text_node_2d().Read(br);
-    //        Text_node_3d = new Text_node_3d().Read(br);
-    //        Complex_string = new Complex_string().Read(br);
-    //        Ellipse_2d = new Ellipse_2d().Read(br);
-    //        Ellipse_3d = new Ellipse_3d().Read(br);
-    //        Arc_2d = new Arc_2d().Read(br);
-    //        Arc_3d = new Arc_3d().Read(br);
-    //        Text_2d = new Text_2d().Read(br);
-    //        Text_3d = new Text_3d().Read(br);
-    //        Point_string_2d = new Point_string_2d().Read(br);
-    //        Point_string_3d = new Point_string_3d().Read(br);
-    //        Cone_3d = new Cone_3d().Read(br);
-    //        Surf = new Surface().Read(br);
-    //        Bspline_pole_2d = new Bspline_pole_2d().Read(br);
-    //        Bspline_pole_3d = new Bspline_pole_3d().Read(br);
-    //        Bspline_curve = new Bspline_curve().Read(br);
-    //        Bspline_surface = new Bspline_surface().Read(br);
-    //        Bspline_weight = new Bspline_weight().Read(br);
-    //        Bspline_knot = new Bspline_knot().Read(br);
-    //        Bsurf_boundary = new Bsurf_boundary().Read(br);
-    //        Raster_hdr = new Raster_hdr().Read(br);
-    //        Raster_comp = new Raster_comp().Read(br);
-    //        ApplicationElm = new ApplicationElm().Read(br);
-    //        ColorTable = new ColorTable().Read(br);
-    //        ReferenceFileElm = new ReferenceFileElm().Read(br);
-    //        Tmp = new Int16[65535];
-    //        for (int i = 0; i < 65535; i++)
-    //        {
-    //            Tmp[i] = br.ReadInt16();
-    //        }
-    //        Buf = new Int16[65535];
-    //        for (int i = 0; i < 65535; i++)
-    //        {
-    //            Buf[i] = br.ReadInt16();
-    //        }
-    //        return this;
-    //    }
-
-    //    public void Dump(StreamWriter sw, int level)
-    //    {
-    //        var ident = new String(' ', 2 * level);
-    //        sw.WriteLine($"{ident}Ehdr >");
-    //        Ehdr.Dump(sw, level + 1);
-    //        sw.WriteLine($"{ident}Hdr >");
-    //        Hdr.Dump(sw, level + 1);
-    //        sw.WriteLine($"{ident}Cell_2d={Cell_2d}");
-    //        sw.WriteLine($"{ident}Cell_3d={Cell_3d}");
-    //        sw.WriteLine($"{ident}Line_2d={Line_2d}");
-    //        sw.WriteLine($"{ident}Line_3d={Line_3d}");
-    //        sw.WriteLine($"{ident}Line_string_2d={Line_string_2d}");
-    //        sw.WriteLine($"{ident}Line_string_3d={Line_string_3d}");
-    //        sw.WriteLine($"{ident}Text_node_2d={Text_node_2d}");
-    //        sw.WriteLine($"{ident}Text_node_3d={Text_node_3d}");
-    //        sw.WriteLine($"{ident}Complex_string={Complex_string}");
-    //        sw.WriteLine($"{ident}Ellipse_2d={Ellipse_2d}");
-    //        sw.WriteLine($"{ident}Ellipse_3d={Ellipse_3d}");
-    //        sw.WriteLine($"{ident}Arc_2d={Arc_2d}");
-    //        sw.WriteLine($"{ident}Arc_3d={Arc_3d}");
-    //        sw.WriteLine($"{ident}Text_2d={Text_2d}");
-    //        sw.WriteLine($"{ident}Text_3d={Text_3d}");
-    //        sw.WriteLine($"{ident}Point_string_2d={Point_string_2d}");
-    //        sw.WriteLine($"{ident}Point_string_3d={Point_string_3d}");
-    //        sw.WriteLine($"{ident}Cone_3d={Cone_3d}");
-    //        sw.WriteLine($"{ident}Surf={Surf}");
-    //        sw.WriteLine($"{ident}Bspline_pole_2d={Bspline_pole_2d}");
-    //        sw.WriteLine($"{ident}Bspline_pole_3d={Bspline_pole_3d}");
-    //        sw.WriteLine($"{ident}Bspline_curve={Bspline_curve}");
-    //        sw.WriteLine($"{ident}Bspline_surface={Bspline_surface}");
-    //        sw.WriteLine($"{ident}Bspline_weight={Bspline_weight}");
-    //        sw.WriteLine($"{ident}Bspline_knot={Bspline_knot}");
-    //        sw.WriteLine($"{ident}Bsurf_boundary={Bsurf_boundary}");
-    //        sw.WriteLine($"{ident}Raster_hdr={Raster_hdr}");
-    //        sw.WriteLine($"{ident}Raster_comp={Raster_comp}");
-    //        sw.WriteLine($"{ident}ApplicationElm={ApplicationElm}");
-    //        sw.WriteLine($"{ident}ColorTable={ColorTable}");
-    //        sw.WriteLine($"{ident}ReferenceFileElm={ReferenceFileElm}");
-    //        for (int i = 0; i < 65535; i++)
-    //        {
-    //            sw.WriteLine($"{ident}Tmp={Tmp[i]}");
-    //        }
-    //        for (int i = 0; i < 65535; i++)
-    //        {
-    //            sw.WriteLine($"{ident}Buf={Buf[i]}");
-    //        }
-    //    }
-    //}
 
     public struct UnitInfo
     {

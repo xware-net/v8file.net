@@ -158,21 +158,20 @@ namespace v8file.net
 
         private static void PrintRecursive(StreamWriter sw, TreeNode treeNode, int level)
         {
+            DumpNodeBegin(sw, treeNode, level);
             Dump(sw, treeNode, level);
             // Print each node recursively.  
             foreach (TreeNode tn in treeNode.Nodes)
             {
                 PrintRecursive(sw, tn, level + 1);
             }
+            DumpNodeEnd(sw, treeNode, level);
         }
 
-        private static void Dump(StreamWriter sw, TreeNode treeNode, int level)
+        private static void DumpNodeBegin(StreamWriter sw, TreeNode treeNode, int level)
         {
-            var ident1 = new String(' ', 2 * level);
-            var ident2 = new String(' ', 2 * (level + 2));
+            var ident = new String(' ', 2 * level);
             string nodeName = string.Empty;
-            string ident = ident1;
-            int lvl = level;
             UInt32 modelId = 0xffffffff;
             if (treeNode.Name == "0")
             {
@@ -214,26 +213,80 @@ namespace v8file.net
             {
                 if (treeNode.Tag is ElementTag tag1)
                 {
-                    ident = /*treeNode.Parent.Text == "NonModel"*/treeNode.Parent.FullPath.Contains("NonModel") ? ident1 : ident2;
-                    lvl = treeNode.Parent.FullPath.Contains("NonModel") ? level : level + 2;
                     nodeName = $"{tag1.ElementId:X16} - {Utils.V8GetElmType(tag1.ElementHeader)} - {tag1.CachePos:X}";
                     sw.WriteLine($"{ident}{nodeName} > ");
                 }
                 else
                 {
-                    ident = ident1;
-                    lvl = level;
                     nodeName = treeNode.Name;
                     sw.WriteLine($"{ident}{nodeName} > ");
                 }
             }
 
-            //sw.WriteLine($"{ident}{nodeName} > ");
             if (modelId != 0xffffffff)
             {
-                V8Models.V8GetModelInfoFromCache(V8FileManipulation.CMFileInfo.Files[0].Caches[modelId]).Dump(sw, lvl + 1);
+                V8Models.V8GetModelInfoFromCache(V8FileManipulation.CMFileInfo.Files[0].Caches[modelId]).Dump(sw, level + 1);
             }
+        }
 
+        private static void DumpNodeEnd(StreamWriter sw, TreeNode treeNode, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            string nodeName = string.Empty;
+            UInt32 modelId = 0xffffffff;
+            if (treeNode.Name == "0")
+            {
+                nodeName = "Root";
+                sw.WriteLine($"{ident}< {nodeName}");
+            }
+            else if (treeNode.Name == "-1")
+            {
+                nodeName = "NonModel";
+                sw.WriteLine($"{ident}< {nodeName}");
+            }
+            else if (treeNode.Name == "-2")
+            {
+                nodeName = "Models";
+                sw.WriteLine($"{ident}< {nodeName}");
+            }
+            else if (treeNode.Name.StartsWith("-"))
+            {
+                int n = Convert.ToInt32(treeNode.Name[1..]);
+                int m = n % 3;
+                if (m == 0)
+                {
+                    nodeName = "Model: " + V8GetModelName((n / 3) - 1);
+                    modelId = (uint)((n / 3) - 1);
+                    sw.WriteLine($"{ident}< {nodeName}");
+                }
+                else if (m == 1)
+                {
+                    nodeName = "Graphics";
+                    sw.WriteLine($"{ident}< {nodeName}");
+                }
+                else if (m == 2)
+                {
+                    nodeName = "Control";
+                    sw.WriteLine($"{ident}< {nodeName}");
+                }
+            }
+            else
+            {
+                if (treeNode.Tag is ElementTag tag1)
+                {
+                    nodeName = $"{tag1.ElementId:X16} - {Utils.V8GetElmType(tag1.ElementHeader)} - {tag1.CachePos:X}";
+                    sw.WriteLine($"{ident}< {nodeName}");
+                }
+                else
+                {
+                    nodeName = treeNode.Name;
+                    sw.WriteLine($"{ident}< {nodeName}");
+                }
+            }
+        }
+
+        private static void Dump(StreamWriter sw, TreeNode treeNode, int level)
+        {
             if (treeNode.Tag is ElementTag tag)
             {
                 object element = V8ReadElementFromCache(tag);
@@ -242,85 +295,85 @@ namespace v8file.net
                     switch (element)
                     {
                         case Arc_2d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Arc_3d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Cell_2d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Cell_3d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Complex_string t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Dgn_header t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Ellipse_2d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Ellipse_3d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case ExtendedElm t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case ExtendedNonGraphicElm t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Line_2d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Line_3d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Line_String_2d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Line_String_3d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case ReferenceFileElm t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Shape_2d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Shape_3d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Surface t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Table t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case TableHdr t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Text_2d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Text_3d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Text_node_2d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Text_node_3d t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case ViewElm t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case ViewGroupElm t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         case Elm_hdr t:
-                            t.Dump(sw, lvl);
+                            t.Dump(sw, level);
                             break;
                         default:
                             break;
@@ -617,7 +670,7 @@ namespace v8file.net
             Elm_hdr ehdr;
             Disp_hdr dhdr;
             int componentCount;
-            var parentNode = FindNode(modelNum == -1 ? "-1" : (cacheType == "Graphics" ? (-3 * modelNum - 1).ToString() : (-3 * modelNum - 2).ToString()));
+            var parentNode = FindNode(modelNum == -1 ? "-1" : (cacheType == "Graphics" ? (-3 * (modelNum + 1) - 1).ToString() : (-3 * (modelNum + 1) - 2).ToString()));
             if (parentNode == null)
                 return;
 
