@@ -15,6 +15,7 @@ namespace v8file.net
         LINKAGEID_DDE_LINK = 20285,        //  0x4f3d
         LINKAGEID_ExternalMaterial = 20314,        //  0x4f5a
         LINKAGEID_Node = 20357,        /* 0x4f85 */
+        //LINKAGEID_CellDef = 20371,        /* 0x4f93 */
         LINKAGEID_CellDef = 20372,        /* 0x4f94 */
         LINKAGEID_ACS = 20389,        /* 0x4fa5 */
         LINKAGEID_AssociatedElements = 20394,        /* 0x4faa */

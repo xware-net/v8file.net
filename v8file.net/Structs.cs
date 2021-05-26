@@ -5121,7 +5121,8 @@ namespace v8file.net
             sw.WriteLine($"{ident}Dhdr >");
             Dhdr.Dump(sw, level + 1);
             sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
-            sw.WriteLine($"{ident}Flags={Flags}");
+            sw.WriteLine($"{ident}Flags >");
+            Flags.Dump(sw, level + 1);
             sw.WriteLine($"{ident}Num_poles={Num_poles}");
             sw.WriteLine($"{ident}Num_knots={Num_knots}");
             if (Linkages.Length > 0)
@@ -5250,7 +5251,7 @@ namespace v8file.net
         }
     }
 
-    public struct Bspline_weight    // 26 // TODO
+    public struct Bspline_weight    // 26
     {
         public Elm_hdr Ehdr;
         public T_Adouble[] Weights;
@@ -5261,6 +5262,7 @@ namespace v8file.net
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
+            NumWeights = (int)((2 * Ehdr.AttrOffset) - 0x20) / sizeof(double);
             Weights = new T_Adouble[NumWeights];
             for (int i = 0; i < NumWeights; i++)
             {
@@ -5275,6 +5277,7 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}NumWeights={NumWeights}");
             for (int i = 0; i < NumWeights; i++)
             {
                 sw.WriteLine($"{ident}Weights[{i}]={Weights[i]}");
@@ -5290,7 +5293,7 @@ namespace v8file.net
         }
     }
 
-    public struct Bspline_knot  // 28 // TODO
+    public struct Bspline_knot  // 28
     {
         public Elm_hdr Ehdr;
         public T_Adouble[] Knots;
@@ -5301,6 +5304,7 @@ namespace v8file.net
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
+            NumKnots = (int)((2 * Ehdr.AttrOffset) - 0x20) / sizeof(double);
             Knots = new T_Adouble[NumKnots];
             for (int i = 0; i < NumKnots; i++)
             {
@@ -5315,6 +5319,7 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}NumKnots={NumKnots}");
             for (int i = 0; i < NumKnots; i++)
             {
                 sw.WriteLine($"{ident}Knots[{i}]={Knots[i]}");
@@ -6215,8 +6220,10 @@ namespace v8file.net
             sw.WriteLine($"{ident}GroupId={GroupId}");
             sw.WriteLine($"{ident}FileNumber={FileNumber}");
             sw.WriteLine($"{ident}ParentAttachmentId={ParentAttachmentId}");
-            sw.WriteLine($"{ident}Fb_opts={Fb_opts}");
-            sw.WriteLine($"{ident}Fd_opts={Fd_opts}");
+            sw.WriteLine($"{ident}Fb_opts >");
+            Fb_opts.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Fd_opts >");
+            Fd_opts.Dump(sw, level + 1);
             sw.WriteLine($"{ident}Priority={Priority}");
             for (int i = 0; i < 8; i++)
             {
@@ -12812,9 +12819,12 @@ namespace v8file.net
             sw.WriteLine($"{ident}DisableCrossingEdge={DisableCrossingEdge}");
             sw.WriteLine($"{ident}KeepOriginal={KeepOriginal}");
             sw.WriteLine($"{ident}Reserved={Reserved}");
-            sw.WriteLine($"{ident}UParams={UParams}");
-            sw.WriteLine($"{ident}VParams={VParams}");
-            sw.WriteLine($"{ident}Display={Display}");
+            sw.WriteLine($"{ident}UParams >");
+            UParams.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}VParams >");
+            VParams.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Display >");
+            Display.Dump(sw, level + 1);
         }
     }
 
@@ -20731,5 +20741,4 @@ namespace v8file.net
             sw.WriteLine($"{ident}StyleID={StyleID}");
         }
     }
-
 }

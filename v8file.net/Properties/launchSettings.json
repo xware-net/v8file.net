@@ -2,7 +2,7 @@
   "profiles": {
     "v8file.net": {
       "commandName": "Project",
-      "commandLineArgs": "GISData1.dgn GISData1.dgn.out"
+      "commandLineArgs": "\"Standards.dgn\" \"Standards.dgn.out\""
     }
   }
 }

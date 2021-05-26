@@ -296,6 +296,24 @@ namespace v8file.net
                         case Arc_3d t:
                             t.Dump(sw, level);
                             break;
+                        case Bspline_curve t:
+                            t.Dump(sw, level);
+                            break;
+                        case Bspline_knot t:
+                            t.Dump(sw, level);
+                            break;
+                        case Bspline_pole_2d t:
+                            t.Dump(sw, level);
+                            break;
+                        case Bspline_pole_3d t:
+                            t.Dump(sw, level);
+                            break;
+                        case Bspline_surface t:
+                            t.Dump(sw, level);
+                            break;
+                        case Bspline_weight t:
+                            t.Dump(sw, level);
+                            break;
                         case Cell_2d t:
                             t.Dump(sw, level);
                             break;
