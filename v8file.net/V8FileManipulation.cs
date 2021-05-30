@@ -290,6 +290,18 @@ namespace v8file.net
                 {
                     switch (element)
                     {
+                        case AnimationParameterTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case AnimationParameterTableElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case AnimationScheduleInfoTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case AnimationScheduleInfoTableElm t:
+                            t.Dump(sw, level);
+                            break;
                         case Arc_2d t:
                             t.Dump(sw, level);
                             break;
@@ -320,10 +332,34 @@ namespace v8file.net
                         case Cell_3d t:
                             t.Dump(sw, level);
                             break;
+                        case ColorBook t:
+                            t.Dump(sw, level);
+                            break;
+                        case ColorBookElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case ColorBookTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case ColorBookTableElm t:
+                            t.Dump(sw, level);
+                            break;
                         case Complex_string t:
                             t.Dump(sw, level);
                             break;
                         case Dgn_header t:
+                            t.Dump(sw, level);
+                            break;
+                        case DictionaryTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case DictionaryTableElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case DimStyleTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case DimStyleTableElm t:
                             t.Dump(sw, level);
                             break;
                         case Ellipse_2d t:
@@ -338,6 +374,36 @@ namespace v8file.net
                         case ExtendedNonGraphicElm t:
                             t.Dump(sw, level);
                             break;
+                        case FilterTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case FilterTableElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case FontTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case FontTableElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case LevelNameDictionaryTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case LevelNameDictionaryTableElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case LevelTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case LevelTableElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case LightSetupTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case LightSetupTableElm t:
+                            t.Dump(sw, level);
+                            break;
                         case Line_2d t:
                             t.Dump(sw, level);
                             break;
@@ -350,7 +416,49 @@ namespace v8file.net
                         case Line_String_3d t:
                             t.Dump(sw, level);
                             break;
+                        case LStyleDefTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case LStyleDefTableElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case LStyleNameTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case LStyleNameTableElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case MaterialPaletteTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case MaterialPaletteTableElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case MLineStyleTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case MLineStyleTableElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case NamedPresentationTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case NamedPresentationTableElm t:
+                            t.Dump(sw, level);
+                            break;
                         case ReferenceFileElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case RegAppTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case RegAppTableElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case RenderSetupTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case RenderSetupTableElm t:
                             t.Dump(sw, level);
                             break;
                         case Shape_2d t:
@@ -362,10 +470,10 @@ namespace v8file.net
                         case Surface t:
                             t.Dump(sw, level);
                             break;
-                        case Table t:
+                        case SymbolStyleTable t:
                             t.Dump(sw, level);
                             break;
-                        case TableHdr t:
+                        case SymbolStyleTableElm t:
                             t.Dump(sw, level);
                             break;
                         case Text_2d t:
@@ -378,6 +486,12 @@ namespace v8file.net
                             t.Dump(sw, level);
                             break;
                         case Text_node_3d t:
+                            t.Dump(sw, level);
+                            break;
+                        case TestStyleTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case TestStyleTableElm t:
                             t.Dump(sw, level);
                             break;
                         case ViewElm t:
@@ -554,9 +668,55 @@ namespace v8file.net
                     // raster hierarchy component
                     93 => null,
                     // table entry
-                    95 => new Table().Read(br),
+                    95 => ehdr.Level switch
+                    {
+                        1 => new LevelTableElm().Read(br),
+                        2 => new FontTableElm().Read(br),
+                        3 => new TestStyleTableElm().Read(br),
+                        4 => new FilterTableElm().Read(br),
+                        5 => new DimStyleTableElm().Read(br),
+                        6 => new MLineStyleTableElm().Read(br),
+                        7 => new LStyleNameTableElm().Read(br),
+                        8 => new LStyleDefTableElm().Read(br),
+                        9 => new DictionaryTableElm().Read(br),
+                        10 => new RegAppTableElm().Read(br),
+                        11 => new ColorBookTableElm().Read(br),
+                        16 => new SymbolStyleTableElm().Read(br),
+                        17 => new ColorBookElm().Read(br),
+                        18 => new MaterialPaletteTableElm().Read(br),
+                        19 => new LevelNameDictionaryTableElm().Read(br),
+                        20 => new AnimationParameterTableElm().Read(br),
+                        21 => new AnimationScheduleInfoTableElm().Read(br),
+                        22 => new RenderSetupTableElm().Read(br),
+                        23 => new LightSetupTableElm().Read(br),
+                        24 => new NamedPresentationTableElm().Read(br),
+                        _ => null,
+                    },
                     // table header
-                    96 => new TableHdr().Read(br),
+                    96 => ehdr.Level switch
+                    {
+                        1 => new LevelTable().Read(br),
+                        2 => new FontTable().Read(br),
+                        3 => new TestStyleTable().Read(br),
+                        4 => new FilterTable().Read(br),
+                        5 => new DimStyleTable().Read(br),
+                        6 => new MLineStyleTable().Read(br),
+                        7 => new LStyleNameTable().Read(br),
+                        8 => new LStyleDefTable().Read(br),
+                        9 => new DictionaryTable().Read(br),
+                        10 => new RegAppTable().Read(br),
+                        11 => new ColorBookTable().Read(br),
+                        16 => new SymbolStyleTable().Read(br),
+                        17 => new ColorBook().Read(br),
+                        18 => new MaterialPaletteTable().Read(br),
+                        19 => new LevelNameDictionaryTable().Read(br),
+                        20 => new AnimationParameterTable().Read(br),
+                        21 => new AnimationScheduleInfoTable().Read(br),
+                        22 => new RenderSetupTable().Read(br),
+                        23 => new LightSetupTable().Read(br),
+                        24 => new NamedPresentationTable().Read(br),
+                        _ => null,
+                    },
                     // view group element
                     97 => new ViewGroupElm().Read(br),
                     // view element

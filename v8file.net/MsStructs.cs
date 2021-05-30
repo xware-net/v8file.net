@@ -326,75 +326,89 @@ namespace v8file.net
         }
     }
 
-    public class Table
-    {
-        public Elm_hdr Ehdr;
-        public Linkage[] Linkages;
+    //public class Table
+    //{
+    //    public Elm_hdr Ehdr;
+    //    public UInt32 ComponentCount;
+    //    public Linkage[] Linkages;
 
-        public Table Read(BinaryReader br)
-        {
-            // read each field
-            Ehdr = new Elm_hdr().Read(br);
-            Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
-            return this;
-        }
+    //    public Table Read(BinaryReader br)
+    //    {
+    //        // read each field
+    //        Ehdr = new Elm_hdr().Read(br);
+    //        ComponentCount = br.ReadUInt32();
+    //        Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
+    //        return this;
+    //    }
 
-        public void Dump(StreamWriter sw, int level)
-        {
-            var ident = new String(' ', 2 * level);
-            sw.WriteLine($"{ident}Ehdr >");
-            Ehdr.Dump(sw, level + 1);
-            if (Linkages.Length > 0)
-            {
-                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
-                for (int i = 0; i < Linkages.Length; i++)
-                {
-                    Linkages[i].Dump(sw, level + 1);
-                }
-            }
-        }
-    }
+    //    public void Dump(StreamWriter sw, int level)
+    //    {
+    //        var ident = new String(' ', 2 * level);
+    //        sw.WriteLine($"{ident}Ehdr >");
+    //        Ehdr.Dump(sw, level + 1);
+    //        sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
+    //        if (Linkages.Length > 0)
+    //        {
+    //            sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+    //            for (int i = 0; i < Linkages.Length; i++)
+    //            {
+    //                Linkages[i].Dump(sw, level + 1);
+    //            }
+    //        }
+    //    }
+    //}
 
-    public class TableHdr
-    {
-        public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
-        public UInt32 Dummy1;
-        public Int32 ActiveFilterId;
-        public UInt32 Dummy2;
-        public Linkage[] Linkages;
+    //public class TableHdr
+    //{
+    //    //public Elm_hdr Ehdr;
+    //    //public UInt32 ComponentCount;
+    //    ////public UInt32 Dummy1;
+    //    //public Int32 ActiveFilterId;
+    //    //public UInt32 Dummy2;
+    //    //public Linkage[] Linkages;
+    //    public object Object;
 
-        public TableHdr Read(BinaryReader br)
-        {
-            // read each field
-            Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
-            Dummy1 = br.ReadUInt32();
-            ActiveFilterId = br.ReadInt32();
-            Dummy2 = br.ReadUInt32();
-            Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
-            return this;
-        }
+    //    public object Read(BinaryReader br)
+    //    {
+    //        // read each field
+    //        //Ehdr = new Elm_hdr().Read(br);
+    //        //ComponentCount = br.ReadUInt32();
 
-        public void Dump(StreamWriter sw, int level)
-        {
-            var ident = new String(' ', 2 * level);
-            sw.WriteLine($"{ident}Ehdr >");
-            Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
-            sw.WriteLine($"{ident}Dummy1={Dummy1}");
-            sw.WriteLine($"{ident}ActiveFilterId={ActiveFilterId}");
-            sw.WriteLine($"{ident}Dummy2={Dummy2}");
-            if (Linkages.Length > 0)
-            {
-                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
-                for (int i = 0; i < Linkages.Length; i++)
-                {
-                    Linkages[i].Dump(sw, level + 1);
-                }
-            }
-        }
-    }
+    //        switch (Ehdr.Level)
+    //        {
+    //            case 1:
+    //                Object = new LevelTable().Read(br);
+    //                break;
+    //            case 2:
+    //                Object = new FontTable().Read(br);
+    //                break;
+    //        }
+    //        //Dummy1 = br.ReadUInt32();
+    //        //ActiveFilterId = br.ReadInt32();
+    //        //Dummy2 = br.ReadUInt32();
+    //        //Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
+    //        return Object;
+    //    }
+
+    //    public void Dump(StreamWriter sw, int level)
+    //    {
+    //        //var ident = new String(' ', 2 * level);
+    //        //sw.WriteLine($"{ident}Ehdr >");
+    //        //Ehdr.Dump(sw, level + 1);
+    //        //sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
+    //        //sw.WriteLine($"{ident}Dummy1={Dummy1}");
+    //        //sw.WriteLine($"{ident}ActiveFilterId={ActiveFilterId}");
+    //        //sw.WriteLine($"{ident}Dummy2={Dummy2}");
+    //        //if (Linkages.Length > 0)
+    //        //{
+    //        //    sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+    //        //    for (int i = 0; i < Linkages.Length; i++)
+    //        //    {
+    //        //        Linkages[i].Dump(sw, level + 1);
+    //        //    }
+    //        //}
+    //    }
+    //}
 
     public class LevelTableEntry
     {

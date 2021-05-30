@@ -4,17 +4,15 @@ using System.Text;
 
 namespace v8file.net
 {
-    public class LevelTable
+    public class LevelTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public LevelTable Read(BinaryReader br)
+        public LevelTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -24,7 +22,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -36,17 +33,15 @@ namespace v8file.net
         }
     }
 
-    public class FontTable
+    public class FontTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public FontTable Read(BinaryReader br)
+        public FontTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -56,7 +51,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -68,17 +62,15 @@ namespace v8file.net
         }
     }
 
-    public class TestStyleTable
+    public class TestStyleTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public TestStyleTable Read(BinaryReader br)
+        public TestStyleTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -88,7 +80,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -100,17 +91,15 @@ namespace v8file.net
         }
     }
 
-    public class FilterTable
+    public class FilterTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public FilterTable Read(BinaryReader br)
+        public FilterTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -120,7 +109,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -132,17 +120,15 @@ namespace v8file.net
         }
     }
 
-    public class DimStyleTable
+    public class DimStyleTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public DimStyleTable Read(BinaryReader br)
+        public DimStyleTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -152,7 +138,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -164,17 +149,15 @@ namespace v8file.net
         }
     }
 
-    public class MLineStyleTable
+    public class MLineStyleTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public MLineStyleTable Read(BinaryReader br)
+        public MLineStyleTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -184,7 +167,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -196,17 +178,15 @@ namespace v8file.net
         }
     }
 
-    public class LStyleNameTable
+    public class LStyleNameTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public LStyleNameTable Read(BinaryReader br)
+        public LStyleNameTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -216,7 +196,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -228,17 +207,15 @@ namespace v8file.net
         }
     }
 
-    public class LStyleDefTable
+    public class LStyleDefTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public LStyleDefTable Read(BinaryReader br)
+        public LStyleDefTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -248,7 +225,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -260,17 +236,15 @@ namespace v8file.net
         }
     }
 
-    public class DictionaryTable
+    public class DictionaryTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public DictionaryTable Read(BinaryReader br)
+        public DictionaryTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -280,7 +254,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -292,17 +265,15 @@ namespace v8file.net
         }
     }
 
-    public class RegAppTable
+    public class RegAppTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public RegAppTable Read(BinaryReader br)
+        public RegAppTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -312,7 +283,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -324,17 +294,15 @@ namespace v8file.net
         }
     }
 
-    public class ColorBookTable
+    public class ColorBookTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public ColorBookTable Read(BinaryReader br)
+        public ColorBookTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -344,7 +312,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -356,17 +323,15 @@ namespace v8file.net
         }
     }
 
-    public class SymbolStyleTable
+    public class SymbolStyleTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public SymbolStyleTable Read(BinaryReader br)
+        public SymbolStyleTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -376,7 +341,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -388,17 +352,15 @@ namespace v8file.net
         }
     }
 
-    public class ColorBook
+    public class ColorBookElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public ColorBook Read(BinaryReader br)
+        public ColorBookElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -408,7 +370,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -420,17 +381,15 @@ namespace v8file.net
         }
     }
 
-    public class MaterialPaletteTable
+    public class MaterialPaletteTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public MaterialPaletteTable Read(BinaryReader br)
+        public MaterialPaletteTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -440,7 +399,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -452,17 +410,15 @@ namespace v8file.net
         }
     }
 
-    public class LevelNameDictionaryTable
+    public class LevelNameDictionaryTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public LevelNameDictionaryTable Read(BinaryReader br)
+        public LevelNameDictionaryTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -472,7 +428,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -484,17 +439,15 @@ namespace v8file.net
         }
     }
 
-    public class AnimationParameterTable
+    public class AnimationParameterTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public AnimationParameterTable Read(BinaryReader br)
+        public AnimationParameterTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -504,7 +457,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -516,17 +468,15 @@ namespace v8file.net
         }
     }
 
-    public class AnimationScheduleInfoTable
+    public class AnimationScheduleInfoTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public AnimationScheduleInfoTable Read(BinaryReader br)
+        public AnimationScheduleInfoTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -536,7 +486,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -548,17 +497,15 @@ namespace v8file.net
         }
     }
 
-    public class RenderSetupTable
+    public class RenderSetupTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public RenderSetupTable Read(BinaryReader br)
+        public RenderSetupTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -568,7 +515,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -580,17 +526,15 @@ namespace v8file.net
         }
     }
 
-    public class LightSetupTable
+    public class LightSetupTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public LightSetupTable Read(BinaryReader br)
+        public LightSetupTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -600,7 +544,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -612,17 +555,15 @@ namespace v8file.net
         }
     }
 
-    public class NamedPresentationTable
+    public class NamedPresentationTableElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public NamedPresentationTable Read(BinaryReader br)
+        public NamedPresentationTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            ComponentCount = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -632,7 +573,6 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
