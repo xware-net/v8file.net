@@ -11,18 +11,6 @@ namespace v8file.net
     public class V8FileManipulation
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-        public const ushort LinkageidString = 22226;
-        public const ushort LinkageidDependency = 22224;
-        public const ushort DependencyappidRaster = 10011;
-
-        public const ushort StringLinkageKeyName = 1;
-        public const ushort StringLinkageKeyDescription = 2;
-        public const ushort StringLinkageKeyFileName = 3;
-        public const ushort StringLinkageKeyLogicalName = 4;
-        public const ushort StringLinkageKeyModelName = 21;
-        public const ushort StringLinkageKeyFullReferencePath = 31;
-
         public static CmFileInfo CMFileInfo = new();
         private static bool SaveToDir = false;
         private static TreeView Tree;

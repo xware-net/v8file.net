@@ -234,10 +234,25 @@ namespace v8file.net
     public struct XAttribute
     {
         public Int32 XAttributeHandler;
-        public Int32 Dummy1;
+        public Int32 AttributeId;
         public UInt32 Size;
         public Int32 Dummy2;
         public string Data;
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            if ((XAttributeHandler == 0x570b0003) ||
+              (XAttributeHandler == 0x570b0004) ||
+              (XAttributeHandler == 0x570b0005))
+            {
+                sw.WriteLine($"{ident}xattribute, handler={XAttributeHandler:X8}, size={Size} is {Data}");
+            }
+            else
+            {
+                sw.WriteLine($"{ident}xattribute, handler={XAttributeHandler:X8}, size={Size}");
+            }
+        }
     };
 
     public class ModelIndex

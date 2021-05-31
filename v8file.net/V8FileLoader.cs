@@ -11,7 +11,9 @@ namespace v8file.net
     public class V8FileLoader
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly Dictionary<ulong, List<XAttribute>> attributes = new();
+        private static readonly Dictionary<UInt64, List<XAttribute>> xattributes = new();
+
+        public static Dictionary<ulong, List<XAttribute>> Xattributes => xattributes;
 
         public static void V8ParseAttributeCache(StreamWriter sw, Cache cache)
         {
@@ -35,9 +37,9 @@ namespace v8file.net
                     Debugger.Break();
                 UInt64 elementId = br.ReadUInt64();
 
-                if (!attributes.ContainsKey(elementId))
+                if (!Xattributes.ContainsKey(elementId))
                 {
-                    attributes.Add(elementId, new List<XAttribute>());
+                    Xattributes.Add(elementId, new List<XAttribute>());
                 }
 
                 if (sw != StreamWriter.Null)
@@ -61,7 +63,7 @@ namespace v8file.net
                             sw.WriteLine("\t xattribute {0}, handler={1:X8}, size={2}", i, xAttribute.XAttributeHandler, xAttribute.Size);
                     }
 
-                    attributes[elementId].Add(xAttribute);
+                    Xattributes[elementId].Add(xAttribute);
                 }
 
                 Int64 dummy4 = br.ReadInt32();
@@ -86,7 +88,7 @@ namespace v8file.net
                 return new XAttribute
                 {
                     XAttributeHandler = xAttributeHandler,
-                    Dummy1 = dummy1,
+                    AttributeId = dummy1,
                     Size = size,
                     Dummy2 = dummy2,
                     Data = Decode(bytes)
@@ -97,7 +99,7 @@ namespace v8file.net
                 return new XAttribute
                 {
                     XAttributeHandler = xAttributeHandler,
-                    Dummy1 = dummy1,
+                    AttributeId = dummy1,
                     Size = size,
                     Dummy2 = dummy2,
                     Data = Encoding.Unicode.GetString(bytes, 0, bytes.Length).Replace("\x00", "")
