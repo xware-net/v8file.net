@@ -341,38 +341,6 @@ namespace v8file.net
         }
     }
 
-    //public class Table
-    //{
-    //    public Elm_hdr Ehdr;
-    //    public UInt32 ComponentCount;
-    //    public Linkage[] Linkages;
-
-    //    public Table Read(BinaryReader br)
-    //    {
-    //        // read each field
-    //        Ehdr = new Elm_hdr().Read(br);
-    //        ComponentCount = br.ReadUInt32();
-    //        Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
-    //        return this;
-    //    }
-
-    //    public void Dump(StreamWriter sw, int level)
-    //    {
-    //        var ident = new String(' ', 2 * level);
-    //        sw.WriteLine($"{ident}Ehdr >");
-    //        Ehdr.Dump(sw, level + 1);
-    //        sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
-    //        if (Linkages.Length > 0)
-    //        {
-    //            sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
-    //            for (int i = 0; i < Linkages.Length; i++)
-    //            {
-    //                Linkages[i].Dump(sw, level + 1);
-    //            }
-    //        }
-    //    }
-    //}
-
     //public class TableHdr
     //{
     //    //public Elm_hdr Ehdr;
@@ -388,16 +356,6 @@ namespace v8file.net
     //        // read each field
     //        //Ehdr = new Elm_hdr().Read(br);
     //        //ComponentCount = br.ReadUInt32();
-
-    //        switch (Ehdr.Level)
-    //        {
-    //            case 1:
-    //                Object = new LevelTable().Read(br);
-    //                break;
-    //            case 2:
-    //                Object = new FontTable().Read(br);
-    //                break;
-    //        }
     //        //Dummy1 = br.ReadUInt32();
     //        //ActiveFilterId = br.ReadInt32();
     //        //Dummy2 = br.ReadUInt32();
@@ -463,6 +421,18 @@ namespace v8file.net
                     Linkages[i].Dump(sw, level + 1);
                 }
             }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
+                }
+            }
         }
     }
 
@@ -502,6 +472,18 @@ namespace v8file.net
                     Linkages[i].Dump(sw, level + 1);
                 }
             }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
+                }
+            }
         }
     }
 
@@ -535,6 +517,18 @@ namespace v8file.net
                 for (int i = 0; i < Linkages.Length; i++)
                 {
                     Linkages[i].Dump(sw, level + 1);
+                }
+            }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
                 }
             }
         }
@@ -637,6 +631,18 @@ namespace v8file.net
                     Linkages[i].Dump(sw, level + 1);
                 }
             }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
+                }
+            }
         }
 
         public bool IsNamed => !string.IsNullOrEmpty(Name) && ViewNumber >= 0 && ViewNumber <= 7;
@@ -687,6 +693,18 @@ namespace v8file.net
                 for (int i = 0; i < Linkages.Length; i++)
                 {
                     Linkages[i].Dump(sw, level + 1);
+                }
+            }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
                 }
             }
         }
