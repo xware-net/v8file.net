@@ -74,7 +74,7 @@ namespace v8file.net
         private static XAttribute ReadXAttribute(StreamWriter sw, BinaryReader br)
         {
             Int32 xAttributeHandler = br.ReadInt32(); // eg 570b0005
-            Int32 dummy1 = br.ReadInt32();
+            Int32 attributeId = br.ReadInt32();
             UInt32 size = br.ReadUInt32();
             if ((size & 0x80000000) == 0x80000000)
             {
@@ -88,7 +88,7 @@ namespace v8file.net
                 return new XAttribute
                 {
                     XAttributeHandler = xAttributeHandler,
-                    AttributeId = dummy1,
+                    AttributeId = attributeId,
                     Size = size,
                     Dummy2 = dummy2,
                     Data = Decode(bytes)
@@ -99,7 +99,7 @@ namespace v8file.net
                 return new XAttribute
                 {
                     XAttributeHandler = xAttributeHandler,
-                    AttributeId = dummy1,
+                    AttributeId = attributeId,
                     Size = size,
                     Dummy2 = dummy2,
                     Data = Encoding.Unicode.GetString(bytes, 0, bytes.Length).Replace("\x00", "")

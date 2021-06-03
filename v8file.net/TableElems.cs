@@ -36,12 +36,24 @@ namespace v8file.net
     public class FontTableElm
     {
         public Elm_hdr Ehdr;
+        public UInt32 Dummy1;
+        public UInt32 Dummy2;
+        public UInt32 FontNumber;
+        public UInt16 NameLength;
+        public byte[] NameBytes;
+        public string FontName;
         public Linkage[] Linkages;
 
         public FontTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
+            Dummy1 = br.ReadUInt32();
+            Dummy2 = br.ReadUInt32();
+            FontNumber = br.ReadUInt32();
+            NameLength = br.ReadUInt16();
+            NameBytes = br.ReadBytes(NameLength);
+            FontName = Encoding.Unicode.GetString(NameBytes);
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -51,6 +63,8 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}FontNumber={FontNumber}");
+            sw.WriteLine($"{ident}FontName={FontName}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -65,12 +79,22 @@ namespace v8file.net
     public class TestStyleTableElm
     {
         public Elm_hdr Ehdr;
+        public UInt64 StyleId;
+        public UInt32 FontNumber;
+        public UInt32 Dummy1;
+        public double Dummy2;
+        public double Dummy3;
         public Linkage[] Linkages;
 
         public TestStyleTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
+            StyleId = br.ReadUInt64();
+            FontNumber = br.ReadUInt32();
+            Dummy1 = br.ReadUInt32();
+            Dummy2 = br.ReadDouble();
+            Dummy3 = br.ReadDouble();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -80,6 +104,11 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}StyleId={StyleId}");
+            sw.WriteLine($"{ident}FontNumber={FontNumber}");
+            sw.WriteLine($"{ident}Dummy1={Dummy1}");
+            sw.WriteLine($"{ident}Dummy2={Dummy2}");
+            sw.WriteLine($"{ident}Dummy3={Dummy3}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");

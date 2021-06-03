@@ -246,11 +246,11 @@ namespace v8file.net
               (XAttributeHandler == 0x570b0004) ||
               (XAttributeHandler == 0x570b0005))
             {
-                sw.WriteLine($"{ident}xattribute, handler={XAttributeHandler:X8}, size={Size} is {Data}");
+                sw.WriteLine($"{ident}xattribute, handler=0x{XAttributeHandler:X8}, size={Size} is {Data}");
             }
             else
             {
-                sw.WriteLine($"{ident}xattribute, handler={XAttributeHandler:X8}, size={Size}");
+                sw.WriteLine($"{ident}xattribute, handler=0x{XAttributeHandler:X8}, size={Size}");
             }
         }
     };
