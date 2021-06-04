@@ -82,19 +82,101 @@ namespace v8file.net
         public UInt64 StyleId;
         public UInt32 FontNumber;
         public UInt32 Dummy1;
+        public double Width;
+        public double Height;
+        public double Slant;
+        public double LineSpacing;
+        public double InterCharSpacing;
+        public double UnderlineOffset;
+        public double OverlineOffset;
         public double Dummy2;
-        public double Dummy3;
+        public DPoint2d LineOffset;
+        public UInt16 Justification;
+        public UInt16 Dummy8;
+        public UInt16 LineLength;
+        public UInt16 Dummy9;
+        public UInt16 Dummy10;
+        public UInt16 Dummy11;
+        public Int32 BackgroudWeight;
+        public Int32 BackgroudColor;
+        public Int32 BackgroudFillColor;
+        public DPoint2d BackgroundBorder;
+        public Int32 UnderlineStyle;
+        public UInt32 UnderlineWeight;
+        public UInt32 UnderlineColor;
+        public Int32 OverlineStyle;
+        public UInt32 OverlineWeight;
+        public UInt32 OverlineColor;
+        public UInt32 Dummy4;
+        public UInt32 Dummy5;
+        public UInt32 Dummy6;
+        public UInt32 Dummy7;
+        public UInt32 ColorIndex;
+        public UInt32 Dummy12;
+        public UInt32 Dummy13;
+        public UInt32 Dummy14;
+        public UInt32 Dummy15;
+        public UInt32 Dummy16;
+        public UInt16 TextStyleNameLength;
+        public string TextStyleName;
         public Linkage[] Linkages;
 
         public TestStyleTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            StyleId = br.ReadUInt64();
-            FontNumber = br.ReadUInt32();
-            Dummy1 = br.ReadUInt32();
-            Dummy2 = br.ReadDouble();
-            Dummy3 = br.ReadDouble();
+            StyleId = br.ReadUInt64();              // 0x20
+            FontNumber = br.ReadUInt32();           // 0x28
+            Dummy1 = br.ReadUInt32();               // 0x2c
+            Width = br.ReadDouble();                // 0x30
+            Height = br.ReadDouble();               // 0x38
+            Slant = br.ReadDouble();                // 0x40
+            LineSpacing = br.ReadDouble();          // 0x48
+            InterCharSpacing = br.ReadDouble();     // 0x50
+            UnderlineOffset = br.ReadDouble();      // 0x58
+            OverlineOffset = br.ReadDouble();       // 0x60
+            Dummy2 = br.ReadDouble();               // 0x68
+            LineOffset = new DPoint2d().Read(br);   // 0x70
+            Justification = br.ReadUInt16();        // 0x80
+            Dummy8 = br.ReadUInt16();               // 0x82
+            LineLength = br.ReadUInt16();           // 0x84
+            Dummy9 = br.ReadUInt16();               // 0x86
+            Dummy10 = br.ReadUInt16();              // 0x88
+            Dummy11 = br.ReadUInt16();              // 0x8a
+            BackgroudWeight = br.ReadInt32();       // 0x8c
+            BackgroudColor = br.ReadInt32();        // 0x90
+            BackgroudFillColor = br.ReadInt32();    // 0x94
+            BackgroundBorder = new DPoint2d().Read(br);   // 0x98
+            UnderlineStyle = br.ReadInt32();        // 0xa8
+            UnderlineWeight = br.ReadUInt32();      // 0xac
+            UnderlineColor = br.ReadUInt32();       // 0xb0
+            OverlineStyle = br.ReadInt32();         // 0xb4
+            OverlineWeight = br.ReadUInt32();       // 0xb8
+            OverlineColor = br.ReadUInt32();        // 0xbc
+            Dummy4 = br.ReadUInt32();               // 0xc0
+            Dummy5 = br.ReadUInt32();               // 0xc4
+            Dummy6 = br.ReadUInt32();               // 0xc8
+            Dummy7 = br.ReadUInt32();               // 0xcc
+            ColorIndex = br.ReadUInt32();           // 0xd0
+            Dummy12 = br.ReadUInt32();              // 0xd4
+            Dummy13 = br.ReadUInt32();              // 0xd8
+            Dummy14 = br.ReadUInt32();              // 0xdc
+            Dummy15 = br.ReadUInt32();              // 0xe0
+            Dummy16 = br.ReadUInt32();              // 0xe4
+            TextStyleNameLength = br.ReadUInt16();  // 0xe8
+            var namePosition = br.BaseStream.Position;
+            var Data = br.ReadBytes(TextStyleNameLength);
+            if ((TextStyleNameLength >= 4) && (Data[0] == 0xff) && (Data[1] == 0xfe) && (Data[2] == 0x01) && (Data[3] == 0x00))
+            {
+                // skip UTF32 LE BOM
+                br.BaseStream.Seek(namePosition + 4, SeekOrigin.Begin);
+                TextStyleNameLength -= 4;
+            } else
+            {
+                br.BaseStream.Seek(namePosition, SeekOrigin.Begin);
+            }
+
+            TextStyleName = System.Text.Encoding.UTF8.GetString(br.ReadBytes(TextStyleNameLength));
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -107,8 +189,44 @@ namespace v8file.net
             sw.WriteLine($"{ident}StyleId={StyleId}");
             sw.WriteLine($"{ident}FontNumber={FontNumber}");
             sw.WriteLine($"{ident}Dummy1={Dummy1}");
+            sw.WriteLine($"{ident}Width={Width}");
+            sw.WriteLine($"{ident}Height={Height}");
+            sw.WriteLine($"{ident}Slant={Slant}");
+            sw.WriteLine($"{ident}LineSpacing={LineSpacing}");
+            sw.WriteLine($"{ident}InterCharSpacing={InterCharSpacing}");
+            sw.WriteLine($"{ident}UnderlineOffset={UnderlineOffset}");
+            sw.WriteLine($"{ident}OverlineOffset={OverlineOffset}");
             sw.WriteLine($"{ident}Dummy2={Dummy2}");
-            sw.WriteLine($"{ident}Dummy3={Dummy3}");
+            sw.WriteLine($"{ident}LineOffset > ");
+            LineOffset.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Justification={Justification}");
+            sw.WriteLine($"{ident}Dummy8={Dummy8}");
+            sw.WriteLine($"{ident}LineLength={LineLength}");
+            sw.WriteLine($"{ident}Dummy9={Dummy9}");
+            sw.WriteLine($"{ident}Dummy10={Dummy10}");
+            sw.WriteLine($"{ident}Dummy11={Dummy11}");
+            sw.WriteLine($"{ident}BackgroudWeight={BackgroudWeight}");
+            sw.WriteLine($"{ident}BackgroudColor={BackgroudColor}");
+            sw.WriteLine($"{ident}BackgroudFillColor={BackgroudFillColor}");
+            sw.WriteLine($"{ident}BackgroundBorder > ");
+            BackgroundBorder.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}UnderlineStyle={UnderlineStyle}");
+            sw.WriteLine($"{ident}UnderlineWeight={UnderlineWeight}");
+            sw.WriteLine($"{ident}UnderlineColor={UnderlineColor}");
+            sw.WriteLine($"{ident}OverlineStyle={OverlineStyle}");
+            sw.WriteLine($"{ident}OverlineWeight={OverlineWeight}");
+            sw.WriteLine($"{ident}OverlineColor={OverlineColor}");
+            sw.WriteLine($"{ident}Dummy4={Dummy4}");
+            sw.WriteLine($"{ident}Dummy5={Dummy5}");
+            sw.WriteLine($"{ident}Dummy6={Dummy6}");
+            sw.WriteLine($"{ident}Dummy7={Dummy7}");
+            sw.WriteLine($"{ident}ColorIndex={ColorIndex}");
+            sw.WriteLine($"{ident}Dummy12={Dummy12}");
+            sw.WriteLine($"{ident}Dummy13={Dummy13}");
+            sw.WriteLine($"{ident}Dummy14={Dummy14}");
+            sw.WriteLine($"{ident}Dummy15={Dummy15}");
+            sw.WriteLine($"{ident}Dummy16={Dummy16}");
+            sw.WriteLine($"{ident}TextStyleName=\"{TextStyleName}\"");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");

@@ -2,7 +2,7 @@
   "profiles": {
     "v8file.net": {
       "commandName": "Project",
-      "commandLineArgs": "\"Standards.dgn\" \"Standards.dgn.out\""
+      "commandLineArgs": "\"TextStyles.dgn\" \"TextStyles.dgn.out\""
     }
   }
 }
