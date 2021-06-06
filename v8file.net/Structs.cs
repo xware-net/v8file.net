@@ -1224,9 +1224,10 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new String(' ', 2 * level);
-            sw.WriteLine($"{ident}Red={Red}");
-            sw.WriteLine($"{ident}Green={Green}");
-            sw.WriteLine($"{ident}Blue={Blue}");
+            sw.WriteLine($"{ident}(Red,Green,Blue)=(0x{Red:X2},0x{Green:X2},0x{Blue:X2})");
+            //sw.WriteLine($"{ident}Red={Red}");
+            //sw.WriteLine($"{ident}Green={Green}");
+            //sw.WriteLine($"{ident}Blue={Blue}");
         }
     }
 
@@ -6132,11 +6133,13 @@ namespace v8file.net
         }
     }
 
-    public struct ColorTable // 5 ?? // TODO
+    public struct ColorTable // 5 
     {
         public Elm_hdr Ehdr;
         public Int16 Screen_flag;
-        public byte[] Color_info;
+        public RgbColorDef[] Color_info;
+        public short NameLength;
+        public string Name;
         public Linkage[] Linkages;
 
         public ColorTable Read(BinaryReader br)
@@ -6144,11 +6147,16 @@ namespace v8file.net
             // read each field
             Ehdr = new Elm_hdr().Read(br);
             Screen_flag = br.ReadInt16();
-            Color_info = new byte[1];
-            for (int i = 0; i < 1; i++)
+            Color_info = new RgbColorDef[256];
+            for (int i = 0; i < 256; i++)
             {
-                Color_info[i] = br.ReadByte();
+                Color_info[i] = new RgbColorDef().Read(br);
             }
+            NameLength = br.ReadInt16();
+            NameLength = Math.Max((short)64, NameLength);
+            var NameBytes = br.ReadBytes(NameLength);
+            NameBytes[NameLength - 1] = 0;
+            Name = Encoding.UTF8.GetString(NameBytes);
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -6159,9 +6167,10 @@ namespace v8file.net
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
             sw.WriteLine($"{ident}Screen_flag={Screen_flag}");
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 256; i++)
             {
-                sw.WriteLine($"{ident}Color_info={Color_info[i]}");
+                sw.WriteLine($"{ident}Color_info[{i}] >");
+                Color_info[i].Dump(sw, level + 1);
             }
             if (Linkages.Length > 0)
             {

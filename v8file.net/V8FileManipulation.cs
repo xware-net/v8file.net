@@ -332,6 +332,9 @@ namespace v8file.net
                         case ColorBookTableElm t:
                             t.Dump(sw, level);
                             break;
+                        case ColorTable t:
+                            t.Dump(sw, level);
+                            break;
                         case Complex_string t:
                             t.Dump(sw, level);
                             break;
@@ -635,8 +638,13 @@ namespace v8file.net
                 // non graphic elements
                 return ehdr.Type switch
                 {
-                    // color table
-                    5 => null,
+                    // color table (level 1), ACS (level 3)
+                    5 => ehdr.Level switch
+                    {
+                        1 => new ColorTable().Read(br),
+                        3 => null,
+                        _ => null,
+                    },
                     9 => new Dgn_header().Read(br),
                     25 => new Bsurf_boundary().Read(br),
                     26 => new Bspline_knot().Read(br),
