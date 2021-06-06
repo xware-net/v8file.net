@@ -341,101 +341,6 @@ namespace v8file.net
         }
     }
 
-    //public class TableHdr
-    //{
-    //    //public Elm_hdr Ehdr;
-    //    //public UInt32 ComponentCount;
-    //    ////public UInt32 Dummy1;
-    //    //public Int32 ActiveFilterId;
-    //    //public UInt32 Dummy2;
-    //    //public Linkage[] Linkages;
-    //    public object Object;
-
-    //    public object Read(BinaryReader br)
-    //    {
-    //        // read each field
-    //        //Ehdr = new Elm_hdr().Read(br);
-    //        //ComponentCount = br.ReadUInt32();
-    //        //Dummy1 = br.ReadUInt32();
-    //        //ActiveFilterId = br.ReadInt32();
-    //        //Dummy2 = br.ReadUInt32();
-    //        //Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
-    //        return Object;
-    //    }
-
-    //    public void Dump(StreamWriter sw, int level)
-    //    {
-    //        //var ident = new String(' ', 2 * level);
-    //        //sw.WriteLine($"{ident}Ehdr >");
-    //        //Ehdr.Dump(sw, level + 1);
-    //        //sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
-    //        //sw.WriteLine($"{ident}Dummy1={Dummy1}");
-    //        //sw.WriteLine($"{ident}ActiveFilterId={ActiveFilterId}");
-    //        //sw.WriteLine($"{ident}Dummy2={Dummy2}");
-    //        //if (Linkages.Length > 0)
-    //        //{
-    //        //    sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
-    //        //    for (int i = 0; i < Linkages.Length; i++)
-    //        //    {
-    //        //        Linkages[i].Dump(sw, level + 1);
-    //        //    }
-    //        //}
-    //    }
-    //}
-
-    public class LevelTableEntry
-    {
-        public Elm_hdr Ehdr;
-        public UInt32 LevelId;
-        public string LevelName;
-        public string LevelDescription;
-        public UInt32 ParentId;
-        public Int32 Displayed;
-        public Int32 Freezed;
-        public Int32 Locked;
-        public Int32 Plot;
-        public Linkage[] Linkages;
-
-        public LevelTableEntry Read(BinaryReader br)
-        {
-            // read each field
-            Ehdr = new Elm_hdr().Read(br);
-            Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
-            LevelName = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Name);
-            LevelDescription = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Description);
-            return this;
-        }
-
-        public void Dump(StreamWriter sw, int level)
-        {
-            var ident = new String(' ', 2 * level);
-            sw.WriteLine($"{ident}Ehdr >");
-            sw.WriteLine($"{ident}LevelName=\"{LevelName}\"");
-            sw.WriteLine($"{ident}LevelDescription=\"{LevelDescription}\"");
-            Ehdr.Dump(sw, level + 1);
-            if (Linkages.Length > 0)
-            {
-                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
-                for (int i = 0; i < Linkages.Length; i++)
-                {
-                    Linkages[i].Dump(sw, level + 1);
-                }
-            }
-            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
-            {
-                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
-                if (xattributes != null)
-                {
-                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
-                    foreach (var xattribute in xattributes)
-                    {
-                        xattribute.Dump(sw, level + 1);
-                    }
-                }
-            }
-        }
-    }
-
     public struct ExtendedElm
     {
         public Elm_hdr Ehdr;
@@ -655,7 +560,7 @@ namespace v8file.net
         //public ViewElm[] Views;
         //public Bitmask[] ViewLevelsMasks;
         public ModelId ModelId;
-        
+
         // extras
         public string Name;
         public string Description;
@@ -707,6 +612,23 @@ namespace v8file.net
                     }
                 }
             }
+        }
+    }
+
+    public struct Bitmask
+    {
+        public Int32 Size;
+        public byte[] Bits;
+
+        public Bitmask Read(BinaryReader br)
+        {
+            // read each field
+            Size = br.ReadInt32();
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
         }
     }
 }

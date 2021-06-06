@@ -2,7 +2,7 @@
   "profiles": {
     "v8file.net": {
       "commandName": "Project",
-      "commandLineArgs": "\"TextStyles.dgn\" \"TextStyles.dgn.out\""
+      "commandLineArgs": "\"GisData1.dgn\" \"GisData1.dgn.out\""
     }
   }
 }

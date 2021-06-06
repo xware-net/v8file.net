@@ -909,7 +909,7 @@ namespace v8file.net
                             CachePos = cachePos,
                             ElementHeader = ehdr,
                             DisplayHeader = dhdr,
-                            ComponenetCount = componentCount,
+                            ComponentCount = componentCount,
                             ParentId = (UInt64)Convert.ToInt64(parentNode.Name),
                             ElementId = ehdr.UniqueId
                         }
@@ -968,7 +968,7 @@ namespace v8file.net
                             CachePos = cachePos,
                             ElementHeader = ehdr,
                             DisplayHeader = dhdr,
-                            ComponenetCount = componentCount,
+                            ComponentCount = componentCount,
                             ParentId = (UInt64)Convert.ToInt64(parentNode.Name),
                             ElementId = ehdr.UniqueId
                         }
@@ -1013,7 +1013,7 @@ namespace v8file.net
                         CachePos = (int)cachePos,
                         ElementHeader = ehdr,
                         DisplayHeader = dhdr,
-                        ComponenetCount = nextComponentCount,
+                        ComponentCount = nextComponentCount,
                         ParentId = parentId,
                         ElementId = ehdr.UniqueId
                     }

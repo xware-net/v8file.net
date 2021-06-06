@@ -402,7 +402,14 @@ namespace v8file.net
                 br.ReadInt32();
                 Length -= 4;
             }
-            NameString = System.Text.Encoding.UTF8.GetString(br.ReadBytes(Length));
+            if (Size1 != 0)
+            {
+                NameString = System.Text.Encoding.UTF8.GetString(br.ReadBytes(Length));
+            }
+            else if (Size2 != 0)
+            {
+                ExpressionString = System.Text.Encoding.UTF8.GetString(br.ReadBytes(Length));
+            }
         }
 
         public void Dump(StreamWriter sw, int level)
