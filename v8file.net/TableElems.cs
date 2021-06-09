@@ -11,6 +11,17 @@ namespace v8file.net
         public UInt32 ParentId;
         public UInt32 Dummy1;
         public UInt32 Dummy2;
+        public UInt32 OverrideStyle;
+        public UInt32 OverrideWeight;
+        public UInt32 OverrideColor;
+        public UInt32 OverrideColor1;
+        public UInt32 ByLevelStyle;
+        public UInt32 ByLevelWeight;
+        public UInt32 ByLevelColor;
+        public UInt32 ByLevelColor1;
+        public float Transparency;
+        public Int32 Priority;
+        public UInt32 Dummy7;
         public UInt32 LevelCode;
         public Linkage[] Linkages;
         public string LevelName;
@@ -24,6 +35,18 @@ namespace v8file.net
             ParentId = br.ReadUInt32();
             Dummy1 = br.ReadUInt32();
             Dummy2 = br.ReadUInt32();
+            OverrideStyle = br.ReadUInt32();
+            OverrideWeight = br.ReadUInt32();
+            OverrideColor = br.ReadUInt32();
+            OverrideColor1 = br.ReadUInt32();
+            ByLevelStyle = br.ReadUInt32();
+            ByLevelWeight = br.ReadUInt32();
+            ByLevelColor = br.ReadUInt32();
+            ByLevelColor1 = br.ReadUInt32();
+            Transparency = br.ReadSingle();
+            Priority = br.ReadInt32();
+            Dummy7 = br.ReadUInt32();
+            LevelCode = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             LevelName = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Name);
             LevelDescription = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Description);
@@ -41,6 +64,18 @@ namespace v8file.net
             sw.WriteLine($"{ident}ParentId={ParentId}");
             sw.WriteLine($"{ident}Dummy1={Dummy1}");
             sw.WriteLine($"{ident}Dummy2={Dummy2}");
+            sw.WriteLine($"{ident}Dummy3={OverrideStyle}");
+            sw.WriteLine($"{ident}Dummy4={OverrideWeight}");
+            sw.WriteLine($"{ident}Dummy5={OverrideColor}");
+            sw.WriteLine($"{ident}Dummy6={OverrideColor1}");
+            sw.WriteLine($"{ident}Style={ByLevelStyle}");
+            sw.WriteLine($"{ident}Weight={ByLevelWeight}");
+            sw.WriteLine($"{ident}Color={ByLevelColor}");
+            sw.WriteLine($"{ident}Color1={ByLevelColor1}");
+            sw.WriteLine($"{ident}Transparency={Transparency}");
+            sw.WriteLine($"{ident}Priority={Priority}");
+            sw.WriteLine($"{ident}Dummy7={Dummy7}");
+            sw.WriteLine($"{ident}LevelCode={LevelCode}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");

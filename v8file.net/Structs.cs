@@ -6133,7 +6133,7 @@ namespace v8file.net
         }
     }
 
-    public struct ColorTable // 5 
+    public struct ColorTable // 5, level 1 
     {
         public Elm_hdr Ehdr;
         public Int16 Screen_flag;
@@ -6172,6 +6172,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Color_info[{i}] >");
                 Color_info[i].Dump(sw, level + 1);
             }
+            sw.WriteLine($"{ident}Name={Name}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
@@ -6692,7 +6693,7 @@ namespace v8file.net
             sw.WriteLine($"{ident}Priority={Priority}");
             for (int i = 0; i < 8; i++)
             {
-                sw.WriteLine($"{ident}DisplayFlags >");
+                sw.WriteLine($"{ident}DisplayFlags[{i}] >");
                 DisplayFlags[i].Dump(sw, level + 1);
             }
             sw.WriteLine($"{ident}BaseNestDepth={BaseNestDepth}");
@@ -6706,7 +6707,7 @@ namespace v8file.net
             sw.WriteLine($"{ident}Scale={Scale}");
             for (int i = 0; i < 2; i++)
             {
-                sw.WriteLine($"{ident}ReservedScale={ReservedScale[i]}");
+                sw.WriteLine($"{ident}ReservedScale[{i}]={ReservedScale[i]}");
             }
             sw.WriteLine($"{ident}ZFront={ZFront}");
             sw.WriteLine($"{ident}ZBack={ZBack}");
