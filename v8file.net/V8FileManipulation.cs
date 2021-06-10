@@ -627,6 +627,8 @@ namespace v8file.net
                         return null;
                     case 94:    // raster frame element
                         return null;
+                    case 105:   // mesh header
+                        return null;
                     case 106:   // extended graphic element (complex)
                         return new ExtendedElm().Read(br);
                     default:
@@ -721,8 +723,18 @@ namespace v8file.net
                     99 => null,
                     // reference file element
                     100 => new ReferenceFileElm().Read(br),
+                    // matrix header
+                    101 => null,
+                    // matrix int data
+                    102 => null,
+                    // matrix double data
+                    103 => null,
                     // extended element (non-graphic) (complex)
                     107 => new ExtendedNonGraphicElm().Read(br),
+                    // named group header
+                    110 => null,
+                    // named group component
+                    111 => null,
                     _ => null,
                 };
             }

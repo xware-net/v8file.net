@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -373,12 +374,106 @@ namespace v8file.net
                         linkage.Dump(sw, level);
                     }
                     break;
+                case LinkageIds.LINKAGEID_FillStyle:
+                    {
+                        FillStyleLinkage linkage = new(Data);
+                        linkage.Dump(sw, level);
+                    }
+                    break;
             }
+
             sw.WriteLine();
         }
     }
 
-    public class FilterMemberLinkage
+    public class FillStyleLinkage   // 0x0041
+    {
+        public UInt16 Dummy1;       // 0x0c (LevelOverride), 0x0d (ByLevelAssigned), 0x0e (ElementAssigned) - InternalMaterialLinkage
+                                    // 0x09 - TransparencyLinkage
+                                    // 0x08 - FillColorLinkage
+                                    // 0x0b - ????
+                                    // 0x10 - DisplayStyleLinkage
+        public UInt16 Dummy2;
+        public UInt64 MaterialId;   // for 0x0c, 0x0d, 0x0e
+        public UInt32 FillColor;
+        public UInt32 DisplayStyleId;
+        public double Transparency;
+
+        public FillStyleLinkage(byte[] data)
+        {
+            BinaryReader br = new(new MemoryStream(data));
+            Dummy1 = br.ReadUInt16();
+            Dummy2 = br.ReadUInt16();
+            if (Dummy1 == 0x0008)
+            {
+                if (Dummy2 == 0x0000)
+                {
+                    FillColor = br.ReadUInt32();
+                }
+                else
+                {
+                    Debugger.Break();
+                }
+            }
+            else if (Dummy1 == 0x0009)
+            {
+                if (Dummy2 == 0x0000)
+                {
+                    Debugger.Break();
+                }
+                else
+                {
+                    Transparency = br.ReadDouble();
+                }
+            }
+            else if (Dummy1 == 0x000b)
+            {
+                Debugger.Break();
+            }
+            else if (Dummy1 == 0x000c)
+            {
+                MaterialId = br.ReadUInt64();
+            }
+            else if (Dummy1 == 0x000d)
+            {
+                MaterialId = br.ReadUInt64();
+            }
+            else if (Dummy1 == 0x000e)
+            {
+                MaterialId = br.ReadUInt64();
+            }
+            else if (Dummy1 == 0x0010)
+            {
+                if (Dummy2 == 0x0000)
+                {
+                    Debugger.Break();
+                }
+                else
+                {
+                    DisplayStyleId = br.ReadUInt32();
+                }
+            }
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            string message;
+            _ = Dummy1 switch
+            {
+                0x0008 => message = $" (Fill Color Linkage, FillColor={FillColor})",
+                0x0009 => message = $" (Transparency Linkage, Transparency={Transparency})",
+                0x000c => message = $" (Internal Material Linkage, Linkage Type=LevelOverride, MaterialId=0x{MaterialId:X})",
+                0x000d => message = $" (Internal Material Linkage, Linkage Type=ByLevelAssigned, MaterialId=0x{MaterialId:X})",
+                0x000e => message = $" (Internal Material Linkage, Linkage Type=ElementAssigned, MaterialId=0x{MaterialId:X})",
+                0x0010 => message = $" (Display Style Linkage, DisplayStyleId={DisplayStyleId})",
+                _ => message = $" (Fill Style Linkage, Dummy1=0x{Dummy1:X4},  Dummy2=0x{Dummy2:X4})",
+            };
+
+            sw.Write(message);
+        }
+    }
+
+    public class FilterMemberLinkage    // 0x56dd
     {
         public UInt32 MemberId;
         public UInt32 MemberType;
