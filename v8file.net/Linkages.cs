@@ -471,6 +471,7 @@ namespace v8file.net
         public GradientKey[] GradientKeys;
         public UInt16 KeyCount;
         public string Keys;
+        public UInt32 UserDefinedColorBookEntry;
 
         public FillStyleLinkage(byte[] data)
         {
@@ -522,7 +523,14 @@ namespace v8file.net
             }
             else if (Dummy1 == 0x000b)
             {
-                //Debugger.Break();
+                if (Dummy2 == 0x0000)
+                {
+                    Debugger.Break();
+                }
+                else
+                {
+                    UserDefinedColorBookEntry = br.ReadUInt32();
+                }
             }
             else if (Dummy1 == 0x000c)
             {
@@ -561,6 +569,7 @@ namespace v8file.net
                     _ => message = "???",
                 },
                 0x0009 => message = $" (Transparency Linkage, Transparency={Transparency})",
+                0x000b => message = $" (User Defined Color Book Linkage, UserDefinedColorBookEntry={UserDefinedColorBookEntry})",
                 0x000c => message = $" (Internal Material Linkage, Linkage Type=LevelOverride, MaterialId=0x{MaterialId:X})",
                 0x000d => message = $" (Internal Material Linkage, Linkage Type=ByLevelAssigned, MaterialId=0x{MaterialId:X})",
                 0x000e => message = $" (Internal Material Linkage, Linkage Type=ElementAssigned, MaterialId=0x{MaterialId:X})",
