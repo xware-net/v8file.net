@@ -11,7 +11,7 @@ namespace v8file.net
     public class V8FileManipulation
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        public static CmFileInfo CMFileInfo = new();
+        internal static CmFileInfo CMFileInfo = new();
         private static bool SaveToDir = false;
         private static TreeView Tree;
         private static TreeNode RootNode;
@@ -731,6 +731,8 @@ namespace v8file.net
                     103 => null,
                     // extended element (non-graphic) (complex)
                     107 => new ExtendedNonGraphicElm().Read(br),
+                    // reference override element
+                    108 => null,
                     // named group header
                     110 => null,
                     // named group component
@@ -1020,7 +1022,7 @@ namespace v8file.net
             for (int i = 0; i < componentCount; i++)
             {
                 var cachePos = br.BaseStream.Position;
-                (ehdr, dhdr, nextComponentCount, nextPos) = ReadComponent(sw, pNode, nextPos, parentId, cacheType, modelNum, cacheNum, cache, br, level);
+                (ehdr, dhdr, nextComponentCount, nextPos) = ReadComponent(sw, pNode, nextPos, parentId, /*cacheType, modelNum, cacheNum,*/ cache, br, level);
 
                 var Node = new TreeNode(ehdr.UniqueId.ToString("X16"))
                 {
@@ -1064,7 +1066,7 @@ namespace v8file.net
             return nextPos;
         }
 
-        private static (Elm_hdr ehdr, Disp_hdr dhdr, int componentCount, int nextPos) ReadComponent(StreamWriter sw, TreeNode pNode, int pos, ulong parentId, string cacheType, int modelNum, int cacheNum, Cache cache, BinaryReader br, int level)
+        private static (Elm_hdr ehdr, Disp_hdr dhdr, int componentCount, int nextPos) ReadComponent(StreamWriter sw, TreeNode pNode, int pos, ulong parentId, /*string cacheType, int modelNum, int cacheNum,*/ Cache cache, BinaryReader br, int level)
         {
             Elm_hdr ehdr;
             Disp_hdr dhdr;

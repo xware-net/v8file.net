@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -341,43 +342,43 @@ namespace v8file.net
                 case LinkageIds.LINKAGEID_String:
                     {
                         StringLinkage linkage = new(Data);
-                        linkage.Dump(sw, level);
+                        linkage.Dump(sw);
                     }
                     break;
                 case LinkageIds.LINKAGEID_TextAnnotation:
                     {
                         TextAnnotationScaleLinkage linkage = new(Data);
-                        linkage.Dump(sw, level);
+                        linkage.Dump(sw);
                     }
                     break;
                 case LinkageIds.LINKAGEID_Thickness:
                     {
                         ThicknessLinkage linkage = new(Data);
-                        linkage.Dump(sw, level);
+                        linkage.Dump(sw);
                     }
                     break;
                 case LinkageIds.LINKAGEID_Dependency:
                     {
                         DepLinkage linkage = new(Data);
-                        linkage.Dump(sw, level);
+                        linkage.Dump(sw);
                     }
                     break;
                 case LinkageIds.LINKAGEID_ByteArray:
                     {
                         ByteArrayLinkage linkage = new(Data);
-                        linkage.Dump(sw, level);
+                        linkage.Dump(sw);
                     }
                     break;
                 case LinkageIds.LINKAGEID_FilterMember:
                     {
                         FilterMemberLinkage linkage = new(Data);
-                        linkage.Dump(sw, level);
+                        linkage.Dump(sw);
                     }
                     break;
                 case LinkageIds.LINKAGEID_FillStyle:
                     {
                         FillStyleLinkage linkage = new(Data);
-                        linkage.Dump(sw, level);
+                        linkage.Dump(sw);
                     }
                     break;
             }
@@ -386,18 +387,90 @@ namespace v8file.net
         }
     }
 
+    public enum OdDgGradientType : int
+    {
+        Linear = 1,
+        Curved = 2,
+        Cylindrical = 3,
+        Spherical = 4,
+        Hemispherical = 5
+    };
+    
+    [StructLayout(LayoutKind.Explicit, Size = 4)]
+    public struct COLORREF
+    {
+        public COLORREF(byte r, byte g, byte b)
+        {
+            this.Value = 0;
+            this.R = r;
+            this.G = g;
+            this.B = b;
+        }
+
+        public COLORREF(uint value)
+        {
+            this.R = 0;
+            this.G = 0;
+            this.B = 0;
+            this.Value = value & 0x00FFFFFF;
+        }
+
+        [FieldOffset(0)]
+        public byte R;
+        [FieldOffset(1)]
+        public byte G;
+        [FieldOffset(2)]
+        public byte B;
+
+        [FieldOffset(0)]
+        public uint Value;
+
+        public override string ToString()
+        {
+            return $"0x00{R:X2}{G:X2}{B:X2}";
+        }
+    }
+
+    public class GradientKey
+    {
+        public double KeyPosition;
+        public COLORREF ColorRef;
+
+        public GradientKey Read(BinaryReader br)
+        {
+            // read each field
+            KeyPosition = br.ReadDouble();
+            var x = br.ReadByte();
+            var y = br.ReadByte();
+            var z = br.ReadByte();
+            br.ReadByte();
+            ColorRef = new COLORREF(y, z, x);
+            br.ReadUInt32();
+            return this;
+        }
+    }
+
     public class FillStyleLinkage   // 0x0041
     {
-        public UInt16 Dummy1;       // 0x0c (LevelOverride), 0x0d (ByLevelAssigned), 0x0e (ElementAssigned) - InternalMaterialLinkage
-                                    // 0x09 - TransparencyLinkage
-                                    // 0x08 - FillColorLinkage
-                                    // 0x0b - ????
-                                    // 0x10 - DisplayStyleLinkage
+        public UInt16 Dummy1;       // 0x000c (LevelOverride), 0x000d (ByLevelAssigned), 0x000e (ElementAssigned) - InternalMaterialLinkage
+                                    // 0x0009 - TransparencyLinkage
+                                    // 0x0008 - FillColorLinkage (Dummy2 == 0x0000)
+                                    // 0x0008 - GradientFillLinkage (Dummy2 == 0x0001)
+                                    // 0x000b - ????
+                                    // 0x0010 - DisplayStyleLinkage
         public UInt16 Dummy2;
         public UInt64 MaterialId;   // for 0x0c, 0x0d, 0x0e
         public UInt32 FillColor;
         public UInt32 DisplayStyleId;
         public double Transparency;
+        public double GradientAngle;
+        public double WhiteIntensity;
+        public double Shift;
+        public bool InvertFlag;
+        public UInt16 GradientType;
+        public GradientKey[] GradientKeys;
+        public UInt16 KeyCount;
+        public string Keys;
 
         public FillStyleLinkage(byte[] data)
         {
@@ -408,11 +481,32 @@ namespace v8file.net
             {
                 if (Dummy2 == 0x0000)
                 {
+                    // Fill Color
                     FillColor = br.ReadUInt32();
                 }
                 else
                 {
-                    Debugger.Break();
+                    // Gradient Fill
+                    GradientAngle = br.ReadDouble();
+                    // 0x10
+                    WhiteIntensity = br.ReadDouble();
+                    // 0x18
+                    Shift = br.ReadDouble();
+                    // 0x20
+                    KeyCount = br.ReadUInt16();
+                    // 0x22
+                    GradientType = br.ReadUInt16();
+                    GradientKeys = new GradientKey[KeyCount];
+                    // 0x24
+                    InvertFlag = (br.ReadUInt32() & 0x00000001) == 0x00000001;
+                    Keys = string.Empty;
+                    for (int i=0; i < KeyCount; i++)
+                    {
+                        GradientKeys[i] = new GradientKey().Read(br);
+                        Keys += string.Format($"Key Number={i}, Key Position={GradientKeys[i].KeyPosition}, Key Color={GradientKeys[i].ColorRef}");
+                        if (i != KeyCount - 1)
+                            Keys += ", ";
+                    }
                 }
             }
             else if (Dummy1 == 0x0009)
@@ -428,7 +522,7 @@ namespace v8file.net
             }
             else if (Dummy1 == 0x000b)
             {
-                Debugger.Break();
+                //Debugger.Break();
             }
             else if (Dummy1 == 0x000c)
             {
@@ -455,12 +549,17 @@ namespace v8file.net
             }
         }
 
-        public void Dump(StreamWriter sw, int level)
+        public void Dump(StreamWriter sw)
         {
             string message;
             _ = Dummy1 switch
             {
-                0x0008 => message = $" (Fill Color Linkage, FillColor={FillColor})",
+                0x0008 => _ = Dummy2 switch
+                {
+                    0x0000 => message = $" (Fill Color Linkage, FillColor={FillColor})",
+                    0x0001 => message = $" (Gradient Fill Linkage, GradientType={(OdDgGradientType)GradientType}, GradientAngle={GradientAngle}, WhiteIntensity={WhiteIntensity}, Shift={Shift}, InvertFlag={InvertFlag}, Keys=({Keys}))",
+                    _ => message = "???",
+                },
                 0x0009 => message = $" (Transparency Linkage, Transparency={Transparency})",
                 0x000c => message = $" (Internal Material Linkage, Linkage Type=LevelOverride, MaterialId=0x{MaterialId:X})",
                 0x000d => message = $" (Internal Material Linkage, Linkage Type=ByLevelAssigned, MaterialId=0x{MaterialId:X})",
@@ -507,7 +606,7 @@ namespace v8file.net
             }
         }
 
-        public void Dump(StreamWriter sw, int level)
+        public void Dump(StreamWriter sw)
         {
             sw.Write($" (Filter Member Linkage, MemberId={MemberId}, MemberType={(FilterMemberType)MemberType}, NameString=\"{NameString}\", ExpressionString=\"{ExpressionString}\" )");
         }
@@ -528,7 +627,7 @@ namespace v8file.net
             ByteArrayData = br.ReadBytes(ByteArraySize);
         }
 
-        public void Dump(StreamWriter sw, int level)
+        public void Dump(StreamWriter sw)
         {
             sw.Write($" (Byte Array Linkage, ByteArrayId=0x{ByteArrayId:X}, ByteArraySize={ByteArraySize} )");
         }
@@ -554,9 +653,8 @@ namespace v8file.net
             String = System.Text.Encoding.UTF8.GetString(br.ReadBytes(Length));
         }
 
-        public void Dump(StreamWriter sw, int level)
+        public void Dump(StreamWriter sw)
         {
-            var ident = new string(' ', 2 * level);
             sw.Write($" (String Linkage, Key={Key}, Value=\"{String}\")");
         }
     }
@@ -571,9 +669,8 @@ namespace v8file.net
             DependencyLinkage = new DependencyLinkage().Read(br);
         }
 
-        public void Dump(StreamWriter sw, int level)
+        public void Dump(StreamWriter sw)
         {
-            var ident = new string(' ', 2 * level);
             sw.Write($" (Dependency Linkage, AppId=0x{DependencyLinkage.AppID:X4}, AppValue={DependencyLinkage.AppValue}, Root Data Type={(DependencyLinkageType)DependencyLinkage.U.F.RootDataType}, NRoots={DependencyLinkage.NRoots}, Roots=(");
             for (int i = 0; i < DependencyLinkage.NRoots; i++)
             {
@@ -604,9 +701,8 @@ namespace v8file.net
             Scale = br.ReadDouble();
         }
 
-        public void Dump(StreamWriter sw, int level)
+        public void Dump(StreamWriter sw)
         {
-            var ident = new string(' ', 2 * level);
             sw.Write($" (Text Annotation Scale Linkage, Value={Scale})");
         }
     }
@@ -625,9 +721,8 @@ namespace v8file.net
             String = System.Text.Encoding.UTF8.GetString(br.ReadBytes(Length));
         }
 
-        public void Dump(StreamWriter sw, int level)
+        public void Dump(StreamWriter sw)
         {
-            var ident = new string(' ', 2 * level);
             sw.Write($" (String Linkage, Key={Key}, Value=\"{String}\")");
         }
     }

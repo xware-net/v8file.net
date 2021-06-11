@@ -2,7 +2,7 @@
   "profiles": {
     "v8file.net": {
       "commandName": "Project",
-      "commandLineArgs": "\"Element Properties.dgn\" \"Element Properties.dgn.out\""
+      "commandLineArgs": "\"Element Properties1.dgn\" \"Element Properties1.dgn.out\""
     }
   }
 }
