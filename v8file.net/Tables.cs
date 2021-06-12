@@ -98,13 +98,13 @@ namespace v8file.net
         }
     }
 
-    public class TestStyleTable
+    public class TextStyleTable
     {
         public Elm_hdr Ehdr;
         public UInt32 ComponentCount;
         public Linkage[] Linkages;
 
-        public TestStyleTable Read(BinaryReader br)
+        public TextStyleTable Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);

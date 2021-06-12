@@ -336,7 +336,7 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
-            sw.Write($"{ident}PrimaryId=0x{LinkageHeader.PrimaryID:X4}, DataSize={Data.Length}");
+            sw.Write($"{ident}PrimaryId=0x{LinkageHeader.PrimaryID:X4} ({(LinkageIds)LinkageHeader.PrimaryID}), DataSize={Data.Length}");
             switch (Type)
             {
                 case LinkageIds.LINKAGEID_String:
@@ -381,6 +381,12 @@ namespace v8file.net
                         linkage.Dump(sw);
                     }
                     break;
+                case LinkageIds.LINKAGEID_BitMask:
+                    {
+                        BitMaskLinkage linkage = new(Data);
+                        linkage.Dump(sw);
+                    }
+                    break;
             }
 
             sw.WriteLine();
@@ -395,7 +401,7 @@ namespace v8file.net
         Spherical = 4,
         Hemispherical = 5
     };
-    
+
     [StructLayout(LayoutKind.Explicit, Size = 4)]
     public struct COLORREF
     {
@@ -501,7 +507,7 @@ namespace v8file.net
                     // 0x24
                     InvertFlag = (br.ReadUInt32() & 0x00000001) == 0x00000001;
                     Keys = string.Empty;
-                    for (int i=0; i < KeyCount; i++)
+                    for (int i = 0; i < KeyCount; i++)
                     {
                         GradientKeys[i] = new GradientKey().Read(br);
                         Keys += string.Format($"Key Number={i}, Key Position={GradientKeys[i].KeyPosition}, Key Color={GradientKeys[i].ColorRef}");
@@ -578,6 +584,26 @@ namespace v8file.net
             };
 
             sw.Write(message);
+        }
+    }
+
+    public class BitMaskLinkage         // 0x56d3
+    {
+        public UInt32 BitMaskId;
+        public UInt32 BitCount;
+        public Bitmask BitMask;
+
+        public BitMaskLinkage(byte[] data)
+        {
+            BinaryReader br = new(new MemoryStream(data));
+            BitMaskId = br.ReadUInt32();
+            BitCount = br.ReadUInt32();
+            BitMask = new Bitmask().Read(br);
+        }
+
+        public void Dump(StreamWriter sw)
+        {
+            sw.Write($" (BitMask Linkage, BitMaskId={BitMaskId}, BitCount={BitCount}, BitMaskSize={BitMask.Size}, BitMaskData={BitMask.ToString()} )");
         }
     }
 
@@ -687,6 +713,18 @@ namespace v8file.net
                 {
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ELEM_ID:
                         sw.Write($"Root[{i}]=0x{DependencyLinkage.Root.Elemid[i]:X16}");
+                        break;
+                    case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ASSOC_POINT:
+                        break;
+                    case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ASSOC_POINT_I:
+                        break;
+                    case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ELEM_ID_V:
+                        break;
+                    case DependencyLinkageType.DEPENDENCY_DATA_TYPE_FAR_ELEM_ID:
+                        break;
+                    case DependencyLinkageType.DEPENDENCY_DATA_TYPE_FAR_ELEM_ID_V:
+                        break;
+                    case DependencyLinkageType.DEPENDENCY_DATA_TYPE_PATH_V:
                         break;
                 }
                 if (i != DependencyLinkage.NRoots - 1)

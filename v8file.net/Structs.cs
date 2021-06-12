@@ -7672,24 +7672,16 @@ namespace v8file.net
         }
     }
 
-    //[StructLayout(LayoutKind.Explicit)]
     public struct DependencyLinkage_union_Root
     {
         UInt16 NRoots;
         DependencyLinkageType RootDataType;
-        //[FieldOffset(0)]
-        //public byte[] Data;
-        //[FieldOffset(0)]
         public ElementId[] Elemid;
-        //[FieldOffset(0)]
         public DependencyRootFarElementID[] Far_elemid;
-        //[FieldOffset(0)]
         public DependencyRootElementID_V[] E_v;
-        //[FieldOffset(0)]
         public DependencyRootFarElementID_V[] Far_e_v;
-        //[FieldOffset(0)]
         public AssocPoint[] Assoc;
-        //[FieldOffset(0)]
+        public DependencyRootAssocPoint_I[] Assoc_I;
         public DependencyRootPath_V Path_v;
 
         public DependencyLinkage_union_Root Read(BinaryReader br, UInt16 nRoots, DependencyLinkageType rootDataType)
@@ -7755,7 +7747,20 @@ namespace v8file.net
                     break;
                 case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ASSOC_POINT_I:
                     {
-                        Debugger.Break();
+                        if (nRoots >= 20)
+                            Debugger.Break();
+                        Assoc_I = new DependencyRootAssocPoint_I[nRoots];
+                        try
+                        {
+                            for (int i = 0; i < nRoots; i++)
+                            {
+                                Assoc_I[i] = new DependencyRootAssocPoint_I().Read(br);
+                            }
+                        }
+                        catch (Exception)
+                        {
+
+                        }
                     }
                     break;
                 case DependencyLinkageType.DEPENDENCY_DATA_TYPE_FAR_ELEM_ID:

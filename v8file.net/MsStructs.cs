@@ -624,11 +624,64 @@ namespace v8file.net
         {
             // read each field
             Size = br.ReadInt32();
+            Bits = new byte[2 * Size];
+            Bits = br.ReadBytes(2 * Size);
             return this;
         }
 
         public void Dump(StreamWriter sw, int level)
         {
         }
+
+        public override string ToString()
+        {
+            return BitConverter.ToString(Bits).Replace("-", ",");
+        }
     }
+
+    public struct DimensionElm
+    {
+        public Elm_hdr Ehdr;
+        public Disp_hdr Dhdr;
+        public Linkage[] Linkages;
+
+        public DimensionElm Read(BinaryReader br)
+        {
+            // read each field
+            Ehdr = new Elm_hdr().Read(br);
+            Dhdr = new Disp_hdr().Read(br);
+            Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Ehdr >");
+            Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Dhdr >");
+            Dhdr.Dump(sw, level + 1);
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].Dump(sw, level + 1);
+                }
+            }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
+                }
+            }
+        }
+    }
+
 }

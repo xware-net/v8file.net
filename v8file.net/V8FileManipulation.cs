@@ -347,6 +347,9 @@ namespace v8file.net
                         case DictionaryTableElm t:
                             t.Dump(sw, level);
                             break;
+                        case DimensionElm t:
+                            t.Dump(sw, level);
+                            break;
                         case DimStyleTable t:
                             t.Dump(sw, level);
                             break;
@@ -479,10 +482,10 @@ namespace v8file.net
                         case Text_node_3d t:
                             t.Dump(sw, level);
                             break;
-                        case TestStyleTable t:
+                        case TextStyleTable t:
                             t.Dump(sw, level);
                             break;
-                        case TestStyleTableElm t:
+                        case TextStyleTableElm t:
                             t.Dump(sw, level);
                             break;
                         case ViewElm t:
@@ -624,7 +627,7 @@ namespace v8file.net
                     case 27:
                         return new Bspline_curve().Read(br);
                     case 33:    // dimension element
-                        return null;
+                        return new DimensionElm().Read(br);
                     case 94:    // raster frame element
                         return null;
                     case 105:   // mesh header
@@ -670,7 +673,7 @@ namespace v8file.net
                     {
                         1 => new LevelTableElm().Read(br),
                         2 => new FontTableElm().Read(br),
-                        3 => new TestStyleTableElm().Read(br),
+                        3 => new TextStyleTableElm().Read(br),
                         4 => new FilterTableElm().Read(br),
                         5 => new DimStyleTableElm().Read(br),
                         6 => new MLineStyleTableElm().Read(br),
@@ -695,7 +698,7 @@ namespace v8file.net
                     {
                         1 => new LevelTable().Read(br),
                         2 => new FontTable().Read(br),
-                        3 => new TestStyleTable().Read(br),
+                        3 => new TextStyleTable().Read(br),
                         4 => new FilterTable().Read(br),
                         5 => new DimStyleTable().Read(br),
                         6 => new MLineStyleTable().Read(br),

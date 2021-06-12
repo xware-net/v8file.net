@@ -154,7 +154,7 @@ namespace v8file.net
         }
     }
 
-    public class TestStyleTableElm
+    public class TextStyleTableElm
     {
         public Elm_hdr Ehdr;
         public UInt64 StyleId;
@@ -199,7 +199,7 @@ namespace v8file.net
         public string TextStyleName;
         public Linkage[] Linkages;
 
-        public TestStyleTableElm Read(BinaryReader br)
+        public TextStyleTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
