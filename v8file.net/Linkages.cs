@@ -387,6 +387,12 @@ namespace v8file.net
                         linkage.Dump(sw);
                     }
                     break;
+                case LinkageIds.LINKAGEID_LevelMask:
+                    {
+                        LevelMaskLinkage linkage = new(Data);
+                        linkage.Dump(sw);
+                    }
+                    break;
             }
 
             sw.WriteLine();
@@ -603,7 +609,31 @@ namespace v8file.net
 
         public void Dump(StreamWriter sw)
         {
-            sw.Write($" (BitMask Linkage, BitMaskId={BitMaskId}, BitCount={BitCount}, BitMaskSize={BitMask.Size}, BitMaskData={BitMask.ToString()} )");
+            sw.Write($" (BitMask Linkage, BitMaskId={BitMaskId}, BitCount={BitCount}, BitMaskSize={BitMask.Size}, BitMaskData={BitMask} )");
+        }
+    }
+
+    public class LevelMaskLinkage       // 0x5710
+    {
+        public UInt16 Dummy1;
+        public UInt16 Dummy2;
+        public UInt32 Dummy3;
+        public UInt32 MaxLevelEntryId;
+        public Bitmask BitMask;
+
+        public LevelMaskLinkage(byte[] data)
+        {
+            BinaryReader br = new(new MemoryStream(data));
+            Dummy1 = br.ReadUInt16();
+            Dummy2 = br.ReadUInt16();
+            Dummy3 = br.ReadUInt32();
+            MaxLevelEntryId = br.ReadUInt32();
+            BitMask = new Bitmask().Read(br);
+        }
+
+        public void Dump(StreamWriter sw)
+        {
+            sw.Write($" (LevelMask Linkage, MaxLevelEntryId={MaxLevelEntryId}, BitMaskSize={BitMask.Size}, BitMaskData={BitMask} )");
         }
     }
 
@@ -719,19 +749,26 @@ namespace v8file.net
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ASSOC_POINT_I:
                         break;
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ELEM_ID_V:
+                        sw.Write($"Root[{i}]=0x{DependencyLinkage.Root.E_v[i].Elemid:X16}, Value={DependencyLinkage.Root.E_v[i].Value}");
                         break;
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_FAR_ELEM_ID:
+                        sw.Write($"Root[{i}]=0x{DependencyLinkage.Root.Far_elemid[i].Elemid:X16}, Refattid={DependencyLinkage.Root.Far_elemid[i].Refattid:X16}");
                         break;
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_FAR_ELEM_ID_V:
+                        sw.Write($"Root[{i}]=0x{DependencyLinkage.Root.Far_e_v[i].S.Elemid:X16}, Value={DependencyLinkage.Root.Far_e_v[i].S.Value}, Refattid={DependencyLinkage.Root.Far_e_v[i]:X16}");
                         break;
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_PATH_V:
                         break;
+                    default:
+                        break;
                 }
+
                 if (i != DependencyLinkage.NRoots - 1)
                 {
                     sw.Write($", ");
                 }
             }
+
             sw.Write($") )");
         }
     }

@@ -380,6 +380,9 @@ namespace v8file.net
                         case FontTableElm t:
                             t.Dump(sw, level);
                             break;
+                        case LevelMaskElm t:
+                            t.Dump(sw, level);
+                            break;
                         case LevelNameDictionaryTable t:
                             t.Dump(sw, level);
                             break;
@@ -426,6 +429,9 @@ namespace v8file.net
                             t.Dump(sw, level);
                             break;
                         case MaterialPaletteTableElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case MeshHeaderElm t:
                             t.Dump(sw, level);
                             break;
                         case MLineStyleTable t:
@@ -631,7 +637,7 @@ namespace v8file.net
                     case 94:    // raster frame element
                         return null;
                     case 105:   // mesh header
-                        return null;
+                        return new MeshHeaderElm().Read(br);
                     case 106:   // extended graphic element (complex)
                         return new ExtendedElm().Read(br);
                     default:
@@ -723,7 +729,7 @@ namespace v8file.net
                     // view element
                     98 => new ViewElm().Read(br),
                     // level mask element
-                    99 => null,
+                    99 => new LevelMaskElm().Read(br),
                     // reference file element
                     100 => new ReferenceFileElm().Read(br),
                     // matrix header

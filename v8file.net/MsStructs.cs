@@ -639,6 +639,27 @@ namespace v8file.net
         }
     }
 
+    public struct BitmaskOld
+    {
+        public Int32 Size;
+        public byte[] Bits;
+
+        public BitmaskOld Read(BinaryReader br)
+        {
+            // read each field
+            Size = br.ReadInt32();
+            Bits = new byte[Size / 8];
+            Bits = br.ReadBytes(Size / 8);
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}TODO=");
+        }
+    }
+
     public struct DimensionElm
     {
         public Elm_hdr Ehdr;
@@ -684,4 +705,111 @@ namespace v8file.net
         }
     }
 
+    public class MeshHeaderElm
+    {
+        public Elm_hdr Ehdr;
+        public Disp_hdr Dhdr;
+        public UInt32 ComponentCount;
+        public UInt32 Dummy1;
+        public Linkage[] Linkages;
+
+        public MeshHeaderElm Read(BinaryReader br)
+        {
+            // read each field
+            Ehdr = new Elm_hdr().Read(br);
+            Dhdr = new Disp_hdr().Read(br);
+            ComponentCount = br.ReadUInt32();
+            Dummy1 = br.ReadUInt32();
+            Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Ehdr >");
+            Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Dhdr >");
+            Dhdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
+            sw.WriteLine($"{ident}Dummy1={Dummy1}");
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].Dump(sw, level + 1);
+                }
+            }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
+                }
+            }
+        }
+    }
+
+    public class LevelMaskElm
+    {
+        public Elm_hdr Ehdr;
+        public UInt32 Dummy1;
+        public UInt16 Dummy2;
+        public UInt16 ViewNumber;
+        public UInt64 ReferenceId;  // an ElementId for a REFERENCE_ATTACH_ELM
+        public BitmaskOld BitmaskOld;
+        public Linkage[] Linkages;
+
+        public LevelMaskElm Read(BinaryReader br)
+        {
+            // read each field
+            Ehdr = new Elm_hdr().Read(br);
+            Dummy1 = br.ReadUInt32();
+            Dummy2 = br.ReadUInt16();
+            ViewNumber = br.ReadUInt16();
+            ReferenceId = br.ReadUInt64();
+            BitmaskOld = new BitmaskOld().Read(br);
+            Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Ehdr >");
+            Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Dummy1={Dummy1}");
+            sw.WriteLine($"{ident}Dummy2={Dummy2}");
+            sw.WriteLine($"{ident}ViewNumber={ViewNumber}");
+            sw.WriteLine($"{ident}ReferenceId=0x{ReferenceId:X16}");
+            sw.WriteLine($"{ident}Bitmask Old >");
+            BitmaskOld.Dump(sw, level + 1);
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].Dump(sw, level + 1);
+                }
+            }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
+                }
+            }
+        }
+    }
 }
