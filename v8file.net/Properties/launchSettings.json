@@ -2,7 +2,7 @@
   "profiles": {
     "v8file.net": {
       "commandName": "Project",
-      "commandLineArgs": "\"_Whats New_.dgn\" \"_Whats New_.dgn.out\""
+      "commandLineArgs": "\"BSI300GI001-Sheets.dgn\" \"BSI300GI001-Sheets.dgn.out\""
     }
   }
 }

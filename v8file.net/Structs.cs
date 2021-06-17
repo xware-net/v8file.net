@@ -16430,7 +16430,9 @@ namespace v8file.net
         private const int sz_1_5 = 1, loc_1_5 = loc_1_4 + sz_1_4, mask_1_5 = unchecked(((1 << sz_1_5) - 1) << loc_1_5);
         private const int sz_1_6 = 2, loc_1_6 = loc_1_5 + sz_1_5, mask_1_6 = unchecked(((1 << sz_1_6) - 1) << loc_1_6);
         private const int sz_1_7 = 23, loc_1_7 = loc_1_6 + sz_1_6, mask_1_7 = unchecked(((1 << sz_1_7) - 1) << loc_1_7);
+#pragma warning disable IDE0052 // Remove unread private members
         private UInt32 Data2;
+#pragma warning restore IDE0052 // Remove unread private members
         public UInt32 KeepOriginal
         {
             get => (UInt32)(Data1 & mask_1_0) >> loc_1_0;

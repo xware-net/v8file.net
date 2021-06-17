@@ -290,6 +290,9 @@ namespace v8file.net
                         case AnimationScheduleInfoTableElm t:
                             t.Dump(sw, level);
                             break;
+                        case AttributeElm t:
+                            t.Dump(sw, level);
+                            break;
                         case Arc_2d t:
                             t.Dump(sw, level);
                             break;
@@ -431,6 +434,15 @@ namespace v8file.net
                         case MaterialPaletteTableElm t:
                             t.Dump(sw, level);
                             break;
+                        case MatrixDoubleDataElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case MatrixHeaderElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case MatrixIntDataElm t:
+                            t.Dump(sw, level);
+                            break;
                         case MeshHeaderElm t:
                             t.Dump(sw, level);
                             break;
@@ -441,6 +453,12 @@ namespace v8file.net
                             t.Dump(sw, level);
                             break;
                         case NamedPresentationTable t:
+                            t.Dump(sw, level);
+                            break;
+                        case NamedGroupComponentElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case NamedGroupHeaderElm t:
                             t.Dump(sw, level);
                             break;
                         case NamedPresentationTableElm t:
@@ -634,6 +652,12 @@ namespace v8file.net
                         return new Bspline_curve().Read(br);
                     case 33:    // dimension element
                         return new DimensionElm().Read(br);
+                    case 34:    // shared cell definition element
+                        return null;
+                    case 35:    // shared cell element
+                        return null;
+                    case 37:    // attribute element
+                        return new AttributeElm().Read(br);
                     case 94:    // raster frame element
                         return null;
                     case 105:   // mesh header
@@ -733,19 +757,19 @@ namespace v8file.net
                     // reference file element
                     100 => new ReferenceFileElm().Read(br),
                     // matrix header
-                    101 => null,
+                    101 => new MatrixHeaderElm().Read(br),
                     // matrix int data
-                    102 => null,
+                    102 => new MatrixIntDataElm().Read(br),
                     // matrix double data
-                    103 => null,
+                    103 => new MatrixDoubleDataElm().Read(br),
                     // extended element (non-graphic) (complex)
                     107 => new ExtendedNonGraphicElm().Read(br),
                     // reference override element
                     108 => null,
                     // named group header
-                    110 => null,
+                    110 => new NamedGroupHeaderElm().Read(br),
                     // named group component
-                    111 => null,
+                    111 => new NamedGroupComponentElm().Read(br),
                     _ => null,
                 };
             }
