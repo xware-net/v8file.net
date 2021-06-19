@@ -7482,28 +7482,235 @@ namespace v8file.net
         }
     }
 
+    public enum AssocPointRootType : int
+    {
+        UnknownAssociation = 0,
+        LinearAssociation = 1,
+        IntersectAssociation = 2,
+        ArcAssociation = 3,
+        MultilineAssociation = 4,
+        BSplineCurveAssociation = 5,
+        ProjectionAssociation = 6,
+        OriginAssociation = 7,
+        Intersect2Association = 8,
+        MeshVertexAssociation = 10,
+        MeshEdgeAssociation = 11,
+        BSplineSurfaceAssociation = 13
+    };
+
+    public enum OriginAssocOption : int
+    {
+        InsertionPoint = 0,
+        UpperLeftPoint = 1
+    };
+
+    public struct LinearAssociation
+    {
+        public UInt16 Vertex;
+        public UInt16 Numerator;
+        public UInt16 Divisor;
+        public UInt64 ElementId;
+        public UInt64 RefAttachId;
+        public UInt16 NVertices;
+
+        public LinearAssociation Read(BinaryReader br)
+        {
+            // read each field
+            Vertex = br.ReadUInt16();
+            Numerator = br.ReadUInt16();
+            Divisor = br.ReadUInt16();
+            ElementId = br.ReadUInt64();
+            RefAttachId = br.ReadUInt64();
+            NVertices = br.ReadUInt16();
+            return this;
+        }
+    }
+
+    public struct IntersectAssociation
+    {
+        public UInt8 Index;
+        public UInt64 ElementId1;
+        public UInt64 RefAttachId1;
+        public UInt64 ElementId2;
+        public UInt64 RefAttachId2;
+
+        public IntersectAssociation Read(BinaryReader br)
+        {
+            // read each field
+            Index = br.ReadByte();
+            ElementId1 = br.ReadUInt64();
+            RefAttachId1 = br.ReadUInt64();
+            ElementId2 = br.ReadUInt64();
+            RefAttachId2 = br.ReadUInt64();
+            return this;
+        }
+    }
+
+    public enum ArcAssociationKeyPoint : int
+    {
+        AnglePoint = 0,
+        CenterPoint = 1,
+        StartPoint = 2,
+        EndPoint = 3
+    };
+
+    public struct ArcAssociation
+    {
+        public ArcAssociationKeyPoint ArcAssociationKeyPoint;
+        public UInt64 ElementId;
+        public UInt64 RefAttachId;
+        public double Angle;
+
+        public ArcAssociation Read(BinaryReader br)
+        {
+            // read each field
+            ArcAssociationKeyPoint = (ArcAssociationKeyPoint)br.ReadInt32();
+            ElementId = br.ReadUInt64();
+            RefAttachId = br.ReadUInt64();
+            Angle = br.ReadDouble();
+            return this;
+        }
+    }
+
+    public struct MultilineAssociation
+    {
+        public UInt16 Vertex;
+        public UInt16 Flags;
+        public UInt64 ElementId;
+        public UInt64 RefAttachId;
+        public double Offset;
+        public UInt16 NVertices;
+
+        public MultilineAssociation Read(BinaryReader br)
+        {
+            // read each field
+            Vertex = br.ReadUInt16();
+            Flags = br.ReadUInt16();
+            ElementId = br.ReadUInt64();
+            RefAttachId = br.ReadUInt64();
+            Offset = br.ReadDouble();
+            NVertices = br.ReadUInt16();
+            return this;
+        }
+    }
+
+    public struct BSplineCurveAssociation
+    {
+        public UInt64 ElementId;
+        public UInt64 RefAttachId;
+        public double Param;
+
+        public BSplineCurveAssociation Read(BinaryReader br)
+        {
+            // read each field
+            ElementId = br.ReadUInt64();
+            RefAttachId = br.ReadUInt64();
+            Param = br.ReadDouble();
+            return this;
+        }
+    }
+
+    public struct ProjectionAssociation
+    {
+        public UInt16 Vertex;
+        public UInt16 NVertices;
+        public UInt64 ElementId;
+        public UInt64 RefAttachId;
+        public double Fraction;
+
+        public ProjectionAssociation Read(BinaryReader br)
+        {
+            // read each field
+            Vertex = br.ReadUInt16();
+            NVertices = br.ReadUInt16();
+            ElementId = br.ReadUInt64();
+            RefAttachId = br.ReadUInt64();
+            Fraction = br.ReadDouble();
+            return this;
+        }
+    }
+
+    public struct OriginAssociation
+    {
+        public OriginAssocOption OriginAssocOption;
+        public UInt64 ElementId;
+        public UInt64 RefAttachId;
+
+        public OriginAssociation Read(BinaryReader br)
+        {
+            // read each field
+            OriginAssocOption = (OriginAssocOption)br.ReadInt32();
+            ElementId = br.ReadUInt64();
+            RefAttachId = br.ReadUInt64();
+            return this;
+        }
+    }
+
+    public struct AssocPoint_Union
+    {
+        //public UnknownAssociation UnknownAssociation;
+        public LinearAssociation LinearAssociation;
+        public IntersectAssociation IntersectAssociation;
+        public ArcAssociation ArcAssociation;
+        public MultilineAssociation MultilineAssociation;
+        public BSplineCurveAssociation BSplineCurveAssociation;
+        public ProjectionAssociation ProjectionAssociation;
+        public OriginAssociation OriginAssociation;
+        //public Intersect2Association Intersect2Association;
+        //public MeshVertexAssociation MeshVertexAssociation;
+        //public MeshEdgeAssociation MeshEdgeAssociation;
+        //public BSplineSurfaceAssociation BSplineSurfaceAssociation;
+
+        public AssocPoint_Union Read(BinaryReader br, AssocPointRootType type)
+        {
+            // read each field
+            switch (type)
+            {
+                case AssocPointRootType.LinearAssociation:
+                    this.LinearAssociation = new LinearAssociation().Read(br);
+                    break;
+                case AssocPointRootType.IntersectAssociation:
+                    this.IntersectAssociation = new IntersectAssociation().Read(br);
+                    break;
+                case AssocPointRootType.ArcAssociation:
+                    this.ArcAssociation = new ArcAssociation().Read(br);
+                    break;
+                case AssocPointRootType.MultilineAssociation:
+                    this.MultilineAssociation = new MultilineAssociation().Read(br);
+                    break;
+                case AssocPointRootType.BSplineCurveAssociation:
+                    this.BSplineCurveAssociation = new BSplineCurveAssociation().Read(br);
+                    break;
+                case AssocPointRootType.ProjectionAssociation:
+                    this.ProjectionAssociation = new ProjectionAssociation().Read(br);
+                    break;
+                case AssocPointRootType.OriginAssociation:
+                    this.OriginAssociation = new OriginAssociation().Read(br);
+                    break;
+                default:
+                    break;
+            };
+
+            return this;
+        }
+    }
+
     public struct AssocPoint
     {
-        public UShort[] Buf;
+        public AssocPointRootType Type;
+        public AssocPoint_Union Assoc;
 
         public AssocPoint Read(BinaryReader br)
         {
             // read each field
-            Buf = new UShort[20];
-            for (int i = 0; i < 20; i++)
-            {
-                Buf[i] = br.ReadUInt16();
-            }
+            Type = (AssocPointRootType)br.ReadInt32();
+            Assoc = new AssocPoint_Union().Read(br, Type);
             return this;
         }
 
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new String(' ', 2 * level);
-            for (int i = 0; i < 20; i++)
-            {
-                sw.WriteLine($"{ident}Buf={Buf[i]}");
-            }
         }
     }
 
@@ -7693,7 +7900,7 @@ namespace v8file.net
             {
                 case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ELEM_ID:
                     {
-                        if (nRoots >= 128)
+                        if (nRoots >= 5120)
                             Debugger.Break();
                         Elemid = new ElementId[nRoots];
                         try
@@ -7711,7 +7918,7 @@ namespace v8file.net
                     break;
                 case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ELEM_ID_V:
                     {
-                        if (nRoots >= 64)
+                        if (nRoots >= 2560)
                             Debugger.Break();
                         E_v = new DependencyRootElementID_V[nRoots];
                         try
@@ -7729,7 +7936,7 @@ namespace v8file.net
                     break;
                 case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ASSOC_POINT:
                     {
-                        if (nRoots >= 25)
+                        if (nRoots >= 1024)
                             Debugger.Break();
                         Assoc = new AssocPoint[nRoots];
                         try
@@ -7747,7 +7954,7 @@ namespace v8file.net
                     break;
                 case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ASSOC_POINT_I:
                     {
-                        if (nRoots >= 20)
+                        if (nRoots >= 853)
                             Debugger.Break();
                         Assoc_I = new DependencyRootAssocPoint_I[nRoots];
                         try
@@ -7765,7 +7972,7 @@ namespace v8file.net
                     break;
                 case DependencyLinkageType.DEPENDENCY_DATA_TYPE_FAR_ELEM_ID:
                     {
-                        if (nRoots >= 64)
+                        if (nRoots >= 2560)
                             Debugger.Break();
                         Far_elemid = new DependencyRootFarElementID[nRoots];
                         try
@@ -7783,7 +7990,7 @@ namespace v8file.net
                     break;
                 case DependencyLinkageType.DEPENDENCY_DATA_TYPE_FAR_ELEM_ID_V:
                     {
-                        if (nRoots >= 42)
+                        if (nRoots >= 1706)
                             Debugger.Break();
                         Far_e_v = new DependencyRootFarElementID_V[nRoots];
                         try
@@ -7850,6 +8057,11 @@ namespace v8file.net
                     break;
                 case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ASSOC_POINT_I:
                     {
+                        for (int i = 0; i < NRoots; i++)
+                        {
+                            sw.WriteLine($"{ident}Assoc_I >");
+                            Assoc_I[i].Dump(sw, level + 1);
+                        }
                     }
                     break;
                 case DependencyLinkageType.DEPENDENCY_DATA_TYPE_FAR_ELEM_ID:
@@ -20349,13 +20561,15 @@ namespace v8file.net
     public struct DependencyRootAssocPoint_I
     {
         public AssocPoint Assoc;
-        public int I;
-        public int I2;
+        public Int32 I;
+        public Int32 I2;
 
         public DependencyRootAssocPoint_I Read(BinaryReader br)
         {
             // read each field
+            var currentPosition = br.BaseStream.Position;
             Assoc = new AssocPoint().Read(br);
+            br.BaseStream.Seek(currentPosition + 40, SeekOrigin.Begin);
             I = br.ReadInt32();
             I2 = br.ReadInt32();
             return this;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using ModelId = System.UInt32;
+using T_Adouble = System.Double;
 
 namespace v8file.net
 {
@@ -1227,6 +1228,25 @@ namespace v8file.net
         public UInt16 Dummy16;  // 0xd0
         public UInt16 Dummy17;  // 0xd2
         public UInt32 Dummy18;  // 0xd4
+        public UInt32 Dummy19;  // 0xd8
+        public UInt32 Dummy20;  // 0xdc
+        public UInt32 Dummy21;  // 0xe0
+        public UInt32 Dummy22;  // 0xe4
+        public UInt32 Dummy23;  // 0xe8
+        public UInt32 Dummy24;  // 0xec     
+        public double Dummy25;  // 0xf0
+        public double Dummy26;  // 0xf8
+        public T_Adouble[] Quat;    // ßx100
+        public UInt32 Dummy27;  // 0x120    
+        public UInt32 Dummy28;  // 0x124     
+        public UInt32 Dummy29;  // 0x128    
+        public UInt32 FontNumber;  // 0x12c     
+        public UInt32 Dummy30;  // 0x130    
+        public UInt32 Dummy31;  // 0x134    
+        public UInt32 Dummy32;  // 0x138    
+        public UInt32 Dummy33;  // 0x13c    
+        public string Value;    // 0x140
+
         public Linkage[] Linkages;
 
         public AttributeElm Read(BinaryReader br)
@@ -1254,6 +1274,27 @@ namespace v8file.net
             Dummy16 = br.ReadUInt16();
             Dummy17 = br.ReadUInt16();
             Dummy18 = br.ReadUInt32();
+            Dummy19 = br.ReadUInt32();
+            Dummy20 = br.ReadUInt32();
+            Dummy21 = br.ReadUInt32();
+            Dummy22 = br.ReadUInt32();
+            Dummy23 = br.ReadUInt32();
+            Dummy24 = br.ReadUInt32();
+            Dummy25 = br.ReadDouble();
+            Dummy26 = br.ReadDouble();
+            Quat = new T_Adouble[4];
+            for (int i = 0; i < 4; i++)
+            {
+                Quat[i] = br.ReadDouble();
+            }
+            Dummy27 = br.ReadUInt32();
+            Dummy28 = br.ReadUInt32();
+            Dummy29 = br.ReadUInt32();
+            FontNumber = br.ReadUInt32();
+            Dummy30 = br.ReadUInt32();
+            Dummy31 = br.ReadUInt32();
+            Dummy32 = br.ReadUInt32();
+            Dummy33 = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -1284,6 +1325,29 @@ namespace v8file.net
             Origin.Dump(sw, level + 1);
             sw.WriteLine($"{ident}Offset >");
             Offset.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Dummy16={Dummy16}");
+            sw.WriteLine($"{ident}Dummy17={Dummy17}");
+            sw.WriteLine($"{ident}Dummy18={Dummy18}");
+            sw.WriteLine($"{ident}Dummy19={Dummy19}");
+            sw.WriteLine($"{ident}Dummy20={Dummy20}");
+            sw.WriteLine($"{ident}Dummy21={Dummy21}");
+            sw.WriteLine($"{ident}Dummy22={Dummy22}");
+            sw.WriteLine($"{ident}Dummy23={Dummy23}");
+            sw.WriteLine($"{ident}Dummy24={Dummy24}");
+            sw.WriteLine($"{ident}Dummy25={Dummy25}");
+            sw.WriteLine($"{ident}Dummy26={Dummy26}");
+            for (int i = 0; i < 4; i++)
+            {
+                sw.WriteLine($"{ident}Quat[{i}]={Quat[i]}");
+            }
+            sw.WriteLine($"{ident}Dummy27={Dummy27}");
+            sw.WriteLine($"{ident}Dummy28={Dummy28}");
+            sw.WriteLine($"{ident}Dummy29={Dummy29}");
+            sw.WriteLine($"{ident}FontNumber={FontNumber}");
+            sw.WriteLine($"{ident}Dummy30={Dummy30}");
+            sw.WriteLine($"{ident}Dummy31={Dummy31}");
+            sw.WriteLine($"{ident}Dummy32={Dummy32}");
+            sw.WriteLine($"{ident}Dummy33={Dummy33}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
