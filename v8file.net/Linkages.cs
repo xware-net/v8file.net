@@ -315,6 +315,10 @@ namespace v8file.net
         {
             LinkageHeader = new LinkageHeader().Read(br);
             int exponent = 0; // LinkageHeader.WdExponent;
+            if (LinkageHeader.PrimaryID == 0x0000)
+            {
+                LinkageHeader.WdMantissa = 3;
+            }
             int length = LinkageHeader.WdMantissa * Utils.V8Power2(exponent);
             if (exponent == 0)
             {
@@ -393,9 +397,28 @@ namespace v8file.net
                         linkage.Dump(sw);
                     }
                     break;
+                case LinkageIds.LINKAGEID_DMRS:
+                    {
+                        DMRSLinkage linkage = new(Data);
+                        linkage.Dump(sw);
+                    }
+                    break;
             }
 
             sw.WriteLine();
+        }
+    }
+
+    public class DMRSLinkage
+    {
+        public DMRSLinkage(byte[] data)
+        {
+            BinaryReader br = new(new MemoryStream(data), Encoding.UTF8);
+        }
+
+        public void Dump(StreamWriter sw)
+        {
+            sw.Write($" (DMRS Linkage)");
         }
     }
 
@@ -745,8 +768,10 @@ namespace v8file.net
                         sw.Write($"Root[{i}]=0x{DependencyLinkage.Root.Elemid[i]:X16}");
                         break;
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ASSOC_POINT:
+                        sw.Write($"Root[{i}]={(AssocPointRootType)DependencyLinkage.Root.Assoc[i].Type}");
                         break;
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ASSOC_POINT_I:
+                        sw.Write($"Root[{i}]={(AssocPointRootType)DependencyLinkage.Root.Assoc_I[i].Assoc.Type}");
                         break;
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ELEM_ID_V:
                         sw.Write($"Root[{i}]=0x{DependencyLinkage.Root.E_v[i].Elemid:X16}, Value={DependencyLinkage.Root.E_v[i].Value}");

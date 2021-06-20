@@ -7516,6 +7516,7 @@ namespace v8file.net
         public LinearAssociation Read(BinaryReader br)
         {
             // read each field
+            br.BaseStream.Seek(-2, SeekOrigin.Current);
             Vertex = br.ReadUInt16();
             Numerator = br.ReadUInt16();
             Divisor = br.ReadUInt16();

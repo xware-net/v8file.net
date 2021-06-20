@@ -2,7 +2,7 @@
   "profiles": {
     "v8file.net": {
       "commandName": "Project",
-      "commandLineArgs": "\"BSI300GI001-Sheets.dgn\" \"BSI300GI001-Sheets.dgn.out\""
+      "commandLineArgs": "\"Learning.dgn\" \"Learning.dgn.out\""
     }
   }
 }
