@@ -7647,9 +7647,108 @@ namespace v8file.net
         }
     }
 
+    public struct Intersect2Association
+    {
+        UInt8 Index;
+        UInt8 NSeg1;
+        UInt8 NSeg2;
+        UInt16 Seg1;
+        UInt16 Seg2;
+        UInt64 ElementId1;
+        UInt64 RefAttachId1;
+        UInt64 ElementId2;
+        UInt64 RefAttachId2;
+
+        public Intersect2Association     Read(BinaryReader br)
+        {
+            // read each field
+            Index = br.ReadByte();
+            NSeg1 = br.ReadByte();
+            NSeg2 = br.ReadByte();
+            Seg1 = br.ReadUInt16();
+            Seg2 = br.ReadUInt16();
+            ElementId1 = br.ReadUInt64();
+            RefAttachId1 = br.ReadUInt64();
+            ElementId2 = br.ReadUInt64();
+            RefAttachId2 = br.ReadUInt64();
+            return this;
+        }
+    }
+
+    public struct MeshVertexAssociation
+    {
+        UInt32 Vertex;
+        UInt32 NVertices;
+        UInt64 ElementId;
+        UInt64 RefAttachId;
+
+        public MeshVertexAssociation Read(BinaryReader br)
+        {
+            // read each field
+            Vertex = br.ReadUInt32();
+            NVertices = br.ReadUInt32();
+            ElementId = br.ReadUInt64();
+            RefAttachId = br.ReadUInt64();
+            return this;
+        }
+    }
+
+    public struct MeshEdgeAssociation
+    {
+        UInt32 Edge;
+        UInt32 NEdges;
+        UInt64 ElementId;
+        UInt64 RefAttachId;
+        double Param;
+
+        public MeshEdgeAssociation Read(BinaryReader br)
+        {
+            // read each field
+            Edge = br.ReadUInt32();
+            NEdges = br.ReadUInt32();
+            ElementId = br.ReadUInt64();
+            RefAttachId = br.ReadUInt64();
+            Param = br.ReadDouble();
+            return this;
+        }
+    }
+
+    public struct BSplineSurfaceAssociation
+    {
+        UInt64 ElementId;
+        UInt64 RefAttachId;
+        double UParam;
+        double VParam;
+
+        public BSplineSurfaceAssociation Read(BinaryReader br)
+        {
+            // read each field
+            ElementId = br.ReadUInt64();
+            RefAttachId = br.ReadUInt64();
+            UParam = br.ReadDouble();
+            VParam = br.ReadDouble();
+            return this;
+        }
+    }
+
+    public struct UnknownAssociation
+    {
+        // binary data
+        UInt64 ElementId;
+        UInt64 RefAttachId;
+
+        public UnknownAssociation Read(BinaryReader br)
+        {
+            // read each field
+            ElementId = br.ReadUInt64();
+            RefAttachId = br.ReadUInt64();
+            return this;
+        }
+    }
+
     public struct AssocPoint_Union
     {
-        //public UnknownAssociation UnknownAssociation;
+        public UnknownAssociation UnknownAssociation;
         public LinearAssociation LinearAssociation;
         public IntersectAssociation IntersectAssociation;
         public ArcAssociation ArcAssociation;
@@ -7657,16 +7756,19 @@ namespace v8file.net
         public BSplineCurveAssociation BSplineCurveAssociation;
         public ProjectionAssociation ProjectionAssociation;
         public OriginAssociation OriginAssociation;
-        //public Intersect2Association Intersect2Association;
-        //public MeshVertexAssociation MeshVertexAssociation;
-        //public MeshEdgeAssociation MeshEdgeAssociation;
-        //public BSplineSurfaceAssociation BSplineSurfaceAssociation;
+        public Intersect2Association Intersect2Association;
+        public MeshVertexAssociation MeshVertexAssociation;
+        public MeshEdgeAssociation MeshEdgeAssociation;
+        public BSplineSurfaceAssociation BSplineSurfaceAssociation;
 
         public AssocPoint_Union Read(BinaryReader br, AssocPointRootType type)
         {
             // read each field
             switch (type)
             {
+                case AssocPointRootType.UnknownAssociation:
+                    this.UnknownAssociation = new UnknownAssociation().Read(br);
+                    break;
                 case AssocPointRootType.LinearAssociation:
                     this.LinearAssociation = new LinearAssociation().Read(br);
                     break;
@@ -7687,6 +7789,18 @@ namespace v8file.net
                     break;
                 case AssocPointRootType.OriginAssociation:
                     this.OriginAssociation = new OriginAssociation().Read(br);
+                    break;
+                case AssocPointRootType.Intersect2Association:
+                    this.Intersect2Association = new Intersect2Association().Read(br);
+                    break;
+                case AssocPointRootType.MeshVertexAssociation:
+                    this.MeshVertexAssociation = new MeshVertexAssociation().Read(br);
+                    break;
+                case AssocPointRootType.MeshEdgeAssociation:
+                    this.MeshEdgeAssociation = new MeshEdgeAssociation().Read(br);
+                    break;
+                case AssocPointRootType.BSplineSurfaceAssociation:
+                    this.BSplineSurfaceAssociation = new BSplineSurfaceAssociation().Read(br);
                     break;
                 default:
                     break;

@@ -315,7 +315,7 @@ namespace v8file.net
         {
             LinkageHeader = new LinkageHeader().Read(br);
             int exponent = 0; // LinkageHeader.WdExponent;
-            if (LinkageHeader.PrimaryID == 0x0000)
+            if ((LinkageIds)LinkageHeader.PrimaryID == LinkageIds.LINKAGEID_DMRS)
             {
                 LinkageHeader.WdMantissa = 3;
             }
@@ -422,7 +422,7 @@ namespace v8file.net
         }
     }
 
-    public enum OdDgGradientType : int
+    public enum GradientType : int
     {
         Linear = 1,
         Curved = 2,
@@ -600,7 +600,7 @@ namespace v8file.net
                 0x0008 => _ = Dummy2 switch
                 {
                     0x0000 => message = $" (Fill Color Linkage, FillColor={FillColor})",
-                    0x0001 => message = $" (Gradient Fill Linkage, GradientType={(OdDgGradientType)GradientType}, GradientAngle={GradientAngle}, WhiteIntensity={WhiteIntensity}, Shift={Shift}, InvertFlag={InvertFlag}, Keys=({Keys}))",
+                    0x0001 => message = $" (Gradient Fill Linkage, GradientType={(GradientType)GradientType}, GradientAngle={GradientAngle}, WhiteIntensity={WhiteIntensity}, Shift={Shift}, InvertFlag={InvertFlag}, Keys=({Keys}))",
                     _ => message = "???",
                 },
                 0x0009 => message = $" (Transparency Linkage, Transparency={Transparency})",
