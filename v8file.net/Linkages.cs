@@ -373,6 +373,12 @@ namespace v8file.net
                         linkage.Dump(sw);
                     }
                     break;
+                case LinkageIds.LINKAGEID_DoubleArray:
+                    {
+                        DoubleArrayLinkage linkage = new(Data);
+                        linkage.Dump(sw);
+                    }
+                    break;
                 case LinkageIds.LINKAGEID_FilterMember:
                     {
                         FilterMemberLinkage linkage = new(Data);
@@ -406,6 +412,38 @@ namespace v8file.net
             }
 
             sw.WriteLine();
+        }
+    }
+
+    public class DoubleArrayLinkage
+    {
+        public UInt32 ArrayId;
+        public UInt32 Dummy1;
+        private int ArraySize;
+        public double[] Array;
+
+        public DoubleArrayLinkage(byte[] data)
+        {
+            BinaryReader br = new(new MemoryStream(data));
+            ArrayId = br.ReadUInt32();
+            Dummy1 = br.ReadUInt32();
+            ArraySize = (data.Length - 8) / sizeof(double);
+            Array = new double[ArraySize];
+            for (int i=0; i<ArraySize; i++)
+            {
+                Array[i] = br.ReadDouble();
+            }
+        }
+
+        public void Dump(StreamWriter sw)
+        {
+            sw.Write($" (Double Array Linkage, ArraySize={ArraySize}");
+            for (int i = 0; i < ArraySize; i++)
+            {
+                sw.Write($", Array[{i}]={Array[i]}");
+            }
+
+            sw.WriteLine(")");
         }
     }
 
