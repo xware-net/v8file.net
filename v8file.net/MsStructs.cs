@@ -218,7 +218,7 @@ namespace v8file.net
         public ulong HighestElementId;
         public double LastSavedTime;
         public int NumModels;                       // number of models in file
-        public ModelInfo[] Models;                // models in file
+        public ModelInfo[] Models;                  // models in file
         public ModelIndex ModelIndex;               // model index in file
         public DgnCache[] Caches;                   // caches in file (a cache for each model)
         public int NumNonModelCaches;               // the same for each model
@@ -1348,6 +1348,152 @@ namespace v8file.net
             sw.WriteLine($"{ident}Dummy31={Dummy31}");
             sw.WriteLine($"{ident}Dummy32={Dummy32}");
             sw.WriteLine($"{ident}Dummy33={Dummy33}");
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].Dump(sw, level + 1);
+                }
+            }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
+                }
+            }
+        }
+    }
+
+    public struct SharedCellDefElm      // 34
+    {
+        public Elm_hdr Ehdr;
+        public Disp_hdr Dhdr;
+        public UInt32 ComponentCount;
+        public UInt32 Dummy1;       // 0x6c
+        public DRange3d Range;      // 0x70
+        public RotMatrix RotMatrix; // 0xa0
+        public DPoint3d Origin;     // 0xe8
+        public string Name;
+        public string Description;
+        public Linkage[] Linkages;
+
+        public SharedCellDefElm Read(BinaryReader br)
+        {
+            // read each field
+            Ehdr = new Elm_hdr().Read(br);
+            Dhdr = new Disp_hdr().Read(br);
+            ComponentCount = br.ReadUInt32();
+            Dummy1 = br.ReadUInt32();
+            Range = new DRange3d().Read(br);
+            RotMatrix = new RotMatrix().Read(br);
+            Origin = new DPoint3d().Read(br);
+            Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
+            Name = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Name);
+            Description = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Description);
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Ehdr >");
+            Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Dhdr >");
+            Dhdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}ComponentCount={ComponentCount}");
+            sw.WriteLine($"{ident}Dummy1={Dummy1}");
+            sw.WriteLine($"{ident}Range >");
+            Range.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}RotMatrix >");
+            RotMatrix.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Origin >");
+            Origin.Dump(sw, level + 1);
+            if (!string.IsNullOrEmpty(Name))
+                sw.WriteLine($"{ident}Name={Name}");
+            if (!string.IsNullOrEmpty(Name))
+                sw.WriteLine($"{ident}Description={Description}");
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].Dump(sw, level + 1);
+                }
+            }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
+                }
+            }
+        }
+    }
+
+    public struct SharedCellElm     // 35
+    {
+        public Elm_hdr Ehdr;
+        public Disp_hdr Dhdr;
+        public UInt32 Dummy1;       // 0x68
+        public ScOverride SCOverride;   // 0x6c
+        public UInt16 ClassMap;     // 0x6e
+        public DRange3d Range;      // 0x70
+        public RotMatrix RotMatrix; // 0xa0
+        public DPoint3d Origin;     // 0xe8
+        public string Name;
+        public string Description;
+        public Linkage[] Linkages;
+
+        public SharedCellElm Read(BinaryReader br)
+        {
+            // read each field
+            Ehdr = new Elm_hdr().Read(br);
+            Dhdr = new Disp_hdr().Read(br);
+            Dummy1 = br.ReadUInt32();
+            SCOverride = new ScOverride().Read(br);
+            ClassMap = br.ReadUInt16();
+            Range = new DRange3d().Read(br);
+            RotMatrix = new RotMatrix().Read(br);
+            Origin = new DPoint3d().Read(br);
+            Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
+            Name = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Name);
+            Description = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Description);
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Ehdr >");
+            Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Dhdr >");
+            Dhdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Dummy1={Dummy1}");
+            sw.WriteLine($"{ident}SCOverride >");
+            SCOverride.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}ClassMap={ClassMap}");
+            sw.WriteLine($"{ident}Range >");
+            Range.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}RotMatrix >");
+            RotMatrix.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Origin >");
+            Origin.Dump(sw, level + 1);
+            if (!string.IsNullOrEmpty(Name))
+                sw.WriteLine($"{ident}Name={Name}");
+            if (!string.IsNullOrEmpty(Name))
+                sw.WriteLine($"{ident}Description={Description}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");

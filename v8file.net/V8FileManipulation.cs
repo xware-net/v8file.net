@@ -512,6 +512,12 @@ namespace v8file.net
                         case TextStyleTableElm t:
                             t.Dump(sw, level);
                             break;
+                        case SharedCellDefElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case SharedCellElm t:
+                            t.Dump(sw, level);
+                            break;
                         case ViewElm t:
                             t.Dump(sw, level);
                             break;
@@ -653,9 +659,9 @@ namespace v8file.net
                     case 33:    // dimension element
                         return new DimensionElm().Read(br);
                     case 34:    // shared cell definition element
-                        return null;
+                        return new SharedCellDefElm().Read(br);
                     case 35:    // shared cell element
-                        return null;
+                        return new SharedCellElm().Read(br);
                     case 37:    // attribute element
                         return new AttributeElm().Read(br);
                     case 94:    // raster frame element
