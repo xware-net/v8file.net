@@ -716,7 +716,7 @@ namespace v8file.net
         QuadList = 4,
         TriangleGrid = 5,
         QuadGrid = 6,
-        LargeMesh =7
+        LargeMesh = 7
     };
 
     public class MeshHeaderElm
@@ -724,7 +724,7 @@ namespace v8file.net
         public Elm_hdr Ehdr;
         public Disp_hdr Dhdr;
         public UInt32 ComponentCount;
-        public UInt32 MeshStyle;            
+        public UInt32 MeshStyle;
         public Linkage[] Linkages;
 
         public MeshHeaderElm Read(BinaryReader br)
@@ -900,7 +900,7 @@ namespace v8file.net
             Dummy4 = br.ReadUInt32();
             NumFaces = (2 * Ehdr.AttrOffset - 0x78) / (4 * sizeof(UInt32));
             Faces = new FaceIndexes[NumFaces];
-            for (int i=0; i<NumFaces; i++)
+            for (int i = 0; i < NumFaces; i++)
             {
                 Faces[i] = new FaceIndexes().Read(br);
             }
@@ -1494,6 +1494,198 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Name={Name}");
             if (!string.IsNullOrEmpty(Name))
                 sw.WriteLine($"{ident}Description={Description}");
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].Dump(sw, level + 1);
+                }
+            }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
+                }
+            }
+        }
+    }
+
+    //public struct MultilineBreak
+    //{
+    //    public UInt32 LinesMask;
+    //    public MultilineBreakFlags Flags;
+    //    public double Offset;
+    //    public double Length;
+    //    public double Angle;
+
+    //    public MultilineBreak Read(BinaryReader br)
+    //    {
+    //        // read each field
+    //        LinesMask = br.ReadUInt32();
+    //        Flags = (MultilineBreakFlags)br.ReadUInt16();
+    //        Offset = br.ReadDouble();
+    //        Length = br.ReadDouble();
+    //        Angle = br.ReadDouble();
+    //        return this;
+    //    }
+
+    //    public void Dump(StreamWriter sw, int level)
+    //    {
+    //        var ident = new String(' ', 2 * level);
+    //        sw.WriteLine($"{ident}LinesMask={LinesMask}");
+    //        sw.WriteLine($"{ident}Flags={Flags}");
+    //        sw.WriteLine($"{ident}Offset={Offset}");
+    //        sw.WriteLine($"{ident}Length={Length}");
+    //        sw.WriteLine($"{ident}Angle={Angle}");
+    //    }
+    //}
+
+    //public struct MultilinePoint
+    //{
+    //    public DPoint3d Point;
+    //    public MlinePoint_Flags Flags;
+    //    public UInt16 Reserved;
+    //    public UInt16 BreakNo;
+    //    public UInt16 NBreaks;
+    //    public MultilineBreak[] Breaks;
+    //    public double Radius;
+
+    //    public MultilinePoint Read(BinaryReader br)
+    //    {
+    //        // read each field
+    //        Point = new DPoint3d().Read(br);
+    //        Flags = new MlinePoint_Flags().Read(br);
+    //        Reserved = br.ReadUInt16();
+    //        BreakNo = br.ReadUInt16();
+    //        NBreaks = br.ReadUInt16();
+    //        Radius = br.ReadDouble();
+    //        Breaks = new MultilineBreak[NBreaks];
+    //        for (int i = 0; i < NBreaks; i++)
+    //        {
+    //            Breaks[i] = new MultilineBreak().Read(br);
+    //        }
+    //        return this;
+    //    }
+
+    //    public void Dump(StreamWriter sw, int level)
+    //    {
+    //        var ident = new String(' ', 2 * level);
+    //        sw.WriteLine($"{ident}Point >");
+    //        Point.Dump(sw, level + 1);
+    //        sw.WriteLine($"{ident}Flags >");
+    //        Flags.Dump(sw, level + 1);
+    //        //sw.WriteLine($"{ident}Reserved={Reserved}");
+    //        sw.WriteLine($"{ident}BreakNo={BreakNo}");
+    //        sw.WriteLine($"{ident}NBreaks={NBreaks}");
+    //        sw.WriteLine($"{ident}Radius={Radius}");
+    //        for (int i = 0; i < NBreaks; i++)
+    //        {
+    //            sw.WriteLine($"Breaks[{i}] > ");
+    //            Breaks[i].Dump(sw, level + 1);
+    //        }
+    //    }
+    //}
+
+    public struct MultilineElm     // 36
+    {
+        public Elm_hdr Ehdr;
+        public Disp_hdr Dhdr;
+        public double OrgCapAngle;      // 0x68
+        public double EndCapAngle;      // 0x70
+        public UInt32 Dummy1;           // 0x78
+        public UInt16 NPoints;           // 0x7c
+        public byte Dummy2;          // 0x7e
+        public byte NProfiles;            // 0x7f
+        public byte NOptions;           // 0x80
+        public byte NBreaks;            // 0x81
+        public UInt16 Dummy3;           // 0x82
+        public UInt32 Dummy5;           // 0x84
+        public DPoint3d ZVector;        // 0x88
+        MlineSymbology OrgCap;          // 0xa0
+        MlineSymbology EndCap;          // 0xb4
+        MlineSymbology MidCap;          // 0xc8
+        public UInt32 Dummy6;           // 0xdc
+        public UInt32 Dummy7;           // 0xe0
+        public UInt32 Dummy8;           // 0xe4
+        public DPoint3d Dummy9;         // 0xe8
+        public MlineProfile[] Profiles;  // begins at 0x100
+        public MlinePoint[] Points;
+        public MlineBreak[] Breaks;
+        public Linkage[] Linkages;
+
+        public MultilineElm Read(BinaryReader br)
+        {
+            // read each field
+            Ehdr = new Elm_hdr().Read(br);
+            Dhdr = new Disp_hdr().Read(br);
+            OrgCapAngle = br.ReadDouble();
+            EndCapAngle = br.ReadDouble();
+            Dummy1 = br.ReadUInt32();
+            NPoints = br.ReadUInt16();
+            Dummy2 = br.ReadByte();
+            NProfiles = br.ReadByte();
+            NOptions = br.ReadByte();
+            NBreaks = br.ReadByte();
+            Dummy3 = br.ReadUInt16();
+            Dummy5 = br.ReadUInt32();
+            ZVector = new DPoint3d().Read(br);
+            OrgCap = new MlineSymbology().Read(br);
+            EndCap = new MlineSymbology().Read(br);
+            MidCap = new MlineSymbology().Read(br);
+            Dummy6 = br.ReadUInt32();
+            Dummy7 = br.ReadUInt32();
+            Dummy8 = br.ReadUInt32();
+            Dummy9 = new DPoint3d().Read(br);
+            Profiles = new MlineProfile[NProfiles];
+            for (int i=0; i<NProfiles; i++)
+            {
+                Profiles[i] = new MlineProfile().Read(br);
+            }
+            Points = new MlinePoint[NPoints];
+            for (int i = 0; i < NPoints; i++)
+            {
+                Points[i] = new MlinePoint().Read(br);
+            }
+            Breaks = new MlineBreak[NBreaks];
+            for (int i = 0; i < NBreaks; i++)
+            {
+                Breaks[i] = new MlineBreak().Read(br);
+            }
+            Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Ehdr >");
+            Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Dhdr >");
+            Dhdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}OrgCapAngle={OrgCapAngle}");
+            sw.WriteLine($"{ident}EndCapAngle={EndCapAngle}");
+            sw.WriteLine($"{ident}Profiles >");
+            for (int i = 0; i < NProfiles; i++)
+            {
+                Profiles[i].Dump(sw, level + 1);
+            }
+            sw.WriteLine($"{ident}Points >");
+            for (int i = 0; i < NPoints; i++)
+            {
+                Points[i].Dump(sw, level + 1);
+            }
+            sw.WriteLine($"{ident}Breaks >");
+            for (int i = 0; i < NBreaks; i++)
+            {
+                Breaks[i].Dump(sw, level + 1);
+            }
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");

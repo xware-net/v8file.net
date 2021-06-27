@@ -1295,9 +1295,10 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new String(' ', 2 * level);
-            sw.WriteLine($"{ident}X={X}");
-            sw.WriteLine($"{ident}Y={Y}");
-            sw.WriteLine($"{ident}Z={Z}");
+            sw.WriteLine($"{ident}(X, Y, Z)=({X}, {Y}, {Z})");
+            //sw.WriteLine($"{ident}X={X}");
+            //sw.WriteLine($"{ident}Y={Y}");
+            //sw.WriteLine($"{ident}Z={Z}");
         }
     }
 
@@ -19607,118 +19608,118 @@ namespace v8file.net
         }
     }
 
-    public struct Mlinesymbology
-    {
-        private UInt32 Data1;
-        private const int sz_1_0 = 16, loc_1_0 = 0, mask_1_0 = unchecked(((1 << sz_1_0) - 1) << loc_1_0);
-        private const int sz_1_1 = 1, loc_1_1 = loc_1_0 + sz_1_0, mask_1_1 = unchecked(((1 << sz_1_1) - 1) << loc_1_1);
-        private const int sz_1_2 = 1, loc_1_2 = loc_1_1 + sz_1_1, mask_1_2 = unchecked(((1 << sz_1_2) - 1) << loc_1_2);
-        private const int sz_1_3 = 1, loc_1_3 = loc_1_2 + sz_1_2, mask_1_3 = unchecked(((1 << sz_1_3) - 1) << loc_1_3);
-        private const int sz_1_4 = 1, loc_1_4 = loc_1_3 + sz_1_3, mask_1_4 = unchecked(((1 << sz_1_4) - 1) << loc_1_4);
-        private const int sz_1_5 = 1, loc_1_5 = loc_1_4 + sz_1_4, mask_1_5 = unchecked(((1 << sz_1_5) - 1) << loc_1_5);
-        private const int sz_1_6 = 1, loc_1_6 = loc_1_5 + sz_1_5, mask_1_6 = unchecked(((1 << sz_1_6) - 1) << loc_1_6);
-        private const int sz_1_7 = 1, loc_1_7 = loc_1_6 + sz_1_6, mask_1_7 = unchecked(((1 << sz_1_7) - 1) << loc_1_7);
-        private const int sz_1_8 = 1, loc_1_8 = loc_1_7 + sz_1_7, mask_1_8 = unchecked(((1 << sz_1_8) - 1) << loc_1_8);
-        private const int sz_1_9 = 1, loc_1_9 = loc_1_8 + sz_1_8, mask_1_9 = unchecked(((1 << sz_1_9) - 1) << loc_1_9);
-        private const int sz_1_10 = 6, loc_1_10 = loc_1_9 + sz_1_9, mask_1_10 = unchecked(((1 << sz_1_10) - 1) << loc_1_10);
-        private const int sz_1_11 = 1, loc_1_11 = loc_1_10 + sz_1_10, mask_1_11 = unchecked(((1 << sz_1_11) - 1) << loc_1_11);
-        public UInt32 Reserved1
-        {
-            get => (UInt32)(Data1 & mask_1_0) >> loc_1_0;
-            set => Data1 = (UInt32)(Data1 & ~mask_1_0 | (value << loc_1_0) & mask_1_0);
-        }
-        public UInt32 UseStyle
-        {
-            get => (UInt32)(Data1 & mask_1_1) >> loc_1_1;
-            set => Data1 = (UInt32)(Data1 & ~mask_1_1 | (value << loc_1_1) & mask_1_1);
-        }
-        public UInt32 UseWeight
-        {
-            get => (UInt32)(Data1 & mask_1_2) >> loc_1_2;
-            set => Data1 = (UInt32)(Data1 & ~mask_1_2 | (value << loc_1_2) & mask_1_2);
-        }
-        public UInt32 UseColor
-        {
-            get => (UInt32)(Data1 & mask_1_3) >> loc_1_3;
-            set => Data1 = (UInt32)(Data1 & ~mask_1_3 | (value << loc_1_3) & mask_1_3);
-        }
-        public UInt32 CapInArc
-        {
-            get => (UInt32)(Data1 & mask_1_4) >> loc_1_4;
-            set => Data1 = (UInt32)(Data1 & ~mask_1_4 | (value << loc_1_4) & mask_1_4);
-        }
-        public UInt32 CapOutArc
-        {
-            get => (UInt32)(Data1 & mask_1_5) >> loc_1_5;
-            set => Data1 = (UInt32)(Data1 & ~mask_1_5 | (value << loc_1_5) & mask_1_5);
-        }
-        public UInt32 CapLine
-        {
-            get => (UInt32)(Data1 & mask_1_6) >> loc_1_6;
-            set => Data1 = (UInt32)(Data1 & ~mask_1_6 | (value << loc_1_6) & mask_1_6);
-        }
-        public UInt32 UseClass
-        {
-            get => (UInt32)(Data1 & mask_1_7) >> loc_1_7;
-            set => Data1 = (UInt32)(Data1 & ~mask_1_7 | (value << loc_1_7) & mask_1_7);
-        }
-        public UInt32 CustomStyle
-        {
-            get => (UInt32)(Data1 & mask_1_8) >> loc_1_8;
-            set => Data1 = (UInt32)(Data1 & ~mask_1_8 | (value << loc_1_8) & mask_1_8);
-        }
-        public UInt32 CapColorFromSeg
-        {
-            get => (UInt32)(Data1 & mask_1_9) >> loc_1_9;
-            set => Data1 = (UInt32)(Data1 & ~mask_1_9 | (value << loc_1_9) & mask_1_9);
-        }
-        public UInt32 Reserved
-        {
-            get => (UInt32)(Data1 & mask_1_10) >> loc_1_10;
-            set => Data1 = (UInt32)(Data1 & ~mask_1_10 | (value << loc_1_10) & mask_1_10);
-        }
-        public UInt32 ConClass
-        {
-            get => (UInt32)(Data1 & mask_1_11) >> loc_1_11;
-            set => Data1 = (UInt32)(Data1 & ~mask_1_11 | (value << loc_1_11) & mask_1_11);
-        }
-        public Int32 Style;
-        public UInt32 Weight;
-        public UInt32 Color;
-        public LevelId Level;
+    //public struct Mlinesymbology
+    //{
+    //    private UInt32 Data1;
+    //    private const int sz_1_0 = 16, loc_1_0 = 0, mask_1_0 = unchecked(((1 << sz_1_0) - 1) << loc_1_0);
+    //    private const int sz_1_1 = 1, loc_1_1 = loc_1_0 + sz_1_0, mask_1_1 = unchecked(((1 << sz_1_1) - 1) << loc_1_1);
+    //    private const int sz_1_2 = 1, loc_1_2 = loc_1_1 + sz_1_1, mask_1_2 = unchecked(((1 << sz_1_2) - 1) << loc_1_2);
+    //    private const int sz_1_3 = 1, loc_1_3 = loc_1_2 + sz_1_2, mask_1_3 = unchecked(((1 << sz_1_3) - 1) << loc_1_3);
+    //    private const int sz_1_4 = 1, loc_1_4 = loc_1_3 + sz_1_3, mask_1_4 = unchecked(((1 << sz_1_4) - 1) << loc_1_4);
+    //    private const int sz_1_5 = 1, loc_1_5 = loc_1_4 + sz_1_4, mask_1_5 = unchecked(((1 << sz_1_5) - 1) << loc_1_5);
+    //    private const int sz_1_6 = 1, loc_1_6 = loc_1_5 + sz_1_5, mask_1_6 = unchecked(((1 << sz_1_6) - 1) << loc_1_6);
+    //    private const int sz_1_7 = 1, loc_1_7 = loc_1_6 + sz_1_6, mask_1_7 = unchecked(((1 << sz_1_7) - 1) << loc_1_7);
+    //    private const int sz_1_8 = 1, loc_1_8 = loc_1_7 + sz_1_7, mask_1_8 = unchecked(((1 << sz_1_8) - 1) << loc_1_8);
+    //    private const int sz_1_9 = 1, loc_1_9 = loc_1_8 + sz_1_8, mask_1_9 = unchecked(((1 << sz_1_9) - 1) << loc_1_9);
+    //    private const int sz_1_10 = 6, loc_1_10 = loc_1_9 + sz_1_9, mask_1_10 = unchecked(((1 << sz_1_10) - 1) << loc_1_10);
+    //    private const int sz_1_11 = 1, loc_1_11 = loc_1_10 + sz_1_10, mask_1_11 = unchecked(((1 << sz_1_11) - 1) << loc_1_11);
+    //    public UInt32 Reserved1
+    //    {
+    //        get => (UInt32)(Data1 & mask_1_0) >> loc_1_0;
+    //        set => Data1 = (UInt32)(Data1 & ~mask_1_0 | (value << loc_1_0) & mask_1_0);
+    //    }
+    //    public UInt32 UseStyle
+    //    {
+    //        get => (UInt32)(Data1 & mask_1_1) >> loc_1_1;
+    //        set => Data1 = (UInt32)(Data1 & ~mask_1_1 | (value << loc_1_1) & mask_1_1);
+    //    }
+    //    public UInt32 UseWeight
+    //    {
+    //        get => (UInt32)(Data1 & mask_1_2) >> loc_1_2;
+    //        set => Data1 = (UInt32)(Data1 & ~mask_1_2 | (value << loc_1_2) & mask_1_2);
+    //    }
+    //    public UInt32 UseColor
+    //    {
+    //        get => (UInt32)(Data1 & mask_1_3) >> loc_1_3;
+    //        set => Data1 = (UInt32)(Data1 & ~mask_1_3 | (value << loc_1_3) & mask_1_3);
+    //    }
+    //    public UInt32 CapInArc
+    //    {
+    //        get => (UInt32)(Data1 & mask_1_4) >> loc_1_4;
+    //        set => Data1 = (UInt32)(Data1 & ~mask_1_4 | (value << loc_1_4) & mask_1_4);
+    //    }
+    //    public UInt32 CapOutArc
+    //    {
+    //        get => (UInt32)(Data1 & mask_1_5) >> loc_1_5;
+    //        set => Data1 = (UInt32)(Data1 & ~mask_1_5 | (value << loc_1_5) & mask_1_5);
+    //    }
+    //    public UInt32 CapLine
+    //    {
+    //        get => (UInt32)(Data1 & mask_1_6) >> loc_1_6;
+    //        set => Data1 = (UInt32)(Data1 & ~mask_1_6 | (value << loc_1_6) & mask_1_6);
+    //    }
+    //    public UInt32 UseClass
+    //    {
+    //        get => (UInt32)(Data1 & mask_1_7) >> loc_1_7;
+    //        set => Data1 = (UInt32)(Data1 & ~mask_1_7 | (value << loc_1_7) & mask_1_7);
+    //    }
+    //    public UInt32 CustomStyle
+    //    {
+    //        get => (UInt32)(Data1 & mask_1_8) >> loc_1_8;
+    //        set => Data1 = (UInt32)(Data1 & ~mask_1_8 | (value << loc_1_8) & mask_1_8);
+    //    }
+    //    public UInt32 CapColorFromSeg
+    //    {
+    //        get => (UInt32)(Data1 & mask_1_9) >> loc_1_9;
+    //        set => Data1 = (UInt32)(Data1 & ~mask_1_9 | (value << loc_1_9) & mask_1_9);
+    //    }
+    //    public UInt32 Reserved
+    //    {
+    //        get => (UInt32)(Data1 & mask_1_10) >> loc_1_10;
+    //        set => Data1 = (UInt32)(Data1 & ~mask_1_10 | (value << loc_1_10) & mask_1_10);
+    //    }
+    //    public UInt32 ConClass
+    //    {
+    //        get => (UInt32)(Data1 & mask_1_11) >> loc_1_11;
+    //        set => Data1 = (UInt32)(Data1 & ~mask_1_11 | (value << loc_1_11) & mask_1_11);
+    //    }
+    //    public Int32 Style;
+    //    public UInt32 Weight;
+    //    public UInt32 Color;
+    //    public LevelId Level;
 
-        public Mlinesymbology Read(BinaryReader br)
-        {
-            // read each field
-            Data1 = br.ReadUInt32();
-            Style = br.ReadInt32();
-            Weight = br.ReadUInt32();
-            Color = br.ReadUInt32();
-            Level = br.ReadUInt32();
-            return this;
-        }
+    //    public Mlinesymbology Read(BinaryReader br)
+    //    {
+    //        // read each field
+    //        Data1 = br.ReadUInt32();
+    //        Style = br.ReadInt32();
+    //        Weight = br.ReadUInt32();
+    //        Color = br.ReadUInt32();
+    //        Level = br.ReadUInt32();
+    //        return this;
+    //    }
 
-        public void Dump(StreamWriter sw, int level)
-        {
-            var ident = new String(' ', 2 * level);
-            sw.WriteLine($"{ident}Reserved1={Reserved1}");
-            sw.WriteLine($"{ident}UseStyle={UseStyle}");
-            sw.WriteLine($"{ident}UseWeight={UseWeight}");
-            sw.WriteLine($"{ident}UseColor={UseColor}");
-            sw.WriteLine($"{ident}CapInArc={CapInArc}");
-            sw.WriteLine($"{ident}CapOutArc={CapOutArc}");
-            sw.WriteLine($"{ident}CapLine={CapLine}");
-            sw.WriteLine($"{ident}UseClass={UseClass}");
-            sw.WriteLine($"{ident}CustomStyle={CustomStyle}");
-            sw.WriteLine($"{ident}CapColorFromSeg={CapColorFromSeg}");
-            sw.WriteLine($"{ident}Reserved={Reserved}");
-            sw.WriteLine($"{ident}ConClass={ConClass}");
-            sw.WriteLine($"{ident}Style={Style}");
-            sw.WriteLine($"{ident}Weight={Weight}");
-            sw.WriteLine($"{ident}Color={Color}");
-            sw.WriteLine($"{ident}Level={Level}");
-        }
-    }
+    //    public void Dump(StreamWriter sw, int level)
+    //    {
+    //        var ident = new String(' ', 2 * level);
+    //        sw.WriteLine($"{ident}Reserved1={Reserved1}");
+    //        sw.WriteLine($"{ident}UseStyle={UseStyle}");
+    //        sw.WriteLine($"{ident}UseWeight={UseWeight}");
+    //        sw.WriteLine($"{ident}UseColor={UseColor}");
+    //        sw.WriteLine($"{ident}CapInArc={CapInArc}");
+    //        sw.WriteLine($"{ident}CapOutArc={CapOutArc}");
+    //        sw.WriteLine($"{ident}CapLine={CapLine}");
+    //        sw.WriteLine($"{ident}UseClass={UseClass}");
+    //        sw.WriteLine($"{ident}CustomStyle={CustomStyle}");
+    //        sw.WriteLine($"{ident}CapColorFromSeg={CapColorFromSeg}");
+    //        sw.WriteLine($"{ident}Reserved={Reserved}");
+    //        sw.WriteLine($"{ident}ConClass={ConClass}");
+    //        sw.WriteLine($"{ident}Style={Style}");
+    //        sw.WriteLine($"{ident}Weight={Weight}");
+    //        sw.WriteLine($"{ident}Color={Color}");
+    //        sw.WriteLine($"{ident}Level={Level}");
+    //    }
+    //}
 
     public struct MlineSymbology
     {
@@ -19833,13 +19834,13 @@ namespace v8file.net
         }
     }
 
-    public struct Mlineprofile
+    public struct MlineProfile
     {
         public double Dist;
         public Int32 Reserved;
         public MlineSymbology Symb;
 
-        public Mlineprofile Read(BinaryReader br)
+        public MlineProfile Read(BinaryReader br)
         {
             // read each field
             Dist = br.ReadDouble();
@@ -19853,7 +19854,8 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Dist={Dist}");
             sw.WriteLine($"{ident}Reserved={Reserved}");
-            sw.WriteLine($"{ident}Symb={Symb}");
+            sw.WriteLine($"{ident}Symb >");
+            Symb.Dump(sw, level + 1);
         }
     }
 
@@ -20474,7 +20476,7 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Assoc={Assoc}");
             sw.WriteLine($"{ident}RoundCorner={RoundCorner}");
-            sw.WriteLine($"{ident}Reserved={Reserved}");
+            //sw.WriteLine($"{ident}Reserved={Reserved}");
         }
     }
 
@@ -20486,6 +20488,7 @@ namespace v8file.net
         public UInt16 BreakNo;
         public UInt16 NBreaks;
         public T_Adouble Radius;
+        //public MlineBreak[] Breaks;
 
         public MlinePoint Read(BinaryReader br)
         {
@@ -20496,6 +20499,11 @@ namespace v8file.net
             BreakNo = br.ReadUInt16();
             NBreaks = br.ReadUInt16();
             Radius = br.ReadDouble();
+            //Breaks = new MlineBreak[NBreaks];
+            //for (int i=0; i< NBreaks; i++)
+            //{
+            //    Breaks[i] = new MlineBreak().Read(br);
+            //}
             return this;
         }
 
@@ -20510,6 +20518,11 @@ namespace v8file.net
             sw.WriteLine($"{ident}BreakNo={BreakNo}");
             sw.WriteLine($"{ident}NBreaks={NBreaks}");
             sw.WriteLine($"{ident}Radius={Radius}");
+            //sw.WriteLine($"{ident}Breaks >");
+            //for (int i = 0; i < NBreaks; i++)
+            //{
+            //    Breaks[i].Dump(sw, level + 1);
+            //}
         }
     }
 

@@ -452,6 +452,9 @@ namespace v8file.net
                         case MLineStyleTableElm t:
                             t.Dump(sw, level);
                             break;
+                        case MultilineElm t:
+                            t.Dump(sw, level);
+                            break;
                         case NamedPresentationTable t:
                             t.Dump(sw, level);
                             break;
@@ -662,6 +665,8 @@ namespace v8file.net
                         return new SharedCellDefElm().Read(br);
                     case 35:    // shared cell element
                         return new SharedCellElm().Read(br);
+                    case 36:    // multiline element
+                        return new MultilineElm().Read(br);
                     case 37:    // attribute element
                         return new AttributeElm().Read(br);
                     case 94:    // raster frame element
