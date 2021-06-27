@@ -2,7 +2,7 @@
   "profiles": {
     "v8file.net": {
       "commandName": "Project",
-      "commandLineArgs": "\"Multi-Lines.dgn\" \"Multi-Lines.dgn.out\""
+      "commandLineArgs": "\"yyyy.dgn\" \"yyyy.dgn.out\""
     }
   }
 }

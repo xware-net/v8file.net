@@ -1600,22 +1600,26 @@ namespace v8file.net
         public double OrgCapAngle;      // 0x68
         public double EndCapAngle;      // 0x70
         public UInt32 Dummy1;           // 0x78
-        public UInt16 NPoints;           // 0x7c
-        public byte Dummy2;          // 0x7e
-        public byte NProfiles;            // 0x7f
+        public UInt16 NPoints;          // 0x7c
+        public byte Dummy2;             // 0x7e
+        public byte NProfiles;          // 0x7f
         public byte NOptions;           // 0x80
         public byte NBreaks;            // 0x81
         public UInt16 Dummy3;           // 0x82
-        public UInt32 Dummy5;           // 0x84
-        public DPoint3d ZVector;        // 0x88
+        public UInt32 Dummy4;           // 0x84
+        public UInt32 Dummy5;           // 0x88
+        public UInt32 Dummy6;           // 0x8c
+        public UInt32 Dummy7;           // 0x90
+        public UInt32 Dummy8;           // 0x94
+        public double Dummy9;           // 0x98
         MlineSymbology OrgCap;          // 0xa0
         MlineSymbology EndCap;          // 0xb4
         MlineSymbology MidCap;          // 0xc8
-        public UInt32 Dummy6;           // 0xdc
-        public UInt32 Dummy7;           // 0xe0
-        public UInt32 Dummy8;           // 0xe4
-        public DPoint3d Dummy9;         // 0xe8
-        public MlineProfile[] Profiles;  // begins at 0x100
+        public UInt32 Dummy10;          // 0xdc
+        public UInt32 Dummy11;          // 0xe0
+        public UInt32 Dummy12;          // 0xe4
+        public DPoint3d ZVector;        // 0xe8
+        public MlineProfile[] Profiles; // begins at 0x100
         public MlinePoint[] Points;
         public MlineBreak[] Breaks;
         public Linkage[] Linkages;
@@ -1634,15 +1638,19 @@ namespace v8file.net
             NOptions = br.ReadByte();
             NBreaks = br.ReadByte();
             Dummy3 = br.ReadUInt16();
+            Dummy4 = br.ReadUInt32();
             Dummy5 = br.ReadUInt32();
-            ZVector = new DPoint3d().Read(br);
-            OrgCap = new MlineSymbology().Read(br);
-            EndCap = new MlineSymbology().Read(br);
-            MidCap = new MlineSymbology().Read(br);
             Dummy6 = br.ReadUInt32();
             Dummy7 = br.ReadUInt32();
             Dummy8 = br.ReadUInt32();
-            Dummy9 = new DPoint3d().Read(br);
+            Dummy9 = br.ReadDouble();
+            OrgCap = new MlineSymbology().Read(br);
+            EndCap = new MlineSymbology().Read(br);
+            MidCap = new MlineSymbology().Read(br);
+            Dummy10 = br.ReadUInt32();
+            Dummy11 = br.ReadUInt32();
+            Dummy12 = br.ReadUInt32();
+            ZVector = new DPoint3d().Read(br);
             Profiles = new MlineProfile[NProfiles];
             for (int i=0; i<NProfiles; i++)
             {
@@ -1671,20 +1679,47 @@ namespace v8file.net
             Dhdr.Dump(sw, level + 1);
             sw.WriteLine($"{ident}OrgCapAngle={OrgCapAngle}");
             sw.WriteLine($"{ident}EndCapAngle={EndCapAngle}");
+            sw.WriteLine($"{ident}Dummy1={Dummy1}");
+            sw.WriteLine($"{ident}NPoints={NPoints}");
+            sw.WriteLine($"{ident}Dummy2={Dummy2}");
+            sw.WriteLine($"{ident}NProfiles={NProfiles}");
+            sw.WriteLine($"{ident}NOptions={NOptions}");
+            sw.WriteLine($"{ident}NBreaks={NBreaks}");
+            sw.WriteLine($"{ident}Dummy3={Dummy3}");
+            sw.WriteLine($"{ident}Dummy4={Dummy4}");
+            sw.WriteLine($"{ident}Dummy5={Dummy5}");
+            sw.WriteLine($"{ident}Dummy6={Dummy6}");
+            sw.WriteLine($"{ident}Dummy7={Dummy7}");
+            sw.WriteLine($"{ident}Dummy8={Dummy8}");
+            sw.WriteLine($"{ident}Dummy9={Dummy9}");
+            sw.WriteLine($"{ident}OrgCap >");
+            OrgCap.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}EndCap >");
+            EndCap.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}MidCap >");
+            MidCap.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Dummy10={Dummy10}");
+            sw.WriteLine($"{ident}Dummy11={Dummy11}");
+            sw.WriteLine($"{ident}Dummy12={Dummy12}");
+            sw.WriteLine($"{ident}ZVector >");
+            ZVector.Dump(sw, level + 1);
             sw.WriteLine($"{ident}Profiles >");
             for (int i = 0; i < NProfiles; i++)
             {
-                Profiles[i].Dump(sw, level + 1);
+                sw.WriteLine($"{ident}  Profiles[{i}] >");
+                Profiles[i].Dump(sw, level + 2);
             }
             sw.WriteLine($"{ident}Points >");
             for (int i = 0; i < NPoints; i++)
             {
-                Points[i].Dump(sw, level + 1);
+                sw.WriteLine($"{ident}  Points[{i}] >");
+                Points[i].Dump(sw, level + 2);
             }
             sw.WriteLine($"{ident}Breaks >");
             for (int i = 0; i < NBreaks; i++)
             {
-                Breaks[i].Dump(sw, level + 1);
+                sw.WriteLine($"{ident}  Breaks[{i}] >");
+                Breaks[i].Dump(sw, level + 2);
             }
             if (Linkages.Length > 0)
             {
