@@ -409,6 +409,12 @@ namespace v8file.net
                         linkage.Dump(sw);
                     }
                     break;
+                case LinkageIds.LINKAGEID_LineStyleMod:
+                    {
+                        LineStyleModLinkage linkage = new(Data);
+                        linkage.Dump(sw);
+                    }
+                    break;
             }
 
             sw.WriteLine();
@@ -444,6 +450,30 @@ namespace v8file.net
             }
 
             sw.WriteLine(")");
+        }
+    }
+
+    public class LineStyleModLinkage
+    {
+        public UInt32 Dummy1;
+        public UInt32 Dummy2;
+        public UInt32 Dummy3;
+        public UInt32 Dummy4;
+        public UInt32 Dummy5;
+
+        public LineStyleModLinkage(byte[] data)
+        {
+            BinaryReader br = new(new MemoryStream(data));
+            Dummy1 = br.ReadUInt32();
+            Dummy2 = br.ReadUInt32();
+            Dummy3 = br.ReadUInt32();
+            Dummy4 = br.ReadUInt32();
+            Dummy5 = br.ReadUInt32();
+        }
+
+        public void Dump(StreamWriter sw)
+        {
+            sw.Write($" (Line Style Modification Linkage)");
         }
     }
 

@@ -36,6 +36,8 @@ namespace v8file.net
             V8DeleteFiles("GSX_*.*");
             V8DeleteFiles("*.Graphics");
             V8DeleteFiles("*.Control");
+            V8DeleteFiles("*.GraphicAttributes");
+            V8DeleteFiles("*.ControlAttributes");
             V8DeleteFiles("*.NonModel");
 
             CMFileInfo = default;
@@ -73,12 +75,14 @@ namespace v8file.net
                 {
                     for (int k = 0; k < CMFileInfo.Files[i].Caches[j].NumControlAttributesCaches; k++)
                     {
-                        V8FileLoader.V8ParseAttributeCache(StreamWriter.Null, CMFileInfo.Files[i].Caches[j].ControlAttributesCaches[k]);
+                        V8FileLoader.V8ParseAttributeCache(CMFileInfo.Files[i].FileName, "ControlAttributes", j, k, CMFileInfo.Files[i].Caches[j].ControlAttributesCaches[k]);
+                        //V8FileLoader.V8ParseAttributeCache(StreamWriter.Null, CMFileInfo.Files[i].Caches[j].ControlAttributesCaches[k]);
                     }
 
                     for (int k = 0; k < CMFileInfo.Files[i].Caches[j].NumGraphicAttributesCaches; k++)
                     {
-                        V8FileLoader.V8ParseAttributeCache(StreamWriter.Null, CMFileInfo.Files[i].Caches[j].GraphicAttributesCaches[k]);
+                        V8FileLoader.V8ParseAttributeCache(CMFileInfo.Files[i].FileName, "GraphicAttributes", j, k, CMFileInfo.Files[i].Caches[j].GraphicAttributesCaches[k]);
+                        //V8FileLoader.V8ParseAttributeCache(StreamWriter.Null, CMFileInfo.Files[i].Caches[j].GraphicAttributesCaches[k]);
                     }
                 }
             }

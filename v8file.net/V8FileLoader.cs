@@ -15,6 +15,68 @@ namespace v8file.net
 
         public static Dictionary<ulong, List<XAttribute>> Xattributes => xattributes;
 
+        public static void V8ParseAttributeCache(string fileName, string cacheType, int modelNum, int cacheNum, Cache cache)
+        {
+            if (cache.Bytes == null)
+                return;
+
+            string streamName = Path.GetFileNameWithoutExtension(fileName) + string.Format("_{0}_{1}.{2}", modelNum + 1, cacheNum, cacheType);
+            using StreamWriter sw = new StreamWriter(streamName);
+            MemoryStream ms = new(cache.Bytes);
+            BinaryReader br = new(ms);
+            long streamPosition = ms.Position;
+            while (streamPosition < ms.Length)
+            {
+                Int32 sign = br.ReadInt32();
+                if (sign != 0xa11b)
+                    Debugger.Break();
+                Int32 size = br.ReadInt32();
+                Int32 dummy2 = br.ReadInt32();
+                if (dummy2 != 0xaa)
+                    Debugger.Break();
+                Int32 dummy3 = br.ReadInt32();
+                if (dummy3 != 0x00)
+                    Debugger.Break();
+                UInt64 elementId = br.ReadUInt64();
+
+                if (!Xattributes.ContainsKey(elementId))
+                {
+                    Xattributes.Add(elementId, new List<XAttribute>());
+                }
+
+                if (sw != StreamWriter.Null)
+                    sw.Write("ElementId={0} (0x{0:X16}", elementId);
+                Int32 numXAttributes = br.ReadInt32();
+                if (sw != StreamWriter.Null)
+                    sw.WriteLine(" has {0} XAttributes", numXAttributes);
+                for (int i = 0; i < numXAttributes; i++)
+                {
+                    var xAttribute = ReadXAttribute(sw, br);
+                    if ((xAttribute.XAttributeHandler == 0x570b0003) ||
+                        (xAttribute.XAttributeHandler == 0x570b0004) ||
+                        (xAttribute.XAttributeHandler == 0x570b0005))
+                    {
+                        if (sw != StreamWriter.Null)
+                            sw.WriteLine("\t xattribute {0}, handler={1:X8}, size={2} is {3}", i, xAttribute.XAttributeHandler, xAttribute.Size, xAttribute.Data);
+                    }
+                    else
+                    {
+                        if (sw != StreamWriter.Null)
+                            sw.WriteLine("\t xattribute {0}, handler={1:X8}, size={2}", i, xAttribute.XAttributeHandler, xAttribute.Size);
+                    }
+
+                    Xattributes[elementId].Add(xAttribute);
+                    sw.WriteLine();
+                    sw.WriteLine(Utils.HexDump(xAttribute.Bytes));
+                    sw.WriteLine();
+                    sw.WriteLine(xAttribute.Data);
+                }
+
+                Int64 dummy4 = br.ReadInt32();
+                streamPosition = ms.Position;
+            }
+        }
+
         public static void V8ParseAttributeCache(StreamWriter sw, Cache cache)
         {
             if (cache.Bytes == null)
@@ -90,6 +152,7 @@ namespace v8file.net
                     XAttributeHandler = xAttributeHandler,
                     AttributeId = attributeId,
                     Size = size,
+                    Bytes = bytes,
                     Dummy2 = dummy2,
                     Data = Decode(bytes)
                 };
@@ -101,6 +164,7 @@ namespace v8file.net
                     XAttributeHandler = xAttributeHandler,
                     AttributeId = attributeId,
                     Size = size,
+                    Bytes = bytes,
                     Dummy2 = dummy2,
                     Data = Encoding.Unicode.GetString(bytes, 0, bytes.Length).Replace("\x00", "")
                 };

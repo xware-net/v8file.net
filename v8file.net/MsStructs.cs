@@ -240,6 +240,7 @@ namespace v8file.net
         public UInt32 Size;
         public Int32 Dummy2;
         public string Data;
+        public byte[] Bytes;
 
         public void Dump(StreamWriter sw, int level)
         {
@@ -1516,82 +1517,6 @@ namespace v8file.net
             }
         }
     }
-
-    //public struct MultilineBreak
-    //{
-    //    public UInt32 LinesMask;
-    //    public MultilineBreakFlags Flags;
-    //    public double Offset;
-    //    public double Length;
-    //    public double Angle;
-
-    //    public MultilineBreak Read(BinaryReader br)
-    //    {
-    //        // read each field
-    //        LinesMask = br.ReadUInt32();
-    //        Flags = (MultilineBreakFlags)br.ReadUInt16();
-    //        Offset = br.ReadDouble();
-    //        Length = br.ReadDouble();
-    //        Angle = br.ReadDouble();
-    //        return this;
-    //    }
-
-    //    public void Dump(StreamWriter sw, int level)
-    //    {
-    //        var ident = new String(' ', 2 * level);
-    //        sw.WriteLine($"{ident}LinesMask={LinesMask}");
-    //        sw.WriteLine($"{ident}Flags={Flags}");
-    //        sw.WriteLine($"{ident}Offset={Offset}");
-    //        sw.WriteLine($"{ident}Length={Length}");
-    //        sw.WriteLine($"{ident}Angle={Angle}");
-    //    }
-    //}
-
-    //public struct MultilinePoint
-    //{
-    //    public DPoint3d Point;
-    //    public MlinePoint_Flags Flags;
-    //    public UInt16 Reserved;
-    //    public UInt16 BreakNo;
-    //    public UInt16 NBreaks;
-    //    public MultilineBreak[] Breaks;
-    //    public double Radius;
-
-    //    public MultilinePoint Read(BinaryReader br)
-    //    {
-    //        // read each field
-    //        Point = new DPoint3d().Read(br);
-    //        Flags = new MlinePoint_Flags().Read(br);
-    //        Reserved = br.ReadUInt16();
-    //        BreakNo = br.ReadUInt16();
-    //        NBreaks = br.ReadUInt16();
-    //        Radius = br.ReadDouble();
-    //        Breaks = new MultilineBreak[NBreaks];
-    //        for (int i = 0; i < NBreaks; i++)
-    //        {
-    //            Breaks[i] = new MultilineBreak().Read(br);
-    //        }
-    //        return this;
-    //    }
-
-    //    public void Dump(StreamWriter sw, int level)
-    //    {
-    //        var ident = new String(' ', 2 * level);
-    //        sw.WriteLine($"{ident}Point >");
-    //        Point.Dump(sw, level + 1);
-    //        sw.WriteLine($"{ident}Flags >");
-    //        Flags.Dump(sw, level + 1);
-    //        //sw.WriteLine($"{ident}Reserved={Reserved}");
-    //        sw.WriteLine($"{ident}BreakNo={BreakNo}");
-    //        sw.WriteLine($"{ident}NBreaks={NBreaks}");
-    //        sw.WriteLine($"{ident}Radius={Radius}");
-    //        for (int i = 0; i < NBreaks; i++)
-    //        {
-    //            sw.WriteLine($"Breaks[{i}] > ");
-    //            Breaks[i].Dump(sw, level + 1);
-    //        }
-    //    }
-    //}
 
     public struct MultilineElm     // 36
     {
