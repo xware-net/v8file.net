@@ -106,7 +106,12 @@ namespace v8file.net
                 2 => "CELL_HEADER_ELM",
                 3 => "LINE_ELM",
                 4 => "LINE_STRING_ELM",
-                5 => "GROUP_DATA_ELM",
+                5 => ehdr.Level switch
+                {
+                    1 => "GROUP_DATA_ELM (COLOR_TABLE_ELM)",
+                    3 => "GROUP_DATA_ELM (ACS_ELM)",
+                    _ => $"???",
+                },
                 6 => "SHAPE_ELM",
                 7 => "TEXT_NODE_ELM",
                 8 => "DIG_SETDATA_ELM",

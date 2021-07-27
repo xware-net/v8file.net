@@ -471,6 +471,12 @@ namespace v8file.net
                         case NamedPresentationTableElm t:
                             t.Dump(sw, level);
                             break;
+                        case RasterReferenceAttachmentElm t:
+                            t.Dump(sw, level);
+                            break;
+                        case RasterReferenceComponentElm t:
+                            t.Dump(sw, level);
+                            break;
                         case ReferenceFileElm t:
                             t.Dump(sw, level);
                             break;
@@ -706,9 +712,9 @@ namespace v8file.net
                     // microstation application element
                     66 => null,
                     // raster reference attachment
-                    90 => null,
+                    90 => new RasterReferenceAttachmentElm().Read(br),
                     // raster reference component
-                    91 => null,
+                    91 => new RasterReferenceComponentElm().Read(br),
                     // raster hierarchy element
                     92 => null,
                     // raster hierarchy component
