@@ -282,6 +282,9 @@ namespace v8file.net
                 {
                     switch (element)
                     {
+                        case AcsElm t:
+                            t.Dump(sw, level);
+                            break;
                         case AnimationParameterTable t:
                             t.Dump(sw, level);
                             break;
@@ -698,7 +701,7 @@ namespace v8file.net
                     5 => ehdr.Level switch
                     {
                         1 => new ColorTable().Read(br),
-                        3 => null,
+                        3 => new AcsElm().Read(br),
                         _ => null,
                     },
                     9 => new Dgn_header().Read(br),

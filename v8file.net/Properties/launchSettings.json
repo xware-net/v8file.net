@@ -2,7 +2,7 @@
   "profiles": {
     "v8file.net": {
       "commandName": "Project",
-      "commandLineArgs": "\"Raster.dgn\" \"Raster.dgn.out\""
+      "commandLineArgs": "\"Animation1.dgn\" \"Animation1.dgn.out\""
     }
   }
 }

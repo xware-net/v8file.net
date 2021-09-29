@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using ModelId = System.UInt32;
 using T_Adouble = System.Double;
 
@@ -1798,10 +1799,20 @@ namespace v8file.net
         public UInt16 Type;       // 0x20
         public UInt16 Dummy2;       // 0x22
         public UInt32 Dummy3;       // 0x24
+
+        // type == 0x0007
         public DPoint3d Origin;     // 0x28
         public DRange1d Extent;     // 0x40
         public DVec3d UVector;      // 0x88
         public DVec3d VVector;      // 0xa8
+
+        // type == 0x0004
+        public UInt16 Dummy4;              // 0x28
+        public UInt32 NumClipPoints;       // 0x2a
+        public UInt16 Dummy5;              // 0x2e
+        public DPoint2d[] ClipPoints;
+
+
         public string Name;
         public string Description;
         public Linkage[] Linkages;
@@ -1815,6 +1826,18 @@ namespace v8file.net
             Dummy3 = br.ReadUInt32();
             switch (Type)
             {
+                case 0x04:
+                    // clip points
+                    Dummy4 = br.ReadUInt16();
+                    NumClipPoints = br.ReadUInt32();
+                    // skip 2 bytes (alignement)
+                    Dummy5 = br.ReadUInt16();
+                    ClipPoints = new DPoint2d[NumClipPoints];
+                    for (int i=0; i<NumClipPoints; i++)
+                    {
+                        ClipPoints[i] = new DPoint2d().Read(br);
+                    }
+                    break;
                 case 0x07:
                     break;
                 case 0x08:
@@ -1839,10 +1862,160 @@ namespace v8file.net
             sw.WriteLine($"{ident}Type={Type}");
             sw.WriteLine($"{ident}Dummy2={Dummy2}");
             sw.WriteLine($"{ident}Dummy3={Dummy3}");
+            switch (Type)
+            {
+                case 0x04:
+                    // clip points
+                    sw.WriteLine($"{ident}Dummy4={Dummy4}");
+                    sw.WriteLine($"{ident}NumClipPoints={NumClipPoints}");
+                    //sw.WriteLine($"{ident}Dummy5={Dummy5}");
+                    sw.WriteLine($"{ident}ClipPoints >");
+                    for (int i = 0; i < NumClipPoints; i++)
+                    {
+                        ClipPoints[i].Dump(sw, level + 1);
+                    }
+                    break;
+                case 0x07:
+                    break;
+                case 0x08:
+                    break;
+                case 0x09:
+                    break;
+                case 0x0B:
+                    break;
+            }
             if (!string.IsNullOrEmpty(Name))
                 sw.WriteLine($"{ident}Name={Name}");
             if (!string.IsNullOrEmpty(Description))
                 sw.WriteLine($"{ident}Description={Description}");
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].Dump(sw, level + 1);
+                }
+            }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
+                }
+            }
+        }
+    }
+
+    public struct RasterFrameElm     // 94
+    {
+        public Elm_hdr Ehdr;
+        public Disp_hdr Dhdr;
+        public DPoint2d Dimensions;     // 0x108
+        public string LogicalName;
+        public string Description;
+        public string FileName;
+        public string FullFileName;
+        public Linkage[] Linkages;
+
+        public RasterFrameElm Read(BinaryReader br)
+        {
+            // read each field
+            Ehdr = new Elm_hdr().Read(br);
+            Dhdr = new Disp_hdr().Read(br);
+            Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
+            LogicalName = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_LogicalName);
+            Description = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Description);
+            FileName = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_FileName);
+            FullFileName = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_FullReferencePath);
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Ehdr >");
+            Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Dhdr >");
+            Dhdr.Dump(sw, level + 1);
+            if (!string.IsNullOrEmpty(LogicalName))
+                sw.WriteLine($"{ident}LogicalName={LogicalName}");
+            if (!string.IsNullOrEmpty(Description))
+                sw.WriteLine($"{ident}Description={Description}");
+            if (!string.IsNullOrEmpty(FileName))
+                sw.WriteLine($"{ident}FileName={FileName}");
+            if (!string.IsNullOrEmpty(FullFileName))
+                sw.WriteLine($"{ident}FullFileName={FullFileName}");
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].Dump(sw, level + 1);
+                }
+            }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
+                }
+            }
+        }
+    }
+
+    public enum AcsType : int
+    {
+        AcsTypeNone = 0,
+        Rectangular = 1,
+        Cylindrical = 2,
+        Spherical = 3
+    };
+
+    public struct AcsElm // 5, level 3
+    {
+        public Elm_hdr Ehdr;
+        public RotMatrix RotMatrix;
+        public DPoint3d Origin;
+        public AcsType Dummy1;
+        public UInt32 Dummy2;
+        public string Name;
+        public Linkage[] Linkages;
+
+        public AcsElm Read(BinaryReader br)
+        {
+            // read each field
+            Ehdr = new Elm_hdr().Read(br);
+            RotMatrix = new RotMatrix().Read(br);
+            Origin = new DPoint3d().Read(br);
+            Dummy1 = (AcsType)br.ReadUInt32();
+            Dummy2 = br.ReadUInt32();
+            Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
+            Name = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Name);
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Ehdr >");
+            Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}RotMatrix >");
+            RotMatrix.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Origin >");
+            Origin.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}AcsType={Dummy1}");
+            sw.WriteLine($"{ident}Dummy2={Dummy2}");
+            sw.WriteLine($"{ident}Name={Name}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");

@@ -186,7 +186,7 @@ namespace v8file.net
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    sw.WriteLine($"{ident}Form3d={Form3d[i, j]}");
+                    sw.WriteLine($"{ident}Form3d[{i},{j}]={Form3d[i, j]}");
                 }
             }
         }
