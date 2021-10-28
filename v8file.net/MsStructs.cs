@@ -34,69 +34,72 @@ namespace v8file.net
     public struct ModelHeaderElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 Dummy1;
-        public UInt32 Dummy2;
-        public UInt32 Dummy3;
-        public UInt32 Dummy4;
-        public UInt32 Dummy5;
-        public UInt32 Dummy6;
-        public UInt32 Dummy7;
-        public UInt32 GridPerReference;
-        public UInt32 Dummy9;
-        public UInt32 Dummy10;
-        public UInt32 Dummy11;
-        public UInt32 Dummy12;
-        public double MuNumerator;
-        public double MuDenominator;
-        public double SuNumerator;
-        public double SuDenominator;
-        public DPoint3d GlobalOrigin;
-        public double LastModified; /* last time this element was changed */
-        public Int64 Y0;
-        public Int64 Y1;
-        public Int64 Y2;
-        public Int64 Y3;
-        public Int64 Y4;
-        public Int64 Y5;
-        public Int64 Y6;
-        public Int64 Y7;
-        public Int64 Y8;
-        public Int64 Y9;
-        public double UorsPerStorage;
-        public double StNumerator;
-        public double StDenominator;
-        public double Z0;
-        public double Z1;
-        public double Z2;
-        public double Z3;
-        public double Z4;
-        public double Z5;
-        public double Z6;
-        public double Z7;
-        public double Z8;
-        public double Z9;
-        public double Z10;
-        public double Z11;
-        public double Z12;
-        public double Z13;
-        public double Z14;
-        public double Z15;
-        public double Z16;
-        public double Z17;
-        public double Z18;
-        public double Z19;
-        public double Z20;
-        public double Z21;
-        public double Z22;
-        public double Z23;
-        public double Z24;
-        public double Z25;
-        public double Z26;
-        public double Z27;
-        public double Z28;
-        public double Z29;
-        public double Z30;
-        public Linkage[] Linkages;
+        public UInt32 Dummy1;                  // 0x20
+        public UInt32 Dummy2;                  // 0x24
+        public UInt32 Dummy3;                  // 0x28
+        public UInt32 Dummy4;                  // 0x2c
+        public UInt32 Dummy5;                  // 0x30
+        public UInt32 Dummy6;                  // 0x34
+        public UInt32 Dummy7;                  // 0x38
+        public UInt32 GridPerReference;        // 0x3c
+        public UInt32 Dummy9;                  // 0x40                   
+        public UInt32 Dummy10;                 // 0x44
+        public UInt32 Dummy11;                 // 0x48
+        public UInt32 Dummy12;                 // 0x4c
+        public double MuNumerator;             // 0x50
+        public double MuDenominator;           // 0x58
+        public double SuNumerator;             // 0x60
+        public double SuDenominator;           // 0x68
+        public DPoint3d GlobalOrigin;          // 0x70
+        public double LastModified; /* last time this element was changed */    // 0x88
+        public ScanRange Rng;                  // 0x90
+        //public Int64 Y0;
+        //public Int64 Y1;
+        //public Int64 Y2;
+        //public Int64 Y3;
+        //public Int64 Y4;
+        //public Int64 Y5;
+        public Int64 Y6;                       // 0xc0
+        public Int64 Y7;                       // 0xc8
+        public Int64 Y8;                       // 0xd0
+        public Int64 Y9;                       // 0xd8
+        public double UorsPerStorage;          // 0xe0
+        public double StNumerator;             // 0xe8
+        public double StDenominator;           // 0xf0
+        public double Z0;                      // 0xf8
+        public double Z1;                      // 0x100
+        public DPoint3d AcsOrigin;             // 0x108
+        //public double Z2;
+        //public double Z3;
+        //public double Z4;
+        public RotMatrix AcsRotMatrix;         // 0x120
+        //public double Z5;
+        //public double Z6;
+        //public double Z7;
+        //public double Z8;
+        //public double Z9;
+        //public double Z10;
+        //public double Z11;
+        //public double Z12;
+        //public double Z13;
+        public double Z14;                     // 0x168
+        public double Z15;                     // 0x170
+        public double Z16;                     // 0x178
+        public double Z17;                     // 0x180
+        public double Z18;                     // 0x188
+        public double Z19;                     // 0x190
+        public double Z20;                     // 0x198
+        public double Z21;                     // 0x1a0
+        public double Z22;                     // 0x1a8
+        public double Z23;                     // 0x1b0
+        public double Z24;                     // 0x1b8
+        public double Z25;                     // 0x1c0
+        public double Z26;                     // 0x1c8
+        public double Z27;                     // 0x1d0
+        public double Z28;                     // 0x1d8
+        public double Z29;                     // 0x1e0
+        public double Z30;                     // 0x1e8
+        public Linkage[] Linkages;             // 0x1f0
 
         public ModelHeaderElm Read(BinaryReader br)
         {
@@ -120,12 +123,13 @@ namespace v8file.net
             SuDenominator = br.ReadDouble();
             GlobalOrigin = new DPoint3d().Read(br);
             LastModified = br.ReadDouble();
-            Y0 = br.ReadInt64();
-            Y1 = br.ReadInt64();
-            Y2 = br.ReadInt64();
-            Y3 = br.ReadInt64();
-            Y4 = br.ReadInt64();
-            Y5 = br.ReadInt64();
+            Rng = new ScanRange().Read(br);
+            //Y0 = br.ReadInt64();
+            //Y1 = br.ReadInt64();
+            //Y2 = br.ReadInt64();
+            //Y3 = br.ReadInt64();
+            //Y4 = br.ReadInt64();
+            //Y5 = br.ReadInt64();
             Y6 = br.ReadInt64();
             Y7 = br.ReadInt64();
             Y8 = br.ReadInt64();
@@ -135,18 +139,20 @@ namespace v8file.net
             StDenominator = br.ReadDouble();
             Z0 = br.ReadDouble();
             Z1 = br.ReadDouble();
-            Z2 = br.ReadDouble();
-            Z3 = br.ReadDouble();
-            Z4 = br.ReadDouble();
-            Z5 = br.ReadDouble();
-            Z6 = br.ReadDouble();
-            Z7 = br.ReadDouble();
-            Z8 = br.ReadDouble();
-            Z9 = br.ReadDouble();
-            Z10 = br.ReadDouble();
-            Z11 = br.ReadDouble();
-            Z12 = br.ReadDouble();
-            Z13 = br.ReadDouble();
+            AcsOrigin = new DPoint3d().Read(br);
+            //Z2 = br.ReadDouble();
+            //Z3 = br.ReadDouble();
+            //Z4 = br.ReadDouble();
+            AcsRotMatrix = new RotMatrix().Read(br);
+            //Z5 = br.ReadDouble();
+            //Z6 = br.ReadDouble();
+            //Z7 = br.ReadDouble();
+            //Z8 = br.ReadDouble();
+            //Z9 = br.ReadDouble();
+            //Z10 = br.ReadDouble();
+            //Z11 = br.ReadDouble();
+            //Z12 = br.ReadDouble();
+            //Z13 = br.ReadDouble();
             Z14 = br.ReadDouble();
             Z15 = br.ReadDouble();
             Z16 = br.ReadDouble();

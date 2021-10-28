@@ -241,7 +241,7 @@ namespace v8file.net
             dgnFileObj.Caches[modelNum].ModelCache.Bytes = File.ReadAllBytes(fileName);
 
             dgnFileObj.Caches[modelNum].ModelName =
-                V8GetModelNameFromModelCache(dgnFileObj.Caches[modelNum].ModelCache);
+                V8GetModelNameFromModelCache(modelNum, dgnFileObj.Caches[modelNum].ModelCache);
             V8LoadControlCaches(ref dgnFileObj.Caches[modelNum], modelNum);
             V8LoadGraphicCaches(ref dgnFileObj.Caches[modelNum], modelNum);
             V8LoadControlAttributesCaches(ref dgnFileObj.Caches[modelNum], modelNum);
@@ -362,9 +362,14 @@ namespace v8file.net
             dgnCache.ControlCaches[cacheNum - 1].Bytes = File.ReadAllBytes(fileName);
         }
 
-        private static string V8GetModelNameFromModelCache(Cache modelCache)
+        private static string V8GetModelNameFromModelCache(int modelNum, Cache modelCache)
         {
-            return string.Empty;
+            using MemoryStream ms = new(modelCache.Bytes);
+            using BinaryReader br = new(ms);
+            ms.Seek(0x1004, SeekOrigin.Begin);
+            var modelHeaderElm = new ModelHeaderElm().Read(br);
+            string modelName = V8Linkages.V8GetStringLinkage(modelHeaderElm.Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Name);
+            return modelName;
         }
 
         public static void V8LoadNonModels(ref DgnFileObj dgnFileObj)

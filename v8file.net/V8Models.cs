@@ -116,26 +116,29 @@ namespace v8file.net
             modelInfo.GridRatio = modelHeaderElm.Z16;
             modelInfo.ModelType = (int)(modelHeaderElm.Dummy1 & 0xFFFF0000) >> 16;
             modelInfo.DgnModelType = (DgnModelType)(modelInfo.ModelType);
-            modelInfo.AcsOrigin.X = modelHeaderElm.Z2;
-            modelInfo.AcsOrigin.Y = modelHeaderElm.Z3;
-            modelInfo.AcsOrigin.Z = modelHeaderElm.Z4;
+            modelInfo.AcsOrigin = modelHeaderElm.AcsOrigin;
+            //modelInfo.AcsOrigin.X = modelHeaderElm.Z2;
+            //modelInfo.AcsOrigin.Y = modelHeaderElm.Z3;
+            //modelInfo.AcsOrigin.Z = modelHeaderElm.Z4;
             modelInfo.AcsRotMatrix.Form3d = new double[3, 3];
-            modelInfo.AcsRotMatrix.Form3d[0, 0] = modelHeaderElm.Z5;
-            modelInfo.AcsRotMatrix.Form3d[0, 1] = modelHeaderElm.Z6;
-            modelInfo.AcsRotMatrix.Form3d[0, 2] = modelHeaderElm.Z7;
-            modelInfo.AcsRotMatrix.Form3d[1, 0] = modelHeaderElm.Z8;
-            modelInfo.AcsRotMatrix.Form3d[1, 1] = modelHeaderElm.Z9;
-            modelInfo.AcsRotMatrix.Form3d[1, 2] = modelHeaderElm.Z10;
-            modelInfo.AcsRotMatrix.Form3d[2, 0] = modelHeaderElm.Z11;
-            modelInfo.AcsRotMatrix.Form3d[2, 1] = modelHeaderElm.Z12;
-            modelInfo.AcsRotMatrix.Form3d[2, 2] = modelHeaderElm.Z13;
+            modelInfo.AcsRotMatrix = modelHeaderElm.AcsRotMatrix;
+            //modelInfo.AcsRotMatrix.Form3d[0, 0] = modelHeaderElm.Z5;
+            //modelInfo.AcsRotMatrix.Form3d[0, 1] = modelHeaderElm.Z6;
+            //modelInfo.AcsRotMatrix.Form3d[0, 2] = modelHeaderElm.Z7;
+            //modelInfo.AcsRotMatrix.Form3d[1, 0] = modelHeaderElm.Z8;
+            //modelInfo.AcsRotMatrix.Form3d[1, 1] = modelHeaderElm.Z9;
+            //modelInfo.AcsRotMatrix.Form3d[1, 2] = modelHeaderElm.Z10;
+            //modelInfo.AcsRotMatrix.Form3d[2, 0] = modelHeaderElm.Z11;
+            //modelInfo.AcsRotMatrix.Form3d[2, 1] = modelHeaderElm.Z12;
+            //modelInfo.AcsRotMatrix.Form3d[2, 2] = modelHeaderElm.Z13;
 
-            modelInfo.Rng.Xlowlim = modelHeaderElm.Y0;
-            modelInfo.Rng.Ylowlim = modelHeaderElm.Y1;
-            modelInfo.Rng.Zlowlim = modelHeaderElm.Y2;
-            modelInfo.Rng.Xhighlim = modelHeaderElm.Y3;
-            modelInfo.Rng.Yhighlim = modelHeaderElm.Y4;
-            modelInfo.Rng.Zhighlim = modelHeaderElm.Y5;
+            modelInfo.Rng = modelHeaderElm.Rng;
+            //modelInfo.Rng.Xlowlim = modelHeaderElm.Y0;
+            //modelInfo.Rng.Ylowlim = modelHeaderElm.Y1;
+            //modelInfo.Rng.Zlowlim = modelHeaderElm.Y2;
+            //modelInfo.Rng.Xhighlim = modelHeaderElm.Y3;
+            //modelInfo.Rng.Yhighlim = modelHeaderElm.Y4;
+            //modelInfo.Rng.Zhighlim = modelHeaderElm.Y5;
             return modelInfo;
         }
     }

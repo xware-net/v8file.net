@@ -50,12 +50,48 @@ namespace v8file.net
         LINKAGEID_LoopOEDCode = 22247,        /* 0x56e7 */
         LINKAGEID_LevelLibrary = 22248,        /* 0x56e8 */
         LINKAGEID_InfiniteLine = 22249,        /* 0x56e9 */
+
+        LINKAGEID_SharedCellFlags = 22250,      /* 0x56ea */
+        LINKAGEID_RasterMetadata = 22251,      /* 0x56eb */
+
         LINKAGEID_SheetModel = 22253,        /* 0x56ed */
         LINKAGEID_SheetScale = 22254,        /* 0x56ee */
+
+        LINKAGEID_StandardsChecker = 22255,      /* 0x56ef */
+        LINKAGEID_StandardsCheckerSettings = 22256,      /* 0x56f0 */
+
         LINKAGEID_ReferenceAttachmentPath = 22257,        /* 0x56f1 */
         LINKAGEID_TextAnnotation = 22259,        /* 0x56f3 */
+
+        LINKAGEID_AnimationModel = 22262,      /* 0x56f6 */
+        LINKAGEID_AnimationScriptParameter = 22263,      /* 0x56f7 */
+        LINKAGEID_AnimationData = 22264,      /* 0x56f8 */
+        LINKAGEID_AnimationPlugins = 22265,      /* 0x56f9 */
+        LINKAGEID_AnimationEntryDescription = 22266,      /* 0x56fa */
+        LINKAGEID_CustomKeypoint = 22267,      /* 0x56fb */
+        LINKAGEID_AnimationTimeElement = 22268,      /* 0x56fc */
+        LINKAGEID_TestLinkage = 22269,      /* 0x56fd */
+        LINKAGEID_AnimationKeyFrameElement = 22270,      /* 0x56fe */
+        LINKAGEID_ECXAttributes = 22271,      /* 0x56ff */
+
         LINKAGEID_SheetModelEx = 22273,        /* 0x5701 */
+
+        LINKAGEID_PersistentTopology = 22285,       /* 0x570d */
+        LINKAGEID_ConflictRevisions = 22287,       /* 0x570f XATTRIBUTEID_ConflictRevisions */
+
         LINKAGEID_LevelMask = 22288,        /* 0x5710 */
+
+        LINKAGEID_MstnApplicationSetting = 22289,       /* 0x5711 */
+        LINKAGEID_MaxwellMaterialMapping = 22291,       /* 0x5713 */
+        LINKAGEID_DGNECPlugin = 22294,       /* 0x5716 XATTRIBUTEID_DGNECPlugin */
+        LINKAGEID_ModelID = 22295,       /* 0x5717 */
+        LINKAGEID_ModelHandler = 22296,       /* 0x5718 */
+        LINKAGEID_ComponentSet = 22297,       /* 0x5719 */
+        LINKAGEID_PrintStyle = 22298,       /* 0x571a XATTRIBUTEID_PrintStyle  */
+        LINKAGEID_ECOMConnection = 22299,       /* 0x571b */
+        LINKAGEID_LuxologyPresetMapping = 22300,       /* 0x571c */
+        LINKAGEID_GeotechnicalData = 22301,       /* 0x571d */
+
         LINKAGEID_ByteArray = 22353,        /* 0x5751 */
         LINKAGEID_DimTextStyle = 22529,        /* 0x5801 */
         LINKAGEID_TextIdentation = 22544,        /* 0x5810 */
