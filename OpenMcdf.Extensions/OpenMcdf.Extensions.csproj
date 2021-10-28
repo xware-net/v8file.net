@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-     <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
+    <TargetFramework>net5.0</TargetFramework>
     <Configurations>Debug;Release</Configurations>
     <SignAssembly>true</SignAssembly>
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
@@ -20,7 +20,9 @@
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <None Remove=".upgrade-assistant" />
+    <None Remove="AnalysisReport.sarif" />
+    <None Remove="upgrade-assistant.clef" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,16 +32,18 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>.\bin\Debug\OpenMcdf.Extensions\OpenMcdf.Extensions.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Release\OpenMcdf.Extensions\</OutputPath>
+    <OutputPath>.\bin\Release\OpenMcdf.Extensions\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Release\OpenMcdf.Extensions\OpenMcdf.Extensions.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -56,8 +60,8 @@
     <AssemblyOriginatorKeyFile>OpenMcdf.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Version>2.2.1.9</Version>
     <PackageLicenseUrl>https://opensource.org/licenses/MPL-2.0</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/ironfede/openmcdf</PackageProjectUrl>
@@ -68,10 +72,11 @@
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj" />
-  </ItemGroup>
-  <ItemGroup />
-  <ItemGroup>
     <None Include="OpenMcdf.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj">
+      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
+    </ProjectReference>
   </ItemGroup>
 </Project>

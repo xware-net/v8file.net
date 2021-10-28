@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net40</TargetFrameworks>
+    <TargetFramework>net5.0</TargetFramework>
     <Configurations>Debug;Release</Configurations>
     <SignAssembly>true</SignAssembly>
     <!-- Optional: Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
@@ -27,18 +27,20 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>.\bin\Debug\OpenMcdf\OpenMcdf.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>portable</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\bin\Release\OpenMcdf\</OutputPath>
+    <OutputPath>.\bin\Release\OpenMcdf\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>..\..\bin\Release\OpenMcdf\OpenMcdf.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <NoWarn>1591,1592,1573,1571,1570,1572</NoWarn>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -55,7 +57,7 @@
     <!--<TargetFrameworkVersion>v4.0</TargetFrameworkVersion>-->
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags />
-    <OldToolsVersion>3.5</OldToolsVersion>
+    <!--<OldToolsVersion>3.5</OldToolsVersion>-->
     <UpgradeBackupLocation />
     <PublishUrl>http://localhost/OpenMcdf/</PublishUrl>
     <Install>true</Install>
@@ -76,26 +78,8 @@
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>OpenMcdf.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  <PropertyGroup>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>2.2.1.9</Version>
-    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
-    <Authors>ironfede</Authors>
-    <PackageLicenseUrl>https://opensource.org/licenses/MPL-2.0</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/ironfede/openmcdf</PackageProjectUrl>
-    <PackageIconUrl>http://a.fsdn.com/allura/p/openmcdf/icon</PackageIconUrl>
-    <RepositoryUrl>https://github.com/ironfede/openmcdf</RepositoryUrl>
-    <PackageTags>Compound file, c#, structured storage</PackageTags>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
-    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
-  </PropertyGroup>
   <ItemGroup />
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="OpenMcdf.snk" />
-    <None Include="OpenMcdfClassDiagram.cd" />
   </ItemGroup>
 </Project>

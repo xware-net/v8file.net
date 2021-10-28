@@ -19,7 +19,10 @@ namespace v8file.net
             // read element header
             int attributesSize = (int)(ehdr.ElementSize - ehdr.AttrOffset);
             if (attributesSize == 0)
+            {
+                br.BaseStream.Seek(currentReaderPosition, SeekOrigin.Begin);
                 return linkages;
+            }
 
             // seek at beginning of attributes
             br.BaseStream.Seek(ehdr.HeaderPosition + 2 * ehdr.AttrOffset, SeekOrigin.Begin);

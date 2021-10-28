@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace v8file.net
 {
@@ -28,6 +26,38 @@ namespace v8file.net
                 sw.WriteLine($"      Model Index Item Name              = {V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].ModelName}");
                 sw.WriteLine($"      Model Index Item Description       = {V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].ModelDescription}");
                 sw.WriteLine($"      Model Index Item Last Saved Time   = {Utils.V8BentleyTime(V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].LastSavedTime)}");
+            }
+            for (int i = 0; i < V8FileManipulation.CMFileInfo.Files[0].NumModels; i++)
+            {
+                if (V8FileManipulation.CMFileInfo.Files[0].Caches[i].Valid)
+                {
+                    V8DumpModelInfoFromCache(V8FileManipulation.CMFileInfo.Files[0].Caches[i]);
+                }
+            }
+        }
+
+        private static void V8DumpModelInfoFromCache(DgnCache dgnCache)
+        {
+            string modelFileName = Path.GetFileNameWithoutExtension(V8FileManipulation.CMFileInfo.Files[V8FileManipulation.CMFileInfo.NumFiles - 1].FileName) + "_" + dgnCache.ModelName + ".model";
+            using BinaryWriter bw = new(File.Open(modelFileName, FileMode.Create));
+
+            using MemoryStream ms = new(dgnCache.ModelCache.Bytes);
+            using BinaryReader br = new(ms);
+            ms.Seek(0x1004, SeekOrigin.Begin);
+            var modelHeaderElm = new ModelHeaderElm().Read(br);
+            br.BaseStream.Seek(0x1004, SeekOrigin.Begin);
+            var bytes = br.ReadBytes((int)(2 * modelHeaderElm.Ehdr.AttrOffset/*.ElementSize*/));
+            var type = modelHeaderElm.Ehdr.Type;
+            if (type == 66)
+{
+                Linkage[] linkages = V8Linkages.V8GetLinkages(br, modelHeaderElm.Ehdr);
+                for (int i=0; i<linkages.Length; i++)
+                {
+                    string modelLinkagesFileName = Path.GetFileNameWithoutExtension(V8FileManipulation.CMFileInfo.Files[V8FileManipulation.CMFileInfo.NumFiles - 1].FileName) + "_" + dgnCache.ModelName + "_" + i.ToString() + "." + linkages[i]./*Type*/LinkageHeader.PrimaryID.ToString("X");
+                    using BinaryWriter bwl = new(File.Open(modelLinkagesFileName, FileMode.Create));
+                    bwl.Write(linkages[i].Data, 0, linkages[i].Data.Length);
+                }
+                bw.Write(bytes, 0, bytes.Length);
             }
         }
 

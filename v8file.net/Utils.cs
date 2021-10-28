@@ -217,6 +217,116 @@ namespace v8file.net
             };
         }
 
+        public static void WriteOut(byte[] bytes, string fileName, int elementType, string elementId, string levelId)
+        {
+            // get actual element id from bytes
+            BinaryReader br = new(new MemoryStream(bytes));
+            var actualType = br.ReadInt16();
+            br.BaseStream.Seek(12, SeekOrigin.Begin);
+            var actualLevelId = br.ReadInt32();
+            var actualLevelIdString = actualLevelId.ToString("X8").ToUpper();
+            br.BaseStream.Seek(16, SeekOrigin.Begin);
+            var actualElementId = br.ReadUInt64();
+            var actualElementIdString = actualElementId.ToString("X16").ToUpper();
+            if (elementId == "*")
+            {
+                if (levelId == "*")
+                {
+                    if (actualType == elementType)
+                    {
+                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "." + elementType.ToString();
+                        using BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
+                        bw.Write(bytes, 0, bytes.Length);
+                    }
+                }
+                else
+                {
+                    if ((actualType == elementType) && (actualLevelId == Convert.ToInt32(levelId)))
+                    {
+                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "_" + actualLevelIdString + "." + elementType.ToString();
+                        using BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
+                        bw.Write(bytes, 0, bytes.Length);
+                    }
+                }
+            }
+            else
+            {
+                if (levelId == "*")
+                {
+                    if ((actualElementIdString == elementId) && (actualType == elementType))
+                    {
+                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "." + elementType.ToString();
+                        BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
+                        bw.Write(bytes, 0, bytes.Length);
+                    }
+                }
+                else
+                {
+                    if ((actualElementIdString == elementId) && (actualType == elementType) && (actualLevelId == Convert.ToInt32(levelId)))
+                    {
+                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "_" + actualLevelIdString + "." + elementType.ToString();
+                        BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
+                        bw.Write(bytes, 0, bytes.Length);
+                    }
+                }
+            }
+        }
+
+        public static void WriteOutAttr(byte[] bytes, string fileName, int elementType, string elementId, string levelId, Linkage linkage)
+        {
+            // get actual element id from bytes
+            BinaryReader br = new(new MemoryStream(bytes));
+            var actualType = br.ReadInt16();
+            br.BaseStream.Seek(12, SeekOrigin.Begin);
+            var actualLevelId = br.ReadInt32();
+            var actualLevelIdString = actualLevelId.ToString("X8").ToUpper();
+            br.BaseStream.Seek(16, SeekOrigin.Begin);
+            var actualElementId = br.ReadUInt64();
+            var actualElementIdString = actualElementId.ToString("X16").ToUpper();
+            if (elementId == "*")
+            {
+                if (levelId == "*")
+                {
+                    if (actualType == elementType)
+                    {
+                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "." + linkage.LinkageHeader.PrimaryID.ToString("X");
+                        using BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
+                        bw.Write(linkage.Data, 0, linkage.Data.Length);
+                    }
+                }
+                else
+                {
+                    if ((actualType == elementType) && (actualLevelId == Convert.ToInt32(levelId)))
+                    {
+                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "_" + actualLevelIdString + "." + linkage.LinkageHeader.PrimaryID.ToString("X");
+                        using BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
+                        bw.Write(linkage.Data, 0, linkage.Data.Length);
+                    }
+                }
+            }
+            else
+            {
+                if (levelId == "*")
+                {
+                    if ((actualElementIdString == elementId) && (actualType == elementType))
+                    {
+                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "." + linkage.LinkageHeader.PrimaryID.ToString("X");
+                        BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
+                        bw.Write(linkage.Data, 0, linkage.Data.Length);
+                    }
+                }
+                else
+                {
+                    if ((actualElementIdString == elementId) && (actualType == elementType) && (actualLevelId == Convert.ToInt32(levelId)))
+                    {
+                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "_" + actualLevelIdString + "." + linkage.LinkageHeader.PrimaryID.ToString("X");
+                        BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
+                        bw.Write(linkage.Data, 0, linkage.Data.Length);
+                    }
+                }
+            }
+        }
+
         public static string HexDump(byte[] bytes, int level = 0, int bytesPerLine = 16)
         {
             var ident = new String(' ', 2 * level);
@@ -283,6 +393,18 @@ namespace v8file.net
             }
 
             return result.ToString();
+        }
+
+        public static byte[] GetBytes<T>(T str)
+        {
+            int size = Marshal.SizeOf(str);
+            byte[] arr = new byte[size];
+
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+            Marshal.StructureToPtr(str, ptr, true);
+            Marshal.Copy(ptr, arr, 0, size);
+            Marshal.FreeHGlobal(ptr);
+            return arr;
         }
     }
 }

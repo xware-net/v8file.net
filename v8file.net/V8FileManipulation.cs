@@ -4,7 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
+using System.Security.AccessControl;
+//using System.Windows.Forms;
 
 namespace v8file.net
 {
@@ -25,6 +26,8 @@ namespace v8file.net
                 V8DgnFreeDgnFileObj(CMFileInfo.Files[i]);
             }
 
+            if (CMFileInfo.NumFiles > 0)
+            {
             V8DeleteFiles("$*.*");
             V8DeleteFiles("dgn~*.*");
             V8DeleteFiles("dgn_*.*");
@@ -39,6 +42,7 @@ namespace v8file.net
             V8DeleteFiles("*.GraphicAttributes");
             V8DeleteFiles("*.ControlAttributes");
             V8DeleteFiles("*.NonModel");
+            }
 
             CMFileInfo = default;
         }
@@ -88,6 +92,10 @@ namespace v8file.net
             }
         }
 
+        public static int ElementType { get; set; }
+        public static string ElementId { get; set; }
+        public static string LevelId { get; set; }
+
         public static void V8DgnParse(StreamWriter sw, bool saveToDir = true)
         {
             SaveToDir = saveToDir;
@@ -99,6 +107,31 @@ namespace v8file.net
             V8Models.V8DumpModelInformation(sw);
             V8ParseCaches();
             V8DumpCaches(sw);
+        }
+
+        public static void V8DgnParse(string elementType, string elementId = "*", string levelId = "*")
+        {
+            //SaveToDir = saveToDir;
+
+            //V8FileOLEStorage.V8DgnDumpProperties(sw);
+            V8ParseDgnHeader();
+            V8Models.V8GetModelIndexInformation();
+            V8Models.V8GetModelsInformation();
+            if (elementType == "-1")
+            {
+                string streamName = Path.GetFileNameWithoutExtension(CMFileInfo.Files[CMFileInfo.NumFiles - 1].FileName) + string.Format(".{0}", "models");
+                using StreamWriter sw = new(streamName);
+                V8Models.V8DumpModelInformation(sw);
+            }
+            else
+            {
+                ElementType = Convert.ToInt32(elementType);
+                ElementId = elementId;
+                LevelId = levelId;
+
+                V8ParseCaches();
+                //V8DumpCaches(sw);
+            }
         }
 
         private static void V8ParseDgnHeader()
@@ -967,6 +1000,15 @@ namespace v8file.net
 
                     // dump the element
                     sw.WriteLine($"{Utils.HexDump(bytes, level)}");
+                    Utils.WriteOut(bytes, streamName, ElementType, ElementId, LevelId);
+
+                    {
+                        Linkage[] linkages = V8Linkages.V8GetLinkages(br, ehdr);
+                        for (int i = 0; i < linkages?.Length; i++)
+                        {
+                            Utils.WriteOutAttr(bytes, streamName, ElementType, ElementId, LevelId, linkages[i]);
+                        }
+                    }
 
                     // dump the linkages
                     if(attributes.Length > 0)
@@ -1026,6 +1068,7 @@ namespace v8file.net
 
                     // dump the element
                     sw.WriteLine($"{Utils.HexDump(bytes, level)}");
+                    Utils.WriteOut(bytes, streamName, ElementType, ElementId, LevelId);
 
                     // dump the linkages
                     if (attributes.Length > 0)
@@ -1059,6 +1102,10 @@ namespace v8file.net
                 ms.Seek(nextPos, SeekOrigin.Begin);
                 pos = nextPos;
             }
+
+            // clear parentNode children
+
+            parentNode.Clear();
         }
 
         private static int ReadComponents(StreamWriter sw, TreeNode pNode, int pos, int componentCount, UInt64 parentId, string cacheType, int modelNum, int cacheNum, Cache cache, BinaryReader br, int level)
@@ -1193,6 +1240,7 @@ namespace v8file.net
 
                 // dump the element
                 sw.WriteLine($"{Utils.HexDump(bytes, level)}");
+                Utils.WriteOut(bytes, (sw.BaseStream as FileStream)?.Name, ElementType, ElementId, LevelId);
 
                 // dump the linkages
                 if (attributes.Length > 0)

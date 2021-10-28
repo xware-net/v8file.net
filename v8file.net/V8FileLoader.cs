@@ -21,7 +21,7 @@ namespace v8file.net
                 return;
 
             string streamName = Path.GetFileNameWithoutExtension(fileName) + string.Format("_{0}_{1}.{2}", modelNum + 1, cacheNum, cacheType);
-            using StreamWriter sw = new StreamWriter(streamName);
+            using StreamWriter sw = new(streamName);
             MemoryStream ms = new(cache.Bytes);
             BinaryReader br = new(ms);
             long streamPosition = ms.Position;

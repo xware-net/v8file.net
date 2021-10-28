@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf", "OpenMcdf\OpenMc
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenMcdf.Extensions", "OpenMcdf.Extensions\OpenMcdf.Extensions.csproj", "{DB748C1D-D71C-442B-832D-2E33BE816CBB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentCommandLineParser", "FluentCommandLineParser\FluentCommandLineParser.csproj", "{DCD0D422-C6DE-4127-BE17-6D2F15FAC8EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB748C1D-D71C-442B-832D-2E33BE816CBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DCD0D422-C6DE-4127-BE17-6D2F15FAC8EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DCD0D422-C6DE-4127-BE17-6D2F15FAC8EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DCD0D422-C6DE-4127-BE17-6D2F15FAC8EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DCD0D422-C6DE-4127-BE17-6D2F15FAC8EF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
