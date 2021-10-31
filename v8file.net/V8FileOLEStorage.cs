@@ -9,7 +9,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using static OpenMcdf.Extensions.OLEProperties.OLEPropertiesContainer;
 
 namespace v8file.net
@@ -183,6 +182,10 @@ namespace v8file.net
         public const int MSuccess = 0;
         public const int MError = 0x8000;
 
+        private static Tree OLETree = null;
+
+        public static Tree GetOLETree() => OLETree;
+
         public static int V8DgnBreak(string fileName)
         {
             System.Runtime.InteropServices.ComTypes.STATSTG[] entry = new System.Runtime.InteropServices.ComTypes.STATSTG[1];
@@ -225,6 +228,9 @@ namespace v8file.net
             if (!v8Dgn)
                 return MError;
 
+            OLETree = new();
+            OLETree.PathSeparator = "@";
+
             StgOpenStorage(fileName, null, Stgm.Read | Stgm.ShareDenyWrite, IntPtr.Zero, 0, out storage);
             storage.EnumElements(0, IntPtr.Zero, 0, out pEnum);
             do
@@ -236,10 +242,43 @@ namespace v8file.net
                     switch (entry[0].type)
                     {
                         case (int)Stgty.StgtyStorage:
-                            V8RecurseStorage(storage, "", entry[0].pwcsName, 1);
+                            {
+                                // add to Root Node
+                                var Node = new TreeNode(entry[0].pwcsName)
+                                {
+                                    Name = entry[0].pwcsName,
+                                    Tag = new OLETag
+                                    {
+                                        Name = entry[0].pwcsName,
+                                        OSName = entry[0].pwcsName.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_'),
+                                        Type = entry[0].type - 1,
+                                        TypeString = typnam[entry[0].type - 1],
+                                        Size = entry[0].cbSize,
+                                        Compressed = false,
+                                        Status = Status.Unchanged
+                                    }
+                                };
+                                OLETree.Nodes.Add(Node);
+                                V8RecurseStorage(storage, "", entry[0].pwcsName, 1, Node);
+                            }
                             break;
                         case (int)Stgty.StgtyStream:
                             {
+                                var Node = new TreeNode(entry[0].pwcsName)
+                                {
+                                    Name = entry[0].pwcsName,
+                                    Tag = new OLETag
+                                    {
+                                        Name = entry[0].pwcsName,
+                                        OSName = entry[0].pwcsName.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_'),
+                                        Type = entry[0].type - 1,
+                                        TypeString = typnam[entry[0].type - 1],
+                                        Size = entry[0].cbSize,
+                                        Compressed = false,
+                                        Status = Status.Unchanged
+                                    }
+                                };
+
                                 string pwzStream = entry[0].pwcsName;
                                 uint cbSize = (uint)entry[0].cbSize;
                                 byte[] buf = new byte[cbSize];
@@ -247,7 +286,22 @@ namespace v8file.net
                                 stream.Read(buf, cbSize, out var cbRead);
                                 pwzStream = pwzStream.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_');
                                 if (!pwzStream.StartsWith("$"))
-                                    V8DecodeAndWrite(pwzStream, buf, cbRead);
+                                {
+                                    if (V8DecodeAndWrite(pwzStream, buf, cbRead) == MSuccess)
+                                    {
+                                        ((OLETag)Node.Tag).Compressed = true;
+                                    }
+                                    else
+                                    {
+                                        ((OLETag)Node.Tag).Compressed = false;
+                                    }
+                                }
+                                else
+                                {
+                                    ((OLETag)Node.Tag).Compressed = false;
+                                }
+
+                                OLETree.Nodes.Add(Node);
                                 Marshal.ReleaseComObject(stream);
                             }
                             break;
@@ -268,7 +322,7 @@ namespace v8file.net
             return MSuccess;
         }
 
-        private static void V8DecodeAndWrite(string streamName, byte[] buf, uint length)
+        private static int V8DecodeAndWrite(string streamName, byte[] buf, uint length)
         {
             for (int i = 0; i < length - 1; i++)
             {
@@ -279,16 +333,17 @@ namespace v8file.net
                     byte[] decompressed = ZlibStream.UncompressBuffer(compressed);
                     using BinaryWriter bw = new BinaryWriter(File.Open(streamName, FileMode.Create));
                     bw.Write(decompressed, 0, decompressed.Length);
-                    return;
+                    return MSuccess;
                 }
             }
             using (var bw = new BinaryWriter(File.Open(streamName, FileMode.Create)))
             {
                 bw.Write(buf, 0, (int)length);
             }
+            return MError;
         }
 
-        private static void V8RecurseStorage(IStorage pStorage, string firstName, string name, int level)
+        private static void V8RecurseStorage(IStorage pStorage, string firstName, string name, int level, TreeNode node)
         {
             System.Runtime.InteropServices.ComTypes.STATSTG[] entry = new System.Runtime.InteropServices.ComTypes.STATSTG[1];
             uint numReturned;
@@ -307,6 +362,22 @@ namespace v8file.net
                     {
                         case (int)Stgty.StgtyStorage:
                             {
+                                // add to node
+                                var Node = new TreeNode(entry[0].pwcsName)
+                                {
+                                    Name = entry[0].pwcsName,
+                                    Tag = new OLETag
+                                    {
+                                        Name = entry[0].pwcsName,
+                                        OSName = entry[0].pwcsName.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_'),
+                                        Type = entry[0].type - 1,
+                                        TypeString = typnam[entry[0].type - 1],
+                                        Size = entry[0].cbSize,
+                                        Compressed = false,
+                                        Status = Status.Unchanged
+                                    }
+                                };
+                                node.Nodes.Add(Node);
                                 string pwzStream;
                                 if (firstName == "")
                                 {
@@ -318,7 +389,7 @@ namespace v8file.net
                                 }
 
                                 pwzStream += name;
-                                V8RecurseStorage(storage, pwzStream, entry[0].pwcsName, level + 1);
+                                V8RecurseStorage(storage, pwzStream, entry[0].pwcsName, level + 1, Node);
                             }
                             break;
                         case (int)Stgty.StgtyStream:
@@ -337,12 +408,38 @@ namespace v8file.net
                                 pwzStream += "@";
                                 pwzStream += entry[0].pwcsName;
 
+                                // add to node
+                                var Node = new TreeNode(entry[0].pwcsName)
+                                {
+                                    Name = entry[0].pwcsName,
+                                    Tag = new OLETag
+                                    {
+                                        Name = entry[0].pwcsName,
+                                        OSName = entry[0].pwcsName.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_'),
+                                        Type = entry[0].type - 1,
+                                        TypeString = typnam[entry[0].type - 1],
+                                        Size = entry[0].cbSize,
+                                        Compressed = false,
+                                        Status = Status.Unchanged
+                                    }
+                                };
+
                                 uint cbSize = (uint)entry[0].cbSize;
                                 byte[] buf = new byte[cbSize];
                                 storage.OpenStream(entry[0].pwcsName, IntPtr.Zero, (uint)(Stgm.Read | Stgm.ShareExclusive), 0, out IStream stream);
                                 stream.Read(buf, cbSize, out var cbRead);
                                 pwzStream = pwzStream.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_');
-                                V8DecodeAndWrite(pwzStream, buf, cbRead);
+                                if (V8DecodeAndWrite(pwzStream, buf, cbRead) == MSuccess)
+                                {
+                                    ((OLETag)Node.Tag).Compressed = true;
+                                }
+                                else
+                                {
+                                    ((OLETag)Node.Tag).Compressed = false;
+                                }
+
+                                //V8DecodeAndWrite(pwzStream, buf, cbRead);
+                                node.Nodes.Add(Node);
                                 Marshal.ReleaseComObject(stream);
                             }
                             break;

@@ -48,6 +48,7 @@ namespace v8file.net
                     return -2;
                 }
 
+                var OLETree = V8FileOLEStorage.GetOLETree();
                 V8FileOLEStorage.V8DgnGetProperties(args[0]);
                 V8FileManipulation.V8DgnLoad(args[0]);
                 if (args.Length == 3)

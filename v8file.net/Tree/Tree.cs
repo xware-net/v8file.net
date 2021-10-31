@@ -16,7 +16,7 @@ namespace v8file.net
     ///  it has sub-nodes, the user can collapse or expand the node.
     /// </summary>
     [DefaultProperty(nameof(Nodes))]
-    public class TreeView
+    public class Tree
     {
         private const string backSlash = "\\";
 
@@ -30,7 +30,7 @@ namespace v8file.net
         /// <summary>
         ///  Creates a TreeView control
         /// </summary>
-        public TreeView()
+        public Tree()
         : base()
         {
             root = new TreeNode(this);

@@ -14,7 +14,7 @@ namespace v8file.net
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         internal static CmFileInfo CMFileInfo = new();
         private static bool SaveToDir = false;
-        private static TreeView Tree;
+        private static Tree Tree;
         private static TreeNode RootNode;
 
         public static void V8DgnFreeAll()
@@ -880,7 +880,7 @@ namespace v8file.net
         private static void AddDefaultNodesToTree()
         {
             // create tree & some nodes
-            Tree = new TreeView();
+            Tree = new Tree();
             // Root Node
             RootNode = new TreeNode("Root")
             {

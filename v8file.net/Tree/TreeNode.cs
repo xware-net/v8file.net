@@ -15,7 +15,7 @@ using System.Text;
 namespace v8file.net
 {
     /// <summary>
-    ///  Implements a node of a <see cref='TreeView'/>.
+    ///  Implements a node of a <see cref='Tree'/>.
     /// </summary>
     [DefaultProperty(nameof(Text))]
     public partial class TreeNode
@@ -35,7 +35,7 @@ namespace v8file.net
         internal int childCount;
         internal TreeNode[] children;
         internal TreeNode parent;
-        internal TreeView treeView;
+        internal Tree tree;
         private TreeNodeCollection nodes;
         object userData;
 
@@ -46,9 +46,9 @@ namespace v8file.net
         {
         }
 
-        internal TreeNode(TreeView treeView) : this()
+        internal TreeNode(Tree tree) : this()
         {
-            this.treeView = treeView;
+            this.tree = tree;
         }
 
         /// <summary>
@@ -83,11 +83,35 @@ namespace v8file.net
         {
             get
             {
-                TreeView tv = TreeView;
-                if (tv is not null)
+                Tree tree = Tree;
+                if (tree is not null)
                 {
                     StringBuilder path = new();
-                    GetFullPath(path, tv.PathSeparator);
+                    GetFullPath(path, tree.PathSeparator);
+                    return path.ToString();
+                }
+                else
+                {
+                    throw new InvalidOperationException("Full path can only be retrieved when a TreeNode has been added to a TreeView. This TreeNode has not been added to a TreeView.");
+                }
+            }
+        }
+
+        /// <summary>
+        ///  Returns the full OS path of this node.
+        ///  The path consists of the labels of each of the nodes from the root to this node,
+        ///  each separated by the pathSeparator.
+        /// </summary>
+        [Browsable(false)]
+        public string FullOsPath
+        {
+            get
+            {
+                Tree tree = Tree;
+                if (tree is not null)
+                {
+                    StringBuilder path = new();
+                    GetFullOsPath(path, tree.PathSeparator);
                     return path.ToString();
                 }
                 else
@@ -175,10 +199,10 @@ namespace v8file.net
         {
             get
             {
-                TreeView tv = TreeView;
+                Tree tree = Tree;
 
                 // Don't expose the virtual root publicly
-                if (tv is not null && parent == tv.root)
+                if (tree is not null && parent == tree.root)
                 {
                     return null;
                 }
@@ -270,16 +294,16 @@ namespace v8file.net
         ///  Return the TreeView control this node belongs to.
         /// </summary>
         [Browsable(false)]
-        public TreeView TreeView
+        public Tree Tree
         {
             get
             {
-                if (treeView is null)
+                if (tree is null)
                 {
-                    treeView = FindTreeView();
+                    tree = FindTree();
                 }
 
-                return treeView;
+                return tree;
             }
         }
 
@@ -293,15 +317,15 @@ namespace v8file.net
             // to selectively remove children here.
             //
             bool isBulkOperation = false;
-            TreeView tv = TreeView;
+            Tree tree = Tree;
 
             try
             {
-                if (tv is not null)
+                if (tree is not null)
                 {
-                    tv.nodesCollectionClear = true;
+                    tree.nodesCollectionClear = true;
 
-                    if (tv is not null && childCount > MAX_TREENODES_OPS)
+                    if (tree is not null && childCount > MAX_TREENODES_OPS)
                     {
                         isBulkOperation = true;
                     }
@@ -314,15 +338,15 @@ namespace v8file.net
 
                 children = null;
 
-                if (tv is not null && isBulkOperation)
+                if (tree is not null && isBulkOperation)
                 {
                 }
             }
             finally
             {
-                if (tv is not null)
+                if (tree is not null)
                 {
-                    tv.nodesCollectionClear = false;
+                    tree.nodesCollectionClear = false;
                 }
 
                 nodesCleared = true;
@@ -364,7 +388,7 @@ namespace v8file.net
         ///  up to the virtual root, whose treeView pointer we know to be
         ///  correct
         /// </summary>
-        internal TreeView FindTreeView()
+        internal Tree FindTree()
         {
             TreeNode node = this;
             while (node.parent is not null)
@@ -372,7 +396,7 @@ namespace v8file.net
                 node = node.parent;
             }
 
-            return node.treeView;
+            return node.tree;
         }
 
         /// <summary>
@@ -389,6 +413,23 @@ namespace v8file.net
                 }
 
                 path.Append(text);
+            }
+        }
+
+        /// <summary>
+        ///  Helper function for getFullPath().
+        /// </summary>
+        private void GetFullOsPath(StringBuilder path, string pathSeparator)
+        {
+            if (parent is not null)
+            {
+                parent.GetFullOsPath(path, pathSeparator);
+                if (parent.parent is not null)
+                {
+                    path.Append(pathSeparator);
+                }
+
+                path.Append(((OLETag)Tag)?.OSName);
             }
         }
 
@@ -476,7 +517,7 @@ namespace v8file.net
                 parent = null;
             }
 
-            treeView = null;
+            tree = null;
         }
 
         /// <summary>

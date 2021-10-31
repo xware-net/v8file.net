@@ -9,9 +9,9 @@ namespace v8file.net
     public static class Extensions
     {
         // Return all of the TreeView's nodes.
-        public static IEnumerable<TreeNode> Descendants(this TreeView trv)
+        public static IEnumerable<TreeNode> Descendants(this Tree tree)
         {
-            foreach (TreeNode node in trv.Nodes.Descendants())
+            foreach (TreeNode node in tree.Nodes.Descendants())
                 yield return node;
         }
 
