@@ -92,7 +92,7 @@ namespace DumpV8File.net
                     V8FileManipulation.V8DgnLoad(parser.Object.FileName);
                     if (!string.IsNullOrEmpty(parser.Object.DumpFileName) && !string.IsNullOrEmpty(parser.Object.OutDir))
                     {
-                        var outFileName = Path.Combine(parser.Object.OutDir, parser.Object.DumpFileName);
+                        var outFileName = Path.Combine(parser.Object.OutDir, Path.GetFileName(parser.Object.DumpFileName));
                         using StreamWriter sw = new(outFileName);
                         V8FileManipulation.V8DgnParse(sw);
                     }

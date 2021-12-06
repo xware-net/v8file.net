@@ -111,7 +111,7 @@ namespace v8file.net
                 var names = Utils.linkagesWithIdAndTypeAndLevel[key];
                 foreach (var name in names)
                 {
-                    var extension = Path.GetExtension(name);
+                    var extension = Path.GetExtension(name).Replace(".", "").ToUpper();
                     // move it to OutDir\linkages\extension 
                     var copyDir = Path.Combine(OutDir, "linkages", extension);
                     if (!Directory.Exists(copyDir))
