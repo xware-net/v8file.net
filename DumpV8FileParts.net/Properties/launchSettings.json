@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "DumpV8FileParts.net": {
+      "commandName": "Executable",
+      "executablePath": "C:\\temp\\v8file.net\\DumpV8FileParts.net\\bin\\Debug\\net5.0\\DumpV8FileParts.net.exe",
+      "commandLineArgs": "-f \"c:\\temp\\v8file.net\\v8file.net\\bin\\Debug\\net5.0\\Animation.dgn\" -o \"n:\\temp\\outdir\" -t 5 -l 3"
+    }
+  }
+}

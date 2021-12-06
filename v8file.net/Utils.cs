@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Xml.Linq;
 
 namespace v8file.net
 {
@@ -217,6 +219,9 @@ namespace v8file.net
             };
         }
 
+        public static Dictionary<Tuple<int, string, string>, List<string>> elementsWithIdAndTypeAndLevel = new Dictionary<Tuple<int, string, string>, List<string>>();
+        public static Dictionary<Tuple<int, string, string>, List<string>> linkagesWithIdAndTypeAndLevel = new Dictionary<Tuple<int, string, string>, List<string>>();
+
         public static void WriteOut(byte[] bytes, string fileName, int elementType, string elementId, string levelId)
         {
             // get actual element id from bytes
@@ -237,6 +242,7 @@ namespace v8file.net
                         string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "." + elementType.ToString();
                         using BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
                         bw.Write(bytes, 0, bytes.Length);
+                        AddToElementDictionary(actualType, levelId, actualElementIdString, newFileName);
                     }
                 }
                 else
@@ -246,6 +252,7 @@ namespace v8file.net
                         string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "_" + actualLevelIdString + "." + elementType.ToString();
                         using BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
                         bw.Write(bytes, 0, bytes.Length);
+                        AddToElementDictionary(actualType, levelId, actualElementIdString, newFileName);
                     }
                 }
             }
@@ -258,6 +265,7 @@ namespace v8file.net
                         string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "." + elementType.ToString();
                         BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
                         bw.Write(bytes, 0, bytes.Length);
+                        AddToElementDictionary(actualType, levelId, actualElementIdString, newFileName);
                     }
                 }
                 else
@@ -267,8 +275,24 @@ namespace v8file.net
                         string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "_" + actualLevelIdString + "." + elementType.ToString();
                         BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
                         bw.Write(bytes, 0, bytes.Length);
+                        AddToElementDictionary(actualType, levelId, actualElementIdString, newFileName);
                     }
                 }
+            }
+        }
+
+        private static void AddToElementDictionary(int actualType, string lLevelId, string elementId, string name)
+        {
+            // name ends in .elementType ???
+            var key = new Tuple<int, string, string>(actualType, lLevelId, elementId);
+            if (!elementsWithIdAndTypeAndLevel.ContainsKey(key))
+            {
+                elementsWithIdAndTypeAndLevel.Add(key, new List<string>());
+            }
+
+            if (!elementsWithIdAndTypeAndLevel[key].Contains(name))
+            {
+                elementsWithIdAndTypeAndLevel[key].Add(name);
             }
         }
 
@@ -289,18 +313,20 @@ namespace v8file.net
                 {
                     if (actualType == elementType)
                     {
-                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "." + linkage.LinkageHeader.PrimaryID.ToString("X");
+                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "." + linkage.LinkageHeader.PrimaryID.ToString("X4");
                         using BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
                         bw.Write(linkage.Data, 0, linkage.Data.Length);
+                        AddToLinkagesDictionary(actualType, actualLevelIdString, actualElementIdString, newFileName);
                     }
                 }
                 else
                 {
                     if ((actualType == elementType) && (actualLevelId == Convert.ToInt32(levelId)))
                     {
-                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "_" + actualLevelIdString + "." + linkage.LinkageHeader.PrimaryID.ToString("X");
+                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "_" + actualLevelIdString + "." + linkage.LinkageHeader.PrimaryID.ToString("X4");
                         using BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
                         bw.Write(linkage.Data, 0, linkage.Data.Length);
+                        AddToLinkagesDictionary(actualType, actualLevelIdString, actualElementIdString, newFileName);
                     }
                 }
             }
@@ -310,20 +336,37 @@ namespace v8file.net
                 {
                     if ((actualElementIdString == elementId) && (actualType == elementType))
                     {
-                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "." + linkage.LinkageHeader.PrimaryID.ToString("X");
+                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "." + linkage.LinkageHeader.PrimaryID.ToString("X4");
                         BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
                         bw.Write(linkage.Data, 0, linkage.Data.Length);
+                        AddToLinkagesDictionary(actualType, actualLevelIdString, actualElementIdString, newFileName);
                     }
                 }
                 else
                 {
                     if ((actualElementIdString == elementId) && (actualType == elementType) && (actualLevelId == Convert.ToInt32(levelId)))
                     {
-                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "_" + actualLevelIdString + "." + linkage.LinkageHeader.PrimaryID.ToString("X");
+                        string newFileName = Path.GetFileNameWithoutExtension(fileName) + "_" + actualElementIdString + "_" + actualLevelIdString + "." + linkage.LinkageHeader.PrimaryID.ToString("X4");
                         BinaryWriter bw = new(File.Open(newFileName, FileMode.Create));
                         bw.Write(linkage.Data, 0, linkage.Data.Length);
+                        AddToLinkagesDictionary(actualType, actualLevelIdString, actualElementIdString, newFileName);
                     }
                 }
+            }
+        }
+
+        private static void AddToLinkagesDictionary(short actualType, string levelId, string elementId, string name)
+        {
+            // name ends in .linkageid (4 hex digits)
+            var key = new Tuple<int, string, string>(actualType, levelId, elementId);
+            if (!linkagesWithIdAndTypeAndLevel.ContainsKey(key))
+            {
+                linkagesWithIdAndTypeAndLevel.Add(key, new List<string>());
+}
+
+            if (!linkagesWithIdAndTypeAndLevel[key].Contains(name))
+{
+                linkagesWithIdAndTypeAndLevel[key].Add(name);
             }
         }
 

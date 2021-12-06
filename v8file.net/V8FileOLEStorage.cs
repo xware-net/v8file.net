@@ -3,6 +3,7 @@ using NLog;
 using OpenMcdf;
 using OpenMcdf.Extensions;
 using OpenMcdf.Extensions.OLEProperties;
+using RedBlackTree;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using static OpenMcdf.Extensions.OLEProperties.OLEPropertiesContainer;
+using static v8file.net.V8FileOLEStorage;
 
 namespace v8file.net
 {
@@ -36,6 +38,19 @@ namespace v8file.net
             Failifthere = 0x00000000,
             Nosnapshot = 0x00200000,
             DirectSwmr = 0x00400000,
+        }
+
+        [ComVisible(false)]
+        [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("0000000A-0000-0000-C000-000000000046")]
+        internal interface ILockBytes
+        {
+            void ReadAt(long ulOffset, System.IntPtr pv, int cb, out UIntPtr pcbRead);
+            void WriteAt(long ulOffset, System.IntPtr pv, int cb, out UIntPtr pcbWritten);
+            void Flush();
+            void SetSize(long cb);
+            void LockRegion(long libOffset, long cb, int dwLockType);
+            void UnlockRegion(long libOffset, long cb, int dwLockType);
+            void Stat(out System.Runtime.InteropServices.ComTypes.STATSTG pstatstg, int grfStatFlag);
         }
 
         [ComImport, Guid("0000000c-0000-0000-C000-000000000046"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
@@ -174,6 +189,17 @@ namespace v8file.net
             IStorage pstgPriority, Stgm grfMode, IntPtr snbExclude, uint reserved,
             out IStorage ppstgOpen);
 
+        [DllImport("ole32.dll")]
+        static extern int StgOpenStorageOnILockBytes(ILockBytes plkbyt, IStorage pStgPriority, Stgm grfMode,
+            IntPtr snbEnclude, uint reserved, out IStorage ppstgOpen);
+
+        [DllImport("ole32.dll")]
+        static extern int CreateILockBytesOnHGlobal(IntPtr hGlobal, [MarshalAs(UnmanagedType.Bool)] bool fDeleteOnRelease,
+            out ILockBytes ppLkbyt);
+
+        [DllImport("ole32.dll")]
+        static extern int StgCreateDocfileOnILockBytes(ILockBytes plkbyt, Stgm grfMode, int reserved, out IStorage ppstgOpen);
+
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static SummaryInfoProperties summaryInfoProperties;
         private static DocumentSummaryInfoProperties documentSummaryInfoProperties;
@@ -190,6 +216,7 @@ namespace v8file.net
         {
             System.Runtime.InteropServices.ComTypes.STATSTG[] entry = new System.Runtime.InteropServices.ComTypes.STATSTG[1];
             uint numReturned;
+            int start = 0, b1 = 0, b2 = 0;
             string[] typnam = { "STGTY_STORAGE", "STGTY_STREAM", "STGTY_LOCKBYTES", "STGTY_PROPERTY" };
             bool v8Dgn = false;
 
@@ -246,12 +273,11 @@ namespace v8file.net
                                 // add to Root Node
                                 var Node = new TreeNode(entry[0].pwcsName)
                                 {
-                                    Name = entry[0].pwcsName,
+                                    Name = entry[0].pwcsName.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_'),
                                     Tag = new OLETag
                                     {
                                         Name = entry[0].pwcsName,
-                                        OSName = entry[0].pwcsName.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_'),
-                                        Type = entry[0].type - 1,
+                                        Type = entry[0].type,
                                         TypeString = typnam[entry[0].type - 1],
                                         Size = entry[0].cbSize,
                                         Compressed = false,
@@ -266,12 +292,11 @@ namespace v8file.net
                             {
                                 var Node = new TreeNode(entry[0].pwcsName)
                                 {
-                                    Name = entry[0].pwcsName,
+                                    Name = entry[0].pwcsName.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_'),
                                     Tag = new OLETag
                                     {
                                         Name = entry[0].pwcsName,
-                                        OSName = entry[0].pwcsName.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_'),
-                                        Type = entry[0].type - 1,
+                                        Type = entry[0].type,
                                         TypeString = typnam[entry[0].type - 1],
                                         Size = entry[0].cbSize,
                                         Compressed = false,
@@ -285,16 +310,10 @@ namespace v8file.net
                                 storage.OpenStream(entry[0].pwcsName, IntPtr.Zero, (uint)(Stgm.Read | Stgm.ShareExclusive), 0, out IStream stream);
                                 stream.Read(buf, cbSize, out var cbRead);
                                 pwzStream = pwzStream.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_');
-                                if (!pwzStream.StartsWith("$"))
+                                if (V8DecodeAndWrite(pwzStream, buf, cbRead, ref start, ref b1, ref b2) == MSuccess)
                                 {
-                                    if (V8DecodeAndWrite(pwzStream, buf, cbRead) == MSuccess)
-                                    {
-                                        ((OLETag)Node.Tag).Compressed = true;
-                                    }
-                                    else
-                                    {
-                                        ((OLETag)Node.Tag).Compressed = false;
-                                    }
+                                    ((OLETag)Node.Tag).Compressed = true;
+                                    Logger.Info("                   start={0}, b1={1} (0x{1:X8}), b2={2} (0x{2:X8})", start, b1, b2);
                                 }
                                 else
                                 {
@@ -322,8 +341,11 @@ namespace v8file.net
             return MSuccess;
         }
 
-        private static int V8DecodeAndWrite(string streamName, byte[] buf, uint length)
+        private static int V8DecodeAndWrite(string streamName, byte[] buf, uint length, ref int start, ref int b1, ref int b2)
         {
+            start = 0;
+            b1 = 0;
+            b2 = 0;
             for (int i = 0; i < length - 1; i++)
             {
                 if (buf[i] == 0x78 && buf[i + 1] == 0x5E)
@@ -333,6 +355,14 @@ namespace v8file.net
                     byte[] decompressed = ZlibStream.UncompressBuffer(compressed);
                     using BinaryWriter bw = new BinaryWriter(File.Open(streamName, FileMode.Create));
                     bw.Write(decompressed, 0, decompressed.Length);
+                    if (i != 0)
+                    {
+                        start = i;
+                        b1 = BitConverter.ToInt32(buf);
+                        b2 = BitConverter.ToInt32(buf, 4);
+                        using BinaryWriter bw1 = new BinaryWriter(File.Open("prefix@" + streamName, FileMode.Create));
+                        bw1.Write(buf, 0, i);
+                    }
                     return MSuccess;
                 }
             }
@@ -347,6 +377,7 @@ namespace v8file.net
         {
             System.Runtime.InteropServices.ComTypes.STATSTG[] entry = new System.Runtime.InteropServices.ComTypes.STATSTG[1];
             uint numReturned;
+            int start = 0, b1 = 0, b2 = 0;
             string[] typnam = { "STGTY_STORAGE", "STGTY_STREAM", "STGTY_LOCKBYTES", "STGTY_PROPERTY" };
 
             pStorage.OpenStorage(name, null, (uint)(Stgm.Read | Stgm.ShareExclusive), IntPtr.Zero, 0, out IStorage storage);
@@ -365,12 +396,12 @@ namespace v8file.net
                                 // add to node
                                 var Node = new TreeNode(entry[0].pwcsName)
                                 {
-                                    Name = entry[0].pwcsName,
+                                    Name = entry[0].pwcsName.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_'),
                                     Tag = new OLETag
                                     {
                                         Name = entry[0].pwcsName,
-                                        OSName = entry[0].pwcsName.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_'),
-                                        Type = entry[0].type - 1,
+
+                                        Type = entry[0].type,
                                         TypeString = typnam[entry[0].type - 1],
                                         Size = entry[0].cbSize,
                                         Compressed = false,
@@ -411,12 +442,11 @@ namespace v8file.net
                                 // add to node
                                 var Node = new TreeNode(entry[0].pwcsName)
                                 {
-                                    Name = entry[0].pwcsName,
+                                    Name = entry[0].pwcsName.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_'),
                                     Tag = new OLETag
                                     {
                                         Name = entry[0].pwcsName,
-                                        OSName = entry[0].pwcsName.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_'),
-                                        Type = entry[0].type - 1,
+                                        Type = entry[0].type,
                                         TypeString = typnam[entry[0].type - 1],
                                         Size = entry[0].cbSize,
                                         Compressed = false,
@@ -429,16 +459,16 @@ namespace v8file.net
                                 storage.OpenStream(entry[0].pwcsName, IntPtr.Zero, (uint)(Stgm.Read | Stgm.ShareExclusive), 0, out IStream stream);
                                 stream.Read(buf, cbSize, out var cbRead);
                                 pwzStream = pwzStream.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_');
-                                if (V8DecodeAndWrite(pwzStream, buf, cbRead) == MSuccess)
+                                if (V8DecodeAndWrite(pwzStream, buf, cbRead, ref start, ref b1, ref b2) == MSuccess)
                                 {
                                     ((OLETag)Node.Tag).Compressed = true;
+                                    Logger.Info("                   start={0}, b1={1} (0x{1:X8}), b2={2} (0x{2:X8})", start, b1, b2);
                                 }
                                 else
                                 {
                                     ((OLETag)Node.Tag).Compressed = false;
                                 }
 
-                                //V8DecodeAndWrite(pwzStream, buf, cbRead);
                                 node.Nodes.Add(Node);
                                 Marshal.ReleaseComObject(stream);
                             }
@@ -456,6 +486,148 @@ namespace v8file.net
             GC.Collect();
             GC.Collect();  // call twice for good measure
             GC.WaitForPendingFinalizers();
+        }
+
+        private static StoragePart BuildStorageFromOLETree(Tree oleTree)
+        {
+            StoragePart storage = new StoragePart();
+            BuildStorageFromOLENode(oleTree.Root, ref storage);
+            return storage;
+        }
+
+        private static void BuildStorageFromOLENode(TreeNode node, ref StoragePart storage)
+        {
+            OLETag tag = (OLETag)node.Tag;
+            if (node == node.Tree.Root)
+            {
+                foreach (TreeNode subNode in node.Nodes)
+                {
+                    BuildStorageFromOLENode(subNode, ref storage);
+                }
+            }
+            else
+            {
+                if (tag.Type == (int)Stgty.StgtyStream)
+                {
+                    if (tag.Status != Status.Deleted)
+                    {
+                        var fileName = node.FullPath.Replace("^", "_").Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$');
+                        byte[] bytes = File.ReadAllBytes(fileName);
+                        if (!tag.Compressed)
+                        {
+                            storage.DataStreams.Add(node.Text, bytes);
+                        }
+                        else
+                        {
+                            //byte[] hdr = new byte[2] { 0x78, 0x5E };
+                            byte[] hdr = new byte[0];
+                            var prefixFileName = "prefix@" + fileName;
+                            if (File.Exists(prefixFileName))
+                            {
+                                byte[] prefix = File.ReadAllBytes(prefixFileName);
+                                //Array.Fill<byte>(prefix, 0, 0, 4);
+                                byte[] compressedBytes = Compress(bytes);
+                                var outputBytes = prefix.Concat(hdr).Concat(compressedBytes).ToArray();
+                                storage.DataStreams.Add(node.Text, outputBytes);
+                            }
+                            else
+                            {
+                                byte[] compressedBytes = Compress(bytes);
+                                var outputBytes = hdr.Concat(compressedBytes).ToArray();
+                                storage.DataStreams.Add(node.Text, outputBytes);
+                            }
+                        }
+                    }
+                }
+                else if (tag.Type == (int)Stgty.StgtyStorage)
+                {
+                    var subStorage = new StoragePart();
+                    storage.SubStorage.Add(node.Text, subStorage);
+                    foreach (TreeNode subNode in node.Nodes)
+                    {
+                        BuildStorageFromOLENode(subNode, ref subStorage);
+                    }
+                }
+            }
+        }
+
+        private static byte[] Compress(byte[] bytes)
+        {
+            using var ms = new MemoryStream();
+            ms.Position = 0;
+            ms.SetLength(0);
+            using (ZlibStream compressor = new(ms, CompressionMode.Compress, CompressionLevel.BestCompression/*Level4*/))
+            {
+                compressor.Write(bytes, 0, bytes.Length);
+                compressor.Flush();
+            }
+
+            return ms.ToArray();
+        }
+
+        public static byte[] V8DgnWriteToBuffer()
+        {
+            StoragePart Storage = BuildStorageFromOLETree(OLETree);
+            // create a new OLE storage
+            ILockBytes lb;
+            var iret = CreateILockBytesOnHGlobal(IntPtr.Zero, true, out lb);
+
+            IStorage storage = null;
+            byte[] ret = null;
+
+            //Create the document in-memory
+            if (StgCreateDocfileOnILockBytes(lb, Stgm.Create | Stgm.Readwrite | Stgm.ShareExclusive | Stgm.Transacted, 0, out storage) == 0)
+            {
+                foreach (var store in Storage.SubStorage)
+                {
+                    CreateStore(store.Key, store.Value, storage);
+                }
+
+                CreateStreams(Storage, storage);
+                lb.Flush();
+
+                //Now copy the unmanaged stream to a byte array --> memory stream
+                var statstg = new System.Runtime.InteropServices.ComTypes.STATSTG();
+                lb.Stat(out statstg, 0);
+                int size = (int)statstg.cbSize;
+                IntPtr buffer = Marshal.AllocHGlobal(size);
+                UIntPtr readSize;
+                ret = new byte[size];
+                lb.ReadAt(0, buffer, size, out readSize);
+                Marshal.Copy(buffer, ret, 0, size);
+                Marshal.FreeHGlobal(buffer);
+            }
+
+            Marshal.ReleaseComObject(storage);
+            Marshal.ReleaseComObject(lb);
+
+            return ret;
+        }
+
+        private static void CreateStore(string name, StoragePart subStore, IStorage storage)
+        {
+            IStorage subStorage;
+            storage.CreateStorage(name, (uint)(Stgm.Create | Stgm.Write | Stgm.Direct | Stgm.ShareExclusive), 0, 0, out subStorage);
+            storage.Commit(0);
+            foreach (var store in subStore.SubStorage)
+            {
+                CreateStore(store.Key, store.Value, subStorage);
+            }
+
+            CreateStreams(subStore, subStorage);
+        }
+
+        private static void CreateStreams(StoragePart subStore, IStorage subStorage)
+        {
+            foreach (var ds in subStore.DataStreams)
+            {
+                IStream stream;
+                uint dwWritten;
+                subStorage.CreateStream(ds.Key, (uint)(Stgm.Create | Stgm.Write | Stgm.Direct | Stgm.ShareExclusive), 0, 0, out stream);
+                stream.Write(ds.Value, (uint)ds.Value.Length, out dwWritten);
+            }
+
+            subStorage.Commit(0);
         }
 
         public static void V8DgnDumpProperties(StreamWriter sw)
@@ -653,5 +825,15 @@ namespace v8file.net
 
             return string.Empty;
         }
+    }
+
+    public class StoragePart
+    {
+        public StoragePart()
+        {
+        }
+
+        public Dictionary<string, StoragePart> SubStorage = new Dictionary<string, StoragePart>();
+        public Dictionary<string, byte[]> DataStreams = new Dictionary<string, byte[]>();
     }
 }

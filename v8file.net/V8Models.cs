@@ -16,22 +16,28 @@ namespace v8file.net
             V8FileManipulation.CMFileInfo.Files[0].ModelIndex.Read(bytes);
         }
 
-        public static void V8DumpModelInformation(StreamWriter sw)
+        public static void V8DumpModelInformation(StreamWriter sw = null)
         {
-            sw.WriteLine($"> Model Index Information");
-            for (int i = 0; i < V8FileManipulation.CMFileInfo.Files[0].ModelIndex.NumModels; i++)
+            if (sw != null)
             {
-                sw.WriteLine($"    Model Index Item >");
-                sw.WriteLine($"      Model Index Item Id                = {V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].ModelId}");
-                sw.WriteLine($"      Model Index Item Name              = {V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].ModelName}");
-                sw.WriteLine($"      Model Index Item Description       = {V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].ModelDescription}");
-                sw.WriteLine($"      Model Index Item Last Saved Time   = {Utils.V8BentleyTime(V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].LastSavedTime)}");
-            }
-            for (int i = 0; i < V8FileManipulation.CMFileInfo.Files[0].NumModels; i++)
-            {
-                if (V8FileManipulation.CMFileInfo.Files[0].Caches[i].Valid)
+                sw.WriteLine($"> Model Index Information");
+                for (int i = 0; i < V8FileManipulation.CMFileInfo.Files[0].ModelIndex.NumModels; i++)
                 {
-                    V8DumpModelInfoFromCache(V8FileManipulation.CMFileInfo.Files[0].Caches[i]);
+                    sw.WriteLine($"    Model Index Item >");
+                    sw.WriteLine($"      Model Index Item Id                = {V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].ModelId}");
+                    sw.WriteLine($"      Model Index Item Name              = {V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].ModelName}");
+                    sw.WriteLine($"      Model Index Item Description       = {V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].ModelDescription}");
+                    sw.WriteLine($"      Model Index Item Last Saved Time   = {Utils.V8BentleyTime(V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].LastSavedTime)}");
+                }
+            }
+            else
+            {
+                for (int i = 0; i < V8FileManipulation.CMFileInfo.Files[0].NumModels; i++)
+                {
+                    if (V8FileManipulation.CMFileInfo.Files[0].Caches[i].Valid)
+                    {
+                        V8DumpModelInfoFromCache(V8FileManipulation.CMFileInfo.Files[0].Caches[i]);
+                    }
                 }
             }
         }

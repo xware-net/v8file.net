@@ -1,24 +1,19 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
-    <ApplicationIcon />
-    <StartupObject />
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DotNetZip" Version="1.15.0" />
     <PackageReference Include="NLog" Version="4.7.9" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FluentCommandLineParser\FluentCommandLineParser.csproj" />
     <ProjectReference Include="..\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj" />
     <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj" />
+    <ProjectReference Include="..\v8file.net\v8file.net.csproj" />
   </ItemGroup>
 
 </Project>

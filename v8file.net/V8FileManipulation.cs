@@ -14,12 +14,23 @@ namespace v8file.net
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         internal static CmFileInfo CMFileInfo = new();
         private static bool SaveToDir = false;
+        private static string OutDir = null;
         private static Tree Tree;
         private static TreeNode RootNode;
 
-        public static void V8DgnFreeAll()
+        public static void V8DgnFreeAll(string outDir = null)
         {
             int i;
+
+            if (!string.IsNullOrEmpty(outDir))
+            {
+                SaveToDir = true;
+                OutDir = outDir;
+            } else
+            {
+                SaveToDir = false;
+                OutDir = null;
+            }
 
             for (i = 0; i < CMFileInfo.NumFiles; i++)
             {
@@ -28,20 +39,24 @@ namespace v8file.net
 
             if (CMFileInfo.NumFiles > 0)
             {
-            V8DeleteFiles("$*.*");
-            V8DeleteFiles("dgn~*.*");
-            V8DeleteFiles("dgn_*.*");
-            V8DeleteFiles("dgn-*.*");
-            V8DeleteFiles("modelelm.*");
-            V8DeleteFiles(".Logfile*.*");
-            V8DeleteFiles("v8file.log");
-            V8DeleteFiles(".Embedded@.Index");
-            V8DeleteFiles("GSX_*.*");
-            V8DeleteFiles("*.Graphics");
-            V8DeleteFiles("*.Control");
-            V8DeleteFiles("*.GraphicAttributes");
-            V8DeleteFiles("*.ControlAttributes");
-            V8DeleteFiles("*.NonModel");
+                V8DeleteFiles("$*.*");
+                V8DeleteFiles("dgn~*.*");
+                V8DeleteFiles("dgn_*.*");
+                V8DeleteFiles("dgn-*.*");
+                V8DeleteFiles("modelelm.*");
+                V8DeleteFiles(".Logfile*.*");
+                V8DeleteFiles("v8file.log");
+                V8DeleteFiles(".Embedded@.Index");
+                V8DeleteFiles("GSX_*.*");
+                V8DeleteFiles("*.bmp");
+                V8DeleteFiles("*.models");
+                V8DeleteFiles("*.model");
+                V8DeleteFiles("prefix@*.*");
+                V8DeleteFiles("*.Graphics", true);
+                V8DeleteFiles("*.Control", true);
+                V8DeleteFiles("*.GraphicAttributes", true);
+                V8DeleteFiles("*.ControlAttributes", true);
+                V8DeleteFiles("*.NonModel", true);
             }
 
             CMFileInfo = default;
@@ -51,15 +66,90 @@ namespace v8file.net
         {
         }
 
-        private static void V8DeleteFiles(string pattern)
+        public static void V8DgnMoveAll(string outDir)
         {
-            string[] files = Directory.GetFiles(".", pattern);
-            string copyDir = CMFileInfo.Files[CMFileInfo.NumFiles - 1].FileName.Replace(".dgn", "");
-            if (SaveToDir)
+            if (!string.IsNullOrEmpty(outDir))
             {
+                SaveToDir = true;
+                OutDir = outDir;
+            }
+            else
+            {
+                SaveToDir = false;
+                OutDir = null;
+            }
+
+            // key is (type, levelId, elementId)
+            foreach (var key in Utils.elementsWithIdAndTypeAndLevel.Keys)
+            {
+                string copyDir;
+                if (key.Item2 != "*")
+                {
+                    copyDir = Path.Combine(OutDir, "elements", key.Item1.ToString(), key.Item2.ToString());
+                }
+                else
+                {
+                    copyDir = Path.Combine(OutDir, "elements", key.Item1.ToString());
+                }
+
                 if (!Directory.Exists(copyDir))
                     Directory.CreateDirectory(copyDir);
-                Array.ForEach(files, f => File.Copy(f, ".\\" + copyDir + "\\" + f, true));
+
+                var names = Utils.elementsWithIdAndTypeAndLevel[key];
+                foreach (var name in names)
+                {
+                    File.Copy(name, Path.Combine(copyDir, name), true);
+                }
+
+                Array.ForEach(names.ToArray(), f => File.Delete(f));
+
+            }
+
+            Utils.elementsWithIdAndTypeAndLevel.Clear();
+            foreach (var key in Utils.linkagesWithIdAndTypeAndLevel.Keys)
+            {
+                var names = Utils.linkagesWithIdAndTypeAndLevel[key];
+                foreach (var name in names)
+                {
+                    var extension = Path.GetExtension(name);
+                    // move it to OutDir\linkages\extension 
+                    var copyDir = Path.Combine(OutDir, "linkages", extension);
+                    if (!Directory.Exists(copyDir))
+                        Directory.CreateDirectory(copyDir);
+                    File.Copy(name, Path.Combine(copyDir, name), true);
+                }
+
+                Array.ForEach(names.ToArray(), f => File.Delete(f));
+            }
+
+            Utils.linkagesWithIdAndTypeAndLevel.Clear();
+        }
+
+        private static void V8DeleteFiles(string pattern, bool dumps = false)
+        {
+            string[] files = Directory.GetFiles(".", pattern);
+            if (SaveToDir)
+            {
+                if (pattern == "*.model")
+                {
+                    if (!Directory.Exists(Path.Combine(OutDir, "model")))
+                        Directory.CreateDirectory(Path.Combine(OutDir, "model"));
+                    Array.ForEach(files, f => File.Copy(f, Path.Combine(OutDir, "model", Path.GetFileName(f)), true));
+                }
+                else if (pattern == "*.bmp")
+                {
+                    if (!Directory.Exists(OutDir))
+                        Directory.CreateDirectory(OutDir);
+                    Array.ForEach(files, f => File.Copy(f, Path.Combine(OutDir, Path.GetFileName(f)), true));
+                }
+                else
+                {
+                    // must copy the files matching pattern to OutDir
+                    string copyDir = Path.Combine(OutDir, Path.GetFileName(CMFileInfo.Files[CMFileInfo.NumFiles - 1].FileName).Replace(".dgn", dumps == false ? "" : "\\Dumps"));
+                    if (!Directory.Exists(copyDir))
+                        Directory.CreateDirectory(copyDir);
+                    Array.ForEach(files, f => File.Copy(f, Path.Combine(copyDir, Path.GetFileName(f)), true));
+                }
             }
 
             Array.ForEach(files, f => File.Delete(f));
@@ -119,9 +209,7 @@ namespace v8file.net
             V8Models.V8GetModelsInformation();
             if (elementType == "-1")
             {
-                string streamName = Path.GetFileNameWithoutExtension(CMFileInfo.Files[CMFileInfo.NumFiles - 1].FileName) + string.Format(".{0}", "models");
-                using StreamWriter sw = new(streamName);
-                V8Models.V8DumpModelInformation(sw);
+                V8Models.V8DumpModelInformation();
             }
             else
             {
@@ -1011,7 +1099,7 @@ namespace v8file.net
                     }
 
                     // dump the linkages
-                    if(attributes.Length > 0)
+                    if (attributes.Length > 0)
                     {
                         sw.WriteLine($"{Utils.HexDump(attributes, level)}");
                     }
@@ -1070,6 +1158,14 @@ namespace v8file.net
                     sw.WriteLine($"{Utils.HexDump(bytes, level)}");
                     Utils.WriteOut(bytes, streamName, ElementType, ElementId, LevelId);
 
+                    {
+                        Linkage[] linkages = V8Linkages.V8GetLinkages(br, ehdr);
+                        for (int i = 0; i < linkages?.Length; i++)
+                        {
+                            Utils.WriteOutAttr(bytes, streamName, ElementType, ElementId, LevelId, linkages[i]);
+                        }
+                    }
+
                     // dump the linkages
                     if (attributes.Length > 0)
                     {
@@ -1105,7 +1201,7 @@ namespace v8file.net
 
             // clear parentNode children
 
-            parentNode.Clear();
+            //parentNode.Clear();
         }
 
         private static int ReadComponents(StreamWriter sw, TreeNode pNode, int pos, int componentCount, UInt64 parentId, string cacheType, int modelNum, int cacheNum, Cache cache, BinaryReader br, int level)
@@ -1241,6 +1337,14 @@ namespace v8file.net
                 // dump the element
                 sw.WriteLine($"{Utils.HexDump(bytes, level)}");
                 Utils.WriteOut(bytes, (sw.BaseStream as FileStream)?.Name, ElementType, ElementId, LevelId);
+
+                {
+                    Linkage[] linkages = V8Linkages.V8GetLinkages(br, ehdr);
+                    for (int i = 0; i < linkages?.Length; i++)
+                    {
+                        Utils.WriteOutAttr(bytes, (sw.BaseStream as FileStream)?.Name, ElementType, ElementId, LevelId, linkages[i]);
+                    }
+                }
 
                 // dump the linkages
                 if (attributes.Length > 0)

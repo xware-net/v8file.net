@@ -98,30 +98,6 @@ namespace v8file.net
         }
 
         /// <summary>
-        ///  Returns the full OS path of this node.
-        ///  The path consists of the labels of each of the nodes from the root to this node,
-        ///  each separated by the pathSeparator.
-        /// </summary>
-        [Browsable(false)]
-        public string FullOsPath
-        {
-            get
-            {
-                Tree tree = Tree;
-                if (tree is not null)
-                {
-                    StringBuilder path = new();
-                    GetFullOsPath(path, tree.PathSeparator);
-                    return path.ToString();
-                }
-                else
-                {
-                    throw new InvalidOperationException("Full path can only be retrieved when a TreeNode has been added to a TreeView. This TreeNode has not been added to a TreeView.");
-                }
-            }
-        }
-
-        /// <summary>
         ///  The last child node of this node.
         /// </summary>
         [Browsable(false)]
@@ -202,7 +178,7 @@ namespace v8file.net
                 Tree tree = Tree;
 
                 // Don't expose the virtual root publicly
-                if (tree is not null && parent == tree.root)
+                if (tree is not null && parent == tree.Root)
                 {
                     return null;
                 }
@@ -413,23 +389,6 @@ namespace v8file.net
                 }
 
                 path.Append(text);
-            }
-        }
-
-        /// <summary>
-        ///  Helper function for getFullPath().
-        /// </summary>
-        private void GetFullOsPath(StringBuilder path, string pathSeparator)
-        {
-            if (parent is not null)
-            {
-                parent.GetFullOsPath(path, pathSeparator);
-                if (parent.parent is not null)
-                {
-                    path.Append(pathSeparator);
-                }
-
-                path.Append(((OLETag)Tag)?.OSName);
             }
         }
 

@@ -23,7 +23,7 @@ namespace v8file.net
         private string pathSeparator = backSlash;
 
         internal TreeNodeCollection nodes;
-        internal TreeNode root;
+        public TreeNode Root;
         internal Hashtable _nodeTable = new();
         internal bool nodesCollectionClear; //this is set when the treeNodeCollection is getting cleared and used by TreeView
 
@@ -33,7 +33,7 @@ namespace v8file.net
         public Tree()
         : base()
         {
-            root = new TreeNode(this);
+            Root = new TreeNode(this);
         }
 
         /// <summary>
@@ -47,7 +47,7 @@ namespace v8file.net
             {
                 if (nodes is null)
                 {
-                    nodes = new TreeNodeCollection(root);
+                    nodes = new TreeNodeCollection(Root);
                 }
 
                 return nodes;
@@ -75,7 +75,7 @@ namespace v8file.net
         /// </summary>
         public int GetNodeCount(bool includeSubTrees)
         {
-            return root.GetNodeCount(includeSubTrees);
+            return Root.GetNodeCount(includeSubTrees);
         }
 
         /// <summary>
