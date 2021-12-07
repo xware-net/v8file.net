@@ -80,7 +80,7 @@ namespace v8file.net
             }
 
             // key is (type, levelId, elementId)
-            foreach (var key in Utils.elementsWithIdAndTypeAndLevel.Keys)
+            foreach (var key in Utils.ElementsWithIdAndTypeAndLevel.Keys)
             {
                 string copyDir;
                 if (key.Item2 != "*")
@@ -95,7 +95,7 @@ namespace v8file.net
                 if (!Directory.Exists(copyDir))
                     Directory.CreateDirectory(copyDir);
 
-                var names = Utils.elementsWithIdAndTypeAndLevel[key];
+                var names = Utils.ElementsWithIdAndTypeAndLevel[key];
                 foreach (var name in names)
                 {
                     File.Copy(name, Path.Combine(copyDir, name), true);
@@ -105,10 +105,10 @@ namespace v8file.net
 
             }
 
-            Utils.elementsWithIdAndTypeAndLevel.Clear();
-            foreach (var key in Utils.linkagesWithIdAndTypeAndLevel.Keys)
+            Utils.ElementsWithIdAndTypeAndLevel.Clear();
+            foreach (var key in Utils.LinkagesWithIdAndTypeAndLevel.Keys)
             {
-                var names = Utils.linkagesWithIdAndTypeAndLevel[key];
+                var names = Utils.LinkagesWithIdAndTypeAndLevel[key];
                 foreach (var name in names)
                 {
                     var extension = Path.GetExtension(name).Replace(".", "").ToUpper();
@@ -122,7 +122,7 @@ namespace v8file.net
                 Array.ForEach(names.ToArray(), f => File.Delete(f));
             }
 
-            Utils.linkagesWithIdAndTypeAndLevel.Clear();
+            Utils.LinkagesWithIdAndTypeAndLevel.Clear();
         }
 
         private static void V8DeleteFiles(string pattern, bool dumps = false)

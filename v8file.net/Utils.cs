@@ -219,8 +219,11 @@ namespace v8file.net
             };
         }
 
-        public static Dictionary<Tuple<int, string, string>, List<string>> elementsWithIdAndTypeAndLevel = new Dictionary<Tuple<int, string, string>, List<string>>();
-        public static Dictionary<Tuple<int, string, string>, List<string>> linkagesWithIdAndTypeAndLevel = new Dictionary<Tuple<int, string, string>, List<string>>();
+        private static Dictionary<Tuple<int, string, string>, List<string>> elementsWithIdAndTypeAndLevel = new();
+        private static Dictionary<Tuple<int, string, string>, List<string>> linkagesWithIdAndTypeAndLevel = new();
+
+        public static Dictionary<Tuple<int, string, string>, List<string>> ElementsWithIdAndTypeAndLevel { get => elementsWithIdAndTypeAndLevel; set => elementsWithIdAndTypeAndLevel = value; }
+        public static Dictionary<Tuple<int, string, string>, List<string>> LinkagesWithIdAndTypeAndLevel { get => linkagesWithIdAndTypeAndLevel; set => linkagesWithIdAndTypeAndLevel = value; }
 
         public static void WriteOut(byte[] bytes, string fileName, int elementType, string elementId, string levelId)
         {

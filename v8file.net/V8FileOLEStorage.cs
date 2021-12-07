@@ -353,14 +353,14 @@ namespace v8file.net
                     byte[] compressed = new byte[length - i];
                     Array.Copy(buf, i, compressed, 0, length - i);
                     byte[] decompressed = ZlibStream.UncompressBuffer(compressed);
-                    using BinaryWriter bw = new BinaryWriter(File.Open(streamName, FileMode.Create));
+                    using BinaryWriter bw = new(File.Open(streamName, FileMode.Create));
                     bw.Write(decompressed, 0, decompressed.Length);
                     if (i != 0)
                     {
                         start = i;
                         b1 = BitConverter.ToInt32(buf);
                         b2 = BitConverter.ToInt32(buf, 4);
-                        using BinaryWriter bw1 = new BinaryWriter(File.Open("prefix@" + streamName, FileMode.Create));
+                        using BinaryWriter bw1 = new(File.Open("prefix@" + streamName, FileMode.Create));
                         bw1.Write(buf, 0, i);
                     }
                     return MSuccess;
@@ -387,7 +387,7 @@ namespace v8file.net
                 pEnum.Next(1, entry, out numReturned);
                 if (numReturned != 0)
                 {
-                    string pad = new string(' ', level);
+                    string pad = new(' ', level);
                     Logger.Info("{3}{0}, type={1}, size={2}", entry[0].pwcsName, typnam[entry[0].type - 1], entry[0].cbSize, pad);
                     switch (entry[0].type)
                     {
@@ -490,7 +490,7 @@ namespace v8file.net
 
         private static StoragePart BuildStorageFromOLETree(Tree oleTree)
         {
-            StoragePart storage = new StoragePart();
+            StoragePart storage = new();
             BuildStorageFromOLENode(oleTree.Root, ref storage);
             return storage;
         }
@@ -520,7 +520,7 @@ namespace v8file.net
                         else
                         {
                             //byte[] hdr = new byte[2] { 0x78, 0x5E };
-                            byte[] hdr = new byte[0];
+                            byte[] hdr = Array.Empty<byte>();
                             var prefixFileName = "prefix@" + fileName;
                             if (File.Exists(prefixFileName))
                             {
@@ -569,14 +569,12 @@ namespace v8file.net
         {
             StoragePart Storage = BuildStorageFromOLETree(OLETree);
             // create a new OLE storage
-            ILockBytes lb;
-            var iret = CreateILockBytesOnHGlobal(IntPtr.Zero, true, out lb);
+            _ = CreateILockBytesOnHGlobal(IntPtr.Zero, true, out ILockBytes lb);
 
-            IStorage storage = null;
             byte[] ret = null;
 
             //Create the document in-memory
-            if (StgCreateDocfileOnILockBytes(lb, Stgm.Create | Stgm.Readwrite | Stgm.ShareExclusive | Stgm.Transacted, 0, out storage) == 0)
+            if (StgCreateDocfileOnILockBytes(lb, Stgm.Create | Stgm.Readwrite | Stgm.ShareExclusive | Stgm.Transacted, 0, out IStorage storage) == 0)
             {
                 foreach (var store in Storage.SubStorage)
                 {
@@ -587,13 +585,11 @@ namespace v8file.net
                 lb.Flush();
 
                 //Now copy the unmanaged stream to a byte array --> memory stream
-                var statstg = new System.Runtime.InteropServices.ComTypes.STATSTG();
-                lb.Stat(out statstg, 0);
+                lb.Stat(out System.Runtime.InteropServices.ComTypes.STATSTG statstg, 0);
                 int size = (int)statstg.cbSize;
                 IntPtr buffer = Marshal.AllocHGlobal(size);
-                UIntPtr readSize;
                 ret = new byte[size];
-                lb.ReadAt(0, buffer, size, out readSize);
+                lb.ReadAt(0, buffer, size, out _);
                 Marshal.Copy(buffer, ret, 0, size);
                 Marshal.FreeHGlobal(buffer);
             }
@@ -606,8 +602,7 @@ namespace v8file.net
 
         private static void CreateStore(string name, StoragePart subStore, IStorage storage)
         {
-            IStorage subStorage;
-            storage.CreateStorage(name, (uint)(Stgm.Create | Stgm.Write | Stgm.Direct | Stgm.ShareExclusive), 0, 0, out subStorage);
+            storage.CreateStorage(name, (uint)(Stgm.Create | Stgm.Write | Stgm.Direct | Stgm.ShareExclusive), 0, 0, out IStorage subStorage);
             storage.Commit(0);
             foreach (var store in subStore.SubStorage)
             {
@@ -621,10 +616,8 @@ namespace v8file.net
         {
             foreach (var ds in subStore.DataStreams)
             {
-                IStream stream;
-                uint dwWritten;
-                subStorage.CreateStream(ds.Key, (uint)(Stgm.Create | Stgm.Write | Stgm.Direct | Stgm.ShareExclusive), 0, 0, out stream);
-                stream.Write(ds.Value, (uint)ds.Value.Length, out dwWritten);
+                subStorage.CreateStream(ds.Key, (uint)(Stgm.Create | Stgm.Write | Stgm.Direct | Stgm.ShareExclusive), 0, 0, out IStream stream);
+                stream.Write(ds.Value, (uint)ds.Value.Length, out _);
             }
 
             subStorage.Commit(0);
@@ -673,7 +666,7 @@ namespace v8file.net
 
         private static void SaveThumbnail()
         {
-            using BinaryWriter bw = new BinaryWriter(File.Open(Path.ChangeExtension(Path.GetFileName(FileName), ".bmp"), FileMode.Create));
+            using BinaryWriter bw = new(File.Open(Path.ChangeExtension(Path.GetFileName(FileName), ".bmp"), FileMode.Create));
             bw.Write('B');
             bw.Write('M');
             bw.Write(summaryInfoProperties.Thumbnail.Length - 8);
@@ -694,7 +687,7 @@ namespace v8file.net
                 using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
                 var cf = new CompoundFile(fs);
 
-                Action<CFItem> va = delegate (CFItem target)
+                static void va(CFItem target)
                 {
                     if (target.IsStream)
                     {
@@ -742,7 +735,7 @@ namespace v8file.net
 
                         }
                     }
-                };
+                }
 
                 // iterate over storage & streams
                 cf.RootStorage.VisitEntries(va, true);
@@ -833,7 +826,7 @@ namespace v8file.net
         {
         }
 
-        public Dictionary<string, StoragePart> SubStorage = new Dictionary<string, StoragePart>();
-        public Dictionary<string, byte[]> DataStreams = new Dictionary<string, byte[]>();
+        public Dictionary<string, StoragePart> SubStorage = new();
+        public Dictionary<string, byte[]> DataStreams = new();
     }
 }

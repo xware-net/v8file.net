@@ -20,7 +20,7 @@ namespace DumpV8FileParts.net
 
     class Program
     {
-        private static Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private static void InitLogger()
         {
