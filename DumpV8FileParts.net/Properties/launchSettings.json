@@ -3,7 +3,7 @@
     "DumpV8FileParts.net": {
       "commandName": "Executable",
       "executablePath": "C:\\temp\\v8file.net\\DumpV8FileParts.net\\bin\\Debug\\net5.0\\DumpV8FileParts.net.exe",
-      "commandLineArgs": "-f \"n:\\temp\\dgns\\Animation.dgn\" -o \"n:\\temp\\outdir\" -t 5 -l 3"
+      "commandLineArgs": "-f \"n:\\temp\\dgns\\Animation.dgn\" -o \"n:\\temp\\outdir\""
     }
   }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace v8file.net
 {
@@ -28,6 +29,7 @@ namespace v8file.net
                     sw.WriteLine($"      Model Index Item Name              = {V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].ModelName}");
                     sw.WriteLine($"      Model Index Item Description       = {V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].ModelDescription}");
                     sw.WriteLine($"      Model Index Item Last Saved Time   = {Utils.V8BentleyTime(V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].LastSavedTime)}");
+                    Dict.Instance.Models.Add((UInt32)V8FileManipulation.CMFileInfo.Files[0].ModelIndex.ModelIndexItems[i].ModelId);
                 }
             }
             else
@@ -62,6 +64,9 @@ namespace v8file.net
                     string modelLinkagesFileName = Path.GetFileNameWithoutExtension(V8FileManipulation.CMFileInfo.Files[V8FileManipulation.CMFileInfo.NumFiles - 1].FileName) + "_" + dgnCache.ModelName + "_" + i.ToString() + "." + linkages[i]./*Type*/LinkageHeader.PrimaryID.ToString("X");
                     using BinaryWriter bwl = new(File.Open(modelLinkagesFileName, FileMode.Create));
                     bwl.Write(linkages[i].Data, 0, linkages[i].Data.Length);
+
+                    // and set to move it to OutDir
+                    Utils.AddToLinkagesDictionary(-1, "*", "*", modelLinkagesFileName);
                 }
                 bw.Write(bytes, 0, bytes.Length);
             }
@@ -114,32 +119,32 @@ namespace v8file.net
             modelInfo.ModelId = cache.ModelNum;
             modelInfo.ModelName = V8Linkages.V8GetStringLinkage(modelHeaderElm.Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Name);
             modelInfo.ModelDescription = V8Linkages.V8GetStringLinkage(modelHeaderElm.Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Description);
-            modelInfo.MasterUnit = new UnitInfo
+            modelInfo.DefaultRefLogical = V8Linkages.V8GetStringLinkage(modelHeaderElm.Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_DefaultRefLogical);
+            modelInfo.MasterUnit = new UnitDefinition
             {
                 Numerator = modelHeaderElm.MuNumerator,
                 Denominator = modelHeaderElm.MuDenominator,
-                Flags = new UnitFlags
-                { 
-                },
+                Base = (UnitBase)(modelHeaderElm.MasterUnitFlags.Base),
+                System = (UnitSystem)(modelHeaderElm.MasterUnitFlags.System),
                 Label = V8Linkages.V8GetStringLinkage(modelHeaderElm.Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_MastUnitLabel)
             };
-            modelInfo.SubUnit = new UnitInfo
+            modelInfo.MasterUnitLabel = modelInfo.MasterUnit.Label;
+            modelInfo.SubUnit = new UnitDefinition
             {
                 Numerator = modelHeaderElm.SuNumerator,
                 Denominator = modelHeaderElm.SuDenominator,
-                Flags = new UnitFlags
-                {
-                },
+                Base = (UnitBase)(modelHeaderElm.SubUnitFlags.Base),
+                System = (UnitSystem)(modelHeaderElm.SubUnitFlags.System),
                 Label = V8Linkages.V8GetStringLinkage(modelHeaderElm.Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_SubUnitLabel)
             };
-            modelInfo.StorageUnit = new UnitInfo
+            modelInfo.SubUnitLabel = modelInfo.SubUnit.Label;
+            modelInfo.StorageUnit = new UnitDefinition
             {
                 Numerator = modelHeaderElm.StNumerator,
                 Denominator = modelHeaderElm.StDenominator,
-                Flags = new UnitFlags
-                {
-                },
-                //Label =
+                Base = (UnitBase)(modelHeaderElm.StorageUnitFlags.Base),
+                System = (UnitSystem)(modelHeaderElm.StorageUnitFlags.System),
+                Label = string.Empty
             };
             modelInfo.UorPerSub = modelHeaderElm.UorsPerStorage * (modelHeaderElm.StNumerator / modelHeaderElm.StDenominator) / (modelHeaderElm.SuNumerator / modelHeaderElm.SuDenominator);
             modelInfo.UorPerStorage = modelHeaderElm.UorsPerStorage;
@@ -147,34 +152,37 @@ namespace v8file.net
             modelInfo.SubPerMaster = (modelHeaderElm.SuNumerator / modelHeaderElm.SuDenominator) / (modelHeaderElm.MuNumerator / modelHeaderElm.MuDenominator);
             modelInfo.LastModified = modelHeaderElm.LastModified;
             modelInfo.GlobalOrigin = modelHeaderElm.GlobalOrigin;
-            modelInfo.GridPerRefernce = modelHeaderElm.GridPerReference;
-            modelInfo.UorPerGrid = modelHeaderElm.Z15;
-            modelInfo.GridRatio = modelHeaderElm.Z16;
+            modelInfo.GridPerReference = modelHeaderElm.GridPerReference;
+            modelInfo.UorPerGrid = modelHeaderElm.UorPerGrid;
+            modelInfo.GridBase = modelHeaderElm.GridBase;
+            modelInfo.GridRatio = modelHeaderElm.GridRatio;
+            modelInfo.GridAngle = modelHeaderElm.GridAngle;
             modelInfo.ModelType = (int)(modelHeaderElm.Dummy1 & 0xFFFF0000) >> 16;
-            modelInfo.DgnModelType = (DgnModelType)(modelInfo.ModelType);
+            modelInfo.DgnModelType = (DgnModelType)modelInfo.ModelType;
+            if (modelInfo.DgnModelType == DgnModelType.Sheet)
+            {
+                // complete the SheetDef & SheetDefScale
+            }
             modelInfo.AcsOrigin = modelHeaderElm.AcsOrigin;
-            //modelInfo.AcsOrigin.X = modelHeaderElm.Z2;
-            //modelInfo.AcsOrigin.Y = modelHeaderElm.Z3;
-            //modelInfo.AcsOrigin.Z = modelHeaderElm.Z4;
             modelInfo.AcsRotMatrix.Form3d = new double[3, 3];
             modelInfo.AcsRotMatrix = modelHeaderElm.AcsRotMatrix;
-            //modelInfo.AcsRotMatrix.Form3d[0, 0] = modelHeaderElm.Z5;
-            //modelInfo.AcsRotMatrix.Form3d[0, 1] = modelHeaderElm.Z6;
-            //modelInfo.AcsRotMatrix.Form3d[0, 2] = modelHeaderElm.Z7;
-            //modelInfo.AcsRotMatrix.Form3d[1, 0] = modelHeaderElm.Z8;
-            //modelInfo.AcsRotMatrix.Form3d[1, 1] = modelHeaderElm.Z9;
-            //modelInfo.AcsRotMatrix.Form3d[1, 2] = modelHeaderElm.Z10;
-            //modelInfo.AcsRotMatrix.Form3d[2, 0] = modelHeaderElm.Z11;
-            //modelInfo.AcsRotMatrix.Form3d[2, 1] = modelHeaderElm.Z12;
-            //modelInfo.AcsRotMatrix.Form3d[2, 2] = modelHeaderElm.Z13;
-
+            modelInfo.AcsScale = modelHeaderElm.AcsScale;
+            modelInfo.AcsType = (int)(modelHeaderElm.Dummy2 & 0x0000FFFF);
+            modelInfo.ACSType = (ACSType)modelInfo.AcsType;
             modelInfo.Rng = modelHeaderElm.Rng;
-            //modelInfo.Rng.Xlowlim = modelHeaderElm.Y0;
-            //modelInfo.Rng.Ylowlim = modelHeaderElm.Y1;
-            //modelInfo.Rng.Zlowlim = modelHeaderElm.Y2;
-            //modelInfo.Rng.Xhighlim = modelHeaderElm.Y3;
-            //modelInfo.Rng.Yhighlim = modelHeaderElm.Y4;
-            //modelInfo.Rng.Zhighlim = modelHeaderElm.Y5;
+            modelInfo.RoundOffUnit = modelHeaderElm.RoundoffUnit;
+            modelInfo.RoundOffRatio = modelHeaderElm.RoundoffRatio;
+            modelInfo.InsertionBase = modelHeaderElm.InsertionBase;
+            modelInfo.Azimuth = modelHeaderElm.Azimuth;
+            modelInfo.SolidExtent = modelHeaderElm.SolidExtent;
+            modelInfo.LineStyleScale = modelHeaderElm.LineStyleScale;
+            modelInfo.AcsElementId = modelHeaderElm.AcsElementId;
+            modelInfo.DirectionBaseDir = modelHeaderElm.DirectionBaseDir;
+            modelInfo.Transparency = modelHeaderElm.Transparency;
+            modelInfo.BackgroundColor = modelHeaderElm.BackgroundColor;
+            modelInfo.SettingFlags = modelHeaderElm.SettingsFlags;
+            modelInfo.SettingFlags1 = modelHeaderElm.SettingFlags1;
+            modelInfo.PropertyFlags = modelHeaderElm.PropertyFlags;
             return modelInfo;
         }
     }

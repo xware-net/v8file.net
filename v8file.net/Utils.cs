@@ -358,14 +358,14 @@ namespace v8file.net
             }
         }
 
-        private static void AddToLinkagesDictionary(short actualType, string levelId, string elementId, string name)
+        public static void AddToLinkagesDictionary(short actualType, string levelId, string elementId, string name)
         {
             // name ends in .linkageid (4 hex digits)
             var key = new Tuple<int, string, string>(actualType, levelId, elementId);
             if (!linkagesWithIdAndTypeAndLevel.ContainsKey(key))
             {
                 linkagesWithIdAndTypeAndLevel.Add(key, new List<string>());
-}
+            }
 
             if (!linkagesWithIdAndTypeAndLevel[key].Contains(name))
 {

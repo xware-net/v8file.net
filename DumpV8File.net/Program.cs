@@ -21,7 +21,7 @@ namespace DumpV8File.net
 
     class Program
     {
-        private static Logger Logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private static void InitLogger()
         {
@@ -71,11 +71,11 @@ namespace DumpV8File.net
                .Callback(text => Console.WriteLine(text));
 
             var result = parser.Parse(args);
-
             if (result.HasErrors == false)
             {
                 try
                 {
+                    Dict.Instance.Load(parser.Object.OutDir, parser.Object.FileName);
                     if (!File.Exists(parser.Object.FileName))
                     {
                         Console.WriteLine($"File {parser.Object.FileName} not found. Exit...");
@@ -96,6 +96,7 @@ namespace DumpV8File.net
                         using StreamWriter sw = new(outFileName);
                         V8FileManipulation.V8DgnParse(sw);
                     }
+                    Dict.Instance.Save(parser.Object.OutDir, parser.Object.FileName);
                 }
                 catch (Exception e)
                 {

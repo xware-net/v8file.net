@@ -13,10 +13,12 @@
 
   <ItemGroup>
     <PackageReference Include="DotNetZip" Version="1.15.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="NLog" Version="4.7.9" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FluentCommandLineParser\FluentCommandLineParser.csproj" />
     <ProjectReference Include="..\OpenMcdf.Extensions\OpenMcdf.Extensions.csproj" />
     <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj" />
   </ItemGroup>

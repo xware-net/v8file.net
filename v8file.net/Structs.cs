@@ -3034,6 +3034,7 @@ namespace v8file.net
             AttrOffset = br.ReadUInt32();
             Level = br.ReadUInt32();
             UniqueId = br.ReadUInt64();
+            Dict.Instance.Elements.Add(UniqueId);
             LastModified = br.ReadDouble();
             return this;
         }

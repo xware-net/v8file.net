@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -39,13 +40,13 @@ namespace v8file.net
         public UInt32 Dummy3;                  // 0x28
         public UInt32 Dummy4;                  // 0x2c
         public UInt32 Dummy5;                  // 0x30
-        public UInt32 Dummy6;                  // 0x34
-        public UInt32 Dummy7;                  // 0x38
+        public UInt32 SettingFlags1;           // 0x34
+        public UInt32 SettingsFlags;           // 0x38
         public UInt32 GridPerReference;        // 0x3c
-        public UInt32 Dummy9;                  // 0x40                   
-        public UInt32 Dummy10;                 // 0x44
-        public UInt32 Dummy11;                 // 0x48
-        public UInt32 Dummy12;                 // 0x4c
+        public UnitFlags StorageUnitFlags;     // 0x40                   
+        public UInt32 PropertyFlags;           // 0x44
+        public UnitFlags MasterUnitFlags;      // 0x48
+        public UnitFlags SubUnitFlags;         // 0x4c
         public double MuNumerator;             // 0x50
         public double MuDenominator;           // 0x58
         public double SuNumerator;             // 0x60
@@ -53,12 +54,6 @@ namespace v8file.net
         public DPoint3d GlobalOrigin;          // 0x70
         public double LastModified; /* last time this element was changed */    // 0x88
         public ScanRange Rng;                  // 0x90
-        //public Int64 Y0;
-        //public Int64 Y1;
-        //public Int64 Y2;
-        //public Int64 Y3;
-        //public Int64 Y4;
-        //public Int64 Y5;
         public Int64 Y6;                       // 0xc0
         public Int64 Y7;                       // 0xc8
         public Int64 Y8;                       // 0xd0
@@ -66,38 +61,25 @@ namespace v8file.net
         public double UorsPerStorage;          // 0xe0
         public double StNumerator;             // 0xe8
         public double StDenominator;           // 0xf0
-        public double Z0;                      // 0xf8
-        public double Z1;                      // 0x100
+        public double SolidExtent;             // 0xf8
+        public UInt64 AcsElementId;            // 0x100
         public DPoint3d AcsOrigin;             // 0x108
-        //public double Z2;
-        //public double Z3;
-        //public double Z4;
         public RotMatrix AcsRotMatrix;         // 0x120
-        //public double Z5;
-        //public double Z6;
-        //public double Z7;
-        //public double Z8;
-        //public double Z9;
-        //public double Z10;
-        //public double Z11;
-        //public double Z12;
-        //public double Z13;
-        public double Z14;                     // 0x168
-        public double Z15;                     // 0x170
-        public double Z16;                     // 0x178
-        public double Z17;                     // 0x180
-        public double Z18;                     // 0x188
-        public double Z19;                     // 0x190
-        public double Z20;                     // 0x198
-        public double Z21;                     // 0x1a0
-        public double Z22;                     // 0x1a8
-        public double Z23;                     // 0x1b0
-        public double Z24;                     // 0x1b8
-        public double Z25;                     // 0x1c0
-        public double Z26;                     // 0x1c8
-        public double Z27;                     // 0x1d0
-        public double Z28;                     // 0x1d8
-        public double Z29;                     // 0x1e0
+        public double RoundoffUnit;            // 0x168
+        public double UorPerGrid;              // 0x170
+        public double GridRatio;               // 0x178
+        public DPoint2d GridBase;              // 0x180
+        public DPoint3d InsertionBase;         // 0x190
+        public double RoundoffRatio;           // 0x1a8
+        public double LineStyleScale;          // 0x1b0
+        public double GridAngle;               // 0x1b8
+        public RgbColorDef BackgroundColor;    // 0x1c0
+        private byte Pad1;
+        private Int32 Pad2;
+        public double AcsScale;                // 0x1c8
+        public double Transparency;            // 0x1d0
+        public double Azimuth;                 // 0x1d8
+        public double DirectionBaseDir;        // 0x1e0
         public double Z30;                     // 0x1e8
         public Linkage[] Linkages;             // 0x1f0
 
@@ -110,13 +92,13 @@ namespace v8file.net
             Dummy3 = br.ReadUInt32();
             Dummy4 = br.ReadUInt32();
             Dummy5 = br.ReadUInt32();
-            Dummy6 = br.ReadUInt32();
-            Dummy7 = br.ReadUInt32();
+            SettingFlags1 = br.ReadUInt32();
+            SettingsFlags = br.ReadUInt32();
             GridPerReference = br.ReadUInt32();
-            Dummy9 = br.ReadUInt32();
-            Dummy10 = br.ReadUInt32();
-            Dummy11 = br.ReadUInt32();
-            Dummy12 = br.ReadUInt32();
+            StorageUnitFlags = new UnitFlags().Read(br);
+            PropertyFlags = br.ReadUInt32();
+            MasterUnitFlags = new UnitFlags().Read(br);
+            SubUnitFlags = new UnitFlags().Read(br);
             MuNumerator = br.ReadDouble();
             MuDenominator = br.ReadDouble();
             SuNumerator = br.ReadDouble();
@@ -124,12 +106,6 @@ namespace v8file.net
             GlobalOrigin = new DPoint3d().Read(br);
             LastModified = br.ReadDouble();
             Rng = new ScanRange().Read(br);
-            //Y0 = br.ReadInt64();
-            //Y1 = br.ReadInt64();
-            //Y2 = br.ReadInt64();
-            //Y3 = br.ReadInt64();
-            //Y4 = br.ReadInt64();
-            //Y5 = br.ReadInt64();
             Y6 = br.ReadInt64();
             Y7 = br.ReadInt64();
             Y8 = br.ReadInt64();
@@ -137,42 +113,78 @@ namespace v8file.net
             UorsPerStorage = br.ReadDouble();
             StNumerator = br.ReadDouble();
             StDenominator = br.ReadDouble();
-            Z0 = br.ReadDouble();
-            Z1 = br.ReadDouble();
+            SolidExtent = br.ReadDouble();
+            AcsElementId = br.ReadUInt64();
             AcsOrigin = new DPoint3d().Read(br);
-            //Z2 = br.ReadDouble();
-            //Z3 = br.ReadDouble();
-            //Z4 = br.ReadDouble();
             AcsRotMatrix = new RotMatrix().Read(br);
-            //Z5 = br.ReadDouble();
-            //Z6 = br.ReadDouble();
-            //Z7 = br.ReadDouble();
-            //Z8 = br.ReadDouble();
-            //Z9 = br.ReadDouble();
-            //Z10 = br.ReadDouble();
-            //Z11 = br.ReadDouble();
-            //Z12 = br.ReadDouble();
-            //Z13 = br.ReadDouble();
-            Z14 = br.ReadDouble();
-            Z15 = br.ReadDouble();
-            Z16 = br.ReadDouble();
-            Z17 = br.ReadDouble();
-            Z18 = br.ReadDouble();
-            Z19 = br.ReadDouble();
-            Z20 = br.ReadDouble();
-            Z21 = br.ReadDouble();
-            Z22 = br.ReadDouble();
-            Z23 = br.ReadDouble();
-            Z24 = br.ReadDouble();
-            Z25 = br.ReadDouble();
-            Z26 = br.ReadDouble();
-            Z27 = br.ReadDouble();
-            Z28 = br.ReadDouble();
-            Z29 = br.ReadDouble();
+            RoundoffUnit = br.ReadDouble();
+            UorPerGrid = br.ReadDouble();
+            GridRatio = br.ReadDouble();
+            GridBase = new DPoint2d().Read(br);
+            InsertionBase = new DPoint3d().Read(br);
+            RoundoffRatio = br.ReadDouble();
+            LineStyleScale = br.ReadDouble();
+            GridAngle = br.ReadDouble();
+            BackgroundColor = new RgbColorDef().Read(br);
+            br.ReadByte();
+            br.ReadInt32();
+            AcsScale = br.ReadDouble();
+            Transparency = br.ReadDouble();
+            Azimuth = br.ReadDouble();
+            DirectionBaseDir = br.ReadDouble();
             Z30 = br.ReadDouble();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
+    };
+
+    public struct UnitDefinition
+    {
+        public UnitBase Base;
+        public UnitSystem System;
+        public double Numerator;
+        public double Denominator;
+        public string Label;
+    };
+
+
+    public struct SheetDef
+    {
+        public short Dummy10;
+        public short Dummy13;
+        public int Dummy12;
+        public DPoint2d Origin;
+        public double Rotation;
+        public double SheetWidth;
+        public double SheetHeight;
+        public int Color;
+        public int Dummy11;
+        public UnitDefinition UnitDefinition;
+        public double Dummy7;
+        public double DWGPaperOrientation;
+        public double TopMargin;
+        public double LeftMargin;
+        public double BottomMargin;
+        public double RightMargin;
+        public double PlotScaleFactor;
+        public double Dummy8;
+        public double Dummy9;
+        public UInt32 SheetNumber;
+        public int Dummy1;
+        public UInt64 BorderAttachmentId;
+        public double Dummy90;
+        public double Dummy91;
+        public double Dummy92;
+    };
+
+    public struct SheetScale
+    {
+        Int16 word0;
+        public DPoint3d Scale;
+        int dword20;
+        Int64 qword28;
+        Int64 qword30;
+        Int64 qword38;
     };
 
     public struct ModelInfo
@@ -181,29 +193,53 @@ namespace v8file.net
         public int ModelId;
         public string ModelName;
         public string ModelDescription;
+        public string DefaultRefLogical;
         public int ModelType;
         public DgnModelType DgnModelType;
         public double UorPerMaster;
         public double UorPerSub;
         public double SubPerMaster;
         public double UorPerStorage;
-        public UnitInfo StorageUnit;
-        public UnitInfo MasterUnit;
-        public UnitInfo SubUnit;
+        public UnitDefinition StorageUnit;
+        public UnitDefinition MasterUnit;
+        public UnitDefinition SubUnit;
         public string MasterUnitLabel;
         public string SubUnitLabel;
         public DPoint3d GlobalOrigin;
+        public DPoint3d InsertionBase;
         public double UorPerGrid;
-        public UInt32 GridPerRefernce;
+        public UInt32 GridPerReference;
         public double GridRatio;
         public DPoint2d GridBase;
         public double GridAngle;
         public double RoundOffUnit;
         public double RoundOffRatio;
+        public double Azimuth;
+        public double SolidExtent;
+        public double LineStyleScale;
         public double LastModified;
+        public UInt64 AcsElementId;
         public DPoint3d AcsOrigin;
         public RotMatrix AcsRotMatrix;
         public ScanRange Rng;
+        public double DirectionBaseDir;
+        public double Transparency;
+        public RgbColorDef BackgroundColor;
+        public double AcsScale;
+        public int AcsType;
+        public ACSType ACSType;
+        public UInt32 SettingFlags1;
+        public UInt32 SettingFlags;
+        public UInt32 PropertyFlags;
+        public Int64 I1;
+        public Int64 I2;
+        public Int64 I3;
+        public double D;
+        public int Dummy0;
+        public int Dummy3;
+        public int Dummy;
+        public SheetDef SheetDef;
+        public SheetScale SheetScale;
 
         public void Dump(StreamWriter sw, int level)
         {
@@ -1584,7 +1620,7 @@ namespace v8file.net
             Dummy12 = br.ReadUInt32();
             ZVector = new DPoint3d().Read(br);
             Profiles = new MlineProfile[NProfiles];
-            for (int i=0; i<NProfiles; i++)
+            for (int i = 0; i < NProfiles; i++)
             {
                 Profiles[i] = new MlineProfile().Read(br);
             }
@@ -1839,7 +1875,7 @@ namespace v8file.net
                     // skip 2 bytes (alignement)
                     Dummy5 = br.ReadUInt16();
                     ClipPoints = new DPoint2d[NumClipPoints];
-                    for (int i=0; i<NumClipPoints; i++)
+                    for (int i = 0; i < NumClipPoints; i++)
                     {
                         ClipPoints[i] = new DPoint2d().Read(br);
                     }
