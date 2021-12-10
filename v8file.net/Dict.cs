@@ -41,7 +41,7 @@ namespace v8file.net
             // number of elements (int)
             // elements ...
             bw.Write(name);
-            bw.Write((int)DictType);
+            bw.Write((Int32)DictType);
             bw.Write(entries.Count);
             var size = Marshal.SizeOf(t);
             if (size == 8)
@@ -57,33 +57,27 @@ namespace v8file.net
 
         public void Load(BinaryReader br, T t)
         {
-            try
+            var name = br.ReadString();
+            var dictType = br.ReadInt32();
+            var numElements = br.ReadInt32();
+            var size = Marshal.SizeOf(t);
+            if (size == 8)
             {
-                var name = br.ReadString();
-                var dictType = br.ReadInt32();
-                var numElements = br.ReadInt32();
-                var size = Marshal.SizeOf(t);
-                if (size == 8)
+                UInt64[] numbers = new UInt64[numElements];
+                for (int i = 0; i < numElements; i++)
                 {
-                    UInt64[] numbers = new UInt64[numElements];
-                    for (int i = 0; i < numElements; i++)
-                    {
-                        numbers[i] = br.ReadUInt64();
-                        entries.Add((T)(object)numbers[i]);
-                    }
-                }
-                else if (size == 4)
-                {
-                    UInt32[] numbers = new UInt32[numElements];
-                    for (int i = 0; i < numElements; i++)
-                    {
-                        numbers[i] = br.ReadUInt32();
-                        entries.Add((T)(object)numbers[i]);
-                    }
+                    numbers[i] = br.ReadUInt64();
+                    entries.Add((T)(object)numbers[i]);
                 }
             }
-            catch (Exception)
+            else if (size == 4)
             {
+                UInt32[] numbers = new UInt32[numElements];
+                for (int i = 0; i < numElements; i++)
+                {
+                    numbers[i] = br.ReadUInt32();
+                    entries.Add((T)(object)numbers[i]);
+                }
             }
         }
     }
@@ -111,9 +105,15 @@ namespace v8file.net
 
         public void Save(string outDir, string fileName)
         {
-            using BinaryWriter bw = new(File.Open(Path.ChangeExtension(Path.Combine(outDir, Path.GetFileName(fileName)), ".dict"), FileMode.Create));
-            elements.Save(bw, new UInt64(), "elements");
-            models.Save(bw, new UInt32(), "models");
+            try
+            {
+                using BinaryWriter bw = new(File.Open(Path.ChangeExtension(Path.Combine(outDir, Path.GetFileName(fileName)), ".dict"), FileMode.Create));
+                elements.Save(bw, new UInt64(), "elements");
+                models.Save(bw, new UInt32(), "models");
+            }
+            catch (Exception)
+            {
+            }
         }
 
         public void Load(string outDir, string fileName)
