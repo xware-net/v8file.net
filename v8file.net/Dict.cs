@@ -21,10 +21,12 @@ namespace v8file.net
     public class Dict<T> where T : struct
     {
         private static DictType DictType;
+        private static string Name;
         private static readonly HashSet<T> entries = new();
 
-        public void SetType(DictType dictType)
+        public void SetNameAndType(string name, DictType dictType)
         {
+            Name = name;
             DictType = dictType;
         }
 
@@ -33,14 +35,14 @@ namespace v8file.net
             return entries.Add(entry);
         }
 
-        public void Save(BinaryWriter bw, T t, string name)
+        public void Save(BinaryWriter bw, T t)
         {
             // save each dictionary as 
-            // name
+            // Name
             // DictType (int)
             // number of elements (int)
             // elements ...
-            bw.Write(name);
+            bw.Write(Name);
             bw.Write((Int32)DictType);
             bw.Write(entries.Count);
             var size = Marshal.SizeOf(t);
@@ -57,8 +59,8 @@ namespace v8file.net
 
         public void Load(BinaryReader br, T t)
         {
-            var name = br.ReadString();
-            var dictType = br.ReadInt32();
+            Name = br.ReadString();
+            DictType = (DictType)br.ReadInt32();
             var numElements = br.ReadInt32();
             var size = Marshal.SizeOf(t);
             if (size == 8)
@@ -96,9 +98,9 @@ namespace v8file.net
         private Dict()
         {
             elements = new Dict<UInt64>();
-            elements.SetType(DictType.ElementId);
+            elements.SetNameAndType("elements", DictType.ElementId);
             models = new Dict<UInt32>();
-            models.SetType(DictType.ModelId);
+            models.SetNameAndType("models", DictType.ModelId);
         }
 
         public static Dict Instance => lazy.Value;
@@ -108,8 +110,8 @@ namespace v8file.net
             try
             {
                 using BinaryWriter bw = new(File.Open(Path.ChangeExtension(Path.Combine(outDir, Path.GetFileName(fileName)), ".dict"), FileMode.Create));
-                elements.Save(bw, new UInt64(), "elements");
-                models.Save(bw, new UInt32(), "models");
+                elements.Save(bw, new UInt64());
+                models.Save(bw, new UInt32());
             }
             catch (Exception)
             {
