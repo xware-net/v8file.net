@@ -9,6 +9,7 @@ for /R %1 %%a in (*.dgn;*.cell;*.dgnlib) do call bin\Debug\net5.0\DumpV8FilePart
 for /R %1 %%a in (*.dgn;*.cell;*.dgnlib) do call bin\Debug\net5.0\DumpV8FileParts.net.exe -f "%%a" -o "n:\temp\outdir" -t 95 -l 9
 for /R %1 %%a in (*.dgn;*.cell;*.dgnlib) do call bin\Debug\net5.0\DumpV8FileParts.net.exe -f "%%a" -o "n:\temp\outdir" -t 95 -l 10
 for /R %1 %%a in (*.dgn;*.cell;*.dgnlib) do call bin\Debug\net5.0\DumpV8FileParts.net.exe -f "%%a" -o "n:\temp\outdir" -t 95 -l 11
+for /R %1 %%a in (*.dgn;*.cell;*.dgnlib) do call bin\Debug\net5.0\DumpV8FileParts.net.exe -f "%%a" -o "n:\temp\outdir" -t 95 -l 12
 for /R %1 %%a in (*.dgn;*.cell;*.dgnlib) do call bin\Debug\net5.0\DumpV8FileParts.net.exe -f "%%a" -o "n:\temp\outdir" -t 95 -l 16
 for /R %1 %%a in (*.dgn;*.cell;*.dgnlib) do call bin\Debug\net5.0\DumpV8FileParts.net.exe -f "%%a" -o "n:\temp\outdir" -t 95 -l 17
 for /R %1 %%a in (*.dgn;*.cell;*.dgnlib) do call bin\Debug\net5.0\DumpV8FileParts.net.exe -f "%%a" -o "n:\temp\outdir" -t 95 -l 18

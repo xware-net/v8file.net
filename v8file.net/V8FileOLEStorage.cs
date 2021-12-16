@@ -642,23 +642,26 @@ namespace v8file.net
             sw.WriteLine($"  LastSavedTime                  = {summaryInfoProperties.LastSavedTime}");
             sw.WriteLine($"  Security                       = {summaryInfoProperties.Security}");
             sw.WriteLine($"  ThumbnailBitmap Size           = {(summaryInfoProperties.Thumbnail != null ? summaryInfoProperties.Thumbnail.Length - 8 : 0)}");
-            sw.WriteLine($"> Document Summary Information");
-            sw.WriteLine($"  Category                       = {documentSummaryInfoProperties.Category}");
-            sw.WriteLine($"  Manager                        = {documentSummaryInfoProperties.Manager}");
-            sw.WriteLine($"  Company                        = {documentSummaryInfoProperties.Company}");
-            if (documentSummaryInfoProperties.BentleyProjectProperties != null)
+            if (documentSummaryInfoProperties != null)
             {
-                sw.WriteLine($"  BentleyProjectProperties       = {Dump(documentSummaryInfoProperties.BentleyProjectProperties)}");
-            }
+                sw.WriteLine($"> Document Summary Information");
+                sw.WriteLine($"  Category                       = {documentSummaryInfoProperties.Category}");
+                sw.WriteLine($"  Manager                        = {documentSummaryInfoProperties.Manager}");
+                sw.WriteLine($"  Company                        = {documentSummaryInfoProperties.Company}");
+                if (documentSummaryInfoProperties.BentleyProjectProperties != null)
+                {
+                    sw.WriteLine($"  BentleyProjectProperties       = {Dump(documentSummaryInfoProperties.BentleyProjectProperties)}");
+                }
 
-            if (documentSummaryInfoProperties.BentleyWorkSetProperties != null)
-            {
-                sw.WriteLine($"  BentleyWorkSetProperties       = {Dump(documentSummaryInfoProperties.BentleyWorkSetProperties)}");
-            }
+                if (documentSummaryInfoProperties.BentleyWorkSetProperties != null)
+                {
+                    sw.WriteLine($"  BentleyWorkSetProperties       = {Dump(documentSummaryInfoProperties.BentleyWorkSetProperties)}");
+                }
 
-            if (summaryInfoProperties.Thumbnail != null && summaryInfoProperties.Thumbnail.Length - 8 != 0)
-            {
-                SaveThumbnail();
+                if (summaryInfoProperties.Thumbnail != null && summaryInfoProperties.Thumbnail.Length - 8 != 0)
+                {
+                    SaveThumbnail();
+                }
             }
 
             sw.WriteLine();

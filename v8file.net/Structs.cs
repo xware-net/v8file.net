@@ -21569,4 +21569,265 @@ namespace v8file.net
             sw.WriteLine($"{ident}StyleID={StyleID}");
         }
     }
+
+    public struct ModelInfoSettings
+    {
+        private UInt32 Data1;
+        private const int sz_1_0 = 1, loc_1_0 = 0, mask_1_0 = unchecked(((1 << sz_1_0) - 1) << loc_1_0);
+        private const int sz_1_1 = 1, loc_1_1 = loc_1_0 + sz_1_0, mask_1_1 = unchecked(((1 << sz_1_1) - 1) << loc_1_1);
+        private const int sz_1_2 = 1, loc_1_2 = loc_1_1 + sz_1_1, mask_1_2 = unchecked(((1 << sz_1_2) - 1) << loc_1_2);
+        private const int sz_1_3 = 1, loc_1_3 = loc_1_2 + sz_1_2, mask_1_3 = unchecked(((1 << sz_1_3) - 1) << loc_1_3);
+        private const int sz_1_4 = 2, loc_1_4 = loc_1_3 + sz_1_3, mask_1_4 = unchecked(((1 << sz_1_4) - 1) << loc_1_4);
+        private const int sz_1_5 = 1, loc_1_5 = loc_1_4 + sz_1_4, mask_1_5 = unchecked(((1 << sz_1_5) - 1) << loc_1_5);
+        private const int sz_1_6 = 1, loc_1_6 = loc_1_5 + sz_1_5, mask_1_6 = unchecked(((1 << sz_1_6) - 1) << loc_1_6);
+        private const int sz_1_7 = 24, loc_1_7 = loc_1_6 + sz_1_6, mask_1_7 = unchecked(((1 << sz_1_7) - 1) << loc_1_7);
+        public UInt32 IsUnitLocked
+        {
+            get => (UInt32)(Data1 & mask_1_0) >> loc_1_0;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_0 | (value << loc_1_0) & mask_1_0);
+        }
+        public UInt32 IsGridLocked
+        {
+            get => (UInt32)(Data1 & mask_1_1) >> loc_1_1;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_1 | (value << loc_1_1) & mask_1_1);
+        }
+        public UInt32 IsoGrid
+        {
+            get => (UInt32)(Data1 & mask_1_2) >> loc_1_2;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_2 | (value << loc_1_2) & mask_1_2);
+        }
+        public UInt32 IsIsoLocked
+        {
+            get => (UInt32)(Data1 & mask_1_3) >> loc_1_3;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_3 | (value << loc_1_3) & mask_1_3);
+        }
+        public UInt32 IsoPlane
+        {
+            get => (UInt32)(Data1 & mask_1_4) >> loc_1_4;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_4 | (value << loc_1_4) & mask_1_4);
+        }
+        public UInt32 IsUseAnnotationScale
+        {
+            get => (UInt32)(Data1 & mask_1_5) >> loc_1_5;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_5 | (value << loc_1_5) & mask_1_5);
+        }
+        public UInt32 IsAcsLocked
+        {
+            get => (UInt32)(Data1 & mask_1_6) >> loc_1_6;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_6 | (value << loc_1_6) & mask_1_6);
+        }
+        public UInt32 Reserved
+        {
+            get => (UInt32)(Data1 & mask_1_7) >> loc_1_7;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_7 | (value << loc_1_7) & mask_1_7);
+        }
+
+        public ModelInfoSettings Read(BinaryReader br)
+        {
+            // read each field
+            Data1 = br.ReadUInt32();
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}IsUnitLocked={IsUnitLocked}");
+            sw.WriteLine($"{ident}IsGridLocked={IsGridLocked}");
+            sw.WriteLine($"{ident}IsoGrid={IsoGrid}");
+            sw.WriteLine($"{ident}IsIsoLocked={IsIsoLocked}");
+            sw.WriteLine($"{ident}IsoPlane={IsoPlane}");
+            sw.WriteLine($"{ident}IsUseAnnotationScale={IsUseAnnotationScale}");
+            sw.WriteLine($"{ident}IsAcsLocked={IsAcsLocked}");
+            sw.WriteLine($"{ident}Reserved={Reserved}");
+        }
+    }
+
+    public struct ModelInfoSettings1
+    {
+        private UInt32 Data1;
+        private const int sz_1_0 = 2, loc_1_0 = 0, mask_1_0 = unchecked(((1 << sz_1_0) - 1) << loc_1_0);
+        private const int sz_1_1 = 4, loc_1_1 = loc_1_0 + sz_1_0, mask_1_1 = unchecked(((1 << sz_1_1) - 1) << loc_1_1);
+        private const int sz_1_2 = 8, loc_1_2 = loc_1_1 + sz_1_1, mask_1_2 = unchecked(((1 << sz_1_2) - 1) << loc_1_2);
+        private const int sz_1_3 = 3, loc_1_3 = loc_1_2 + sz_1_2, mask_1_3 = unchecked(((1 << sz_1_3) - 1) << loc_1_3);
+        private const int sz_1_4 = 8, loc_1_4 = loc_1_3 + sz_1_3, mask_1_4 = unchecked(((1 << sz_1_4) - 1) << loc_1_4);
+        private const int sz_1_5 = 1, loc_1_5 = loc_1_4 + sz_1_4, mask_1_5 = unchecked(((1 << sz_1_5) - 1) << loc_1_5);
+        private const int sz_1_6 = 4, loc_1_6 = loc_1_5 + sz_1_5, mask_1_6 = unchecked(((1 << sz_1_6) - 1) << loc_1_6);
+        public UInt32 LinearUnitMode
+        {
+            get => (UInt32)(Data1 & mask_1_0) >> loc_1_0;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_0 | (value << loc_1_0) & mask_1_0);
+        }
+        public UInt32 LinearPrecision
+        {
+            get => (UInt32)(Data1 & mask_1_1) >> loc_1_1;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_1 | (value << loc_1_1) & mask_1_1);
+        }
+        public UInt32 ByteFromPrecision
+        {
+            get => (UInt32)(Data1 & mask_1_2) >> loc_1_2;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_2 | (value << loc_1_2) & mask_1_2);
+        }
+        public UInt32 AngularMode
+        {
+            get => (UInt32)(Data1 & mask_1_3) >> loc_1_3;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_3 | (value << loc_1_3) & mask_1_3);
+        }
+        public UInt32 AngularPrecision
+        {
+            get => (UInt32)(Data1 & mask_1_4) >> loc_1_4;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_4 | (value << loc_1_4) & mask_1_4);
+        }
+        public UInt32 DirectionClockwise
+        {
+            get => (UInt32)(Data1 & mask_1_5) >> loc_1_5;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_5 | (value << loc_1_5) & mask_1_5);
+        }
+        public UInt32 Reserved
+        {
+            get => (UInt32)(Data1 & mask_1_6) >> loc_1_6;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_6 | (value << loc_1_6) & mask_1_6);
+        }
+
+        public ModelInfoSettings1 Read(BinaryReader br)
+        {
+            // read each field
+            Data1 = br.ReadUInt32();
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}LinearUnitMode={LinearUnitMode}");
+            sw.WriteLine($"{ident}LinearPrecision={LinearPrecision}");
+            sw.WriteLine($"{ident}ByteFromPrecision={ByteFromPrecision}");
+            sw.WriteLine($"{ident}AngularMode={AngularMode}");
+            sw.WriteLine($"{ident}AngularPrecision={AngularPrecision}");
+            sw.WriteLine($"{ident}DirectionClockwise={DirectionClockwise}");
+            sw.WriteLine($"{ident}Reserved={Reserved}");
+        }
+    }
+
+    public struct ModelInfoProperties
+    {
+        private UInt32 Data1;
+        private const int sz_1_0 = 1, loc_1_0 = 0, mask_1_0 = unchecked(((1 << sz_1_0) - 1) << loc_1_0);
+        private const int sz_1_1 = 1, loc_1_1 = loc_1_0 + sz_1_0, mask_1_1 = unchecked(((1 << sz_1_1) - 1) << loc_1_1);
+        private const int sz_1_2 = 1, loc_1_2 = loc_1_1 + sz_1_1, mask_1_2 = unchecked(((1 << sz_1_2) - 1) << loc_1_2);
+        private const int sz_1_3 = 1, loc_1_3 = loc_1_2 + sz_1_2, mask_1_3 = unchecked(((1 << sz_1_3) - 1) << loc_1_3);
+        private const int sz_1_4 = 1, loc_1_4 = loc_1_3 + sz_1_3, mask_1_4 = unchecked(((1 << sz_1_4) - 1) << loc_1_4);
+        private const int sz_1_5 = 1, loc_1_5 = loc_1_4 + sz_1_4, mask_1_5 = unchecked(((1 << sz_1_5) - 1) << loc_1_5);
+        private const int sz_1_6 = 1, loc_1_6 = loc_1_5 + sz_1_5, mask_1_6 = unchecked(((1 << sz_1_6) - 1) << loc_1_6);
+        private const int sz_1_7 = 1, loc_1_7 = loc_1_6 + sz_1_6, mask_1_7 = unchecked(((1 << sz_1_7) - 1) << loc_1_7);
+        private const int sz_1_8 = 1, loc_1_8 = loc_1_7 + sz_1_7, mask_1_8 = unchecked(((1 << sz_1_8) - 1) << loc_1_8);
+        private const int sz_1_9 = 1, loc_1_9 = loc_1_8 + sz_1_8, mask_1_9 = unchecked(((1 << sz_1_9) - 1) << loc_1_9);
+        private const int sz_1_10 = 1, loc_1_10 = loc_1_9 + sz_1_9, mask_1_10 = unchecked(((1 << sz_1_10) - 1) << loc_1_10);
+        private const int sz_1_11 = 1, loc_1_11 = loc_1_10 + sz_1_10, mask_1_11 = unchecked(((1 << sz_1_11) - 1) << loc_1_11);
+        private const int sz_1_12 = 1, loc_1_12 = loc_1_11 + sz_1_11, mask_1_12 = unchecked(((1 << sz_1_12) - 1) << loc_1_12);
+        private const int sz_1_13 = 1, loc_1_13 = loc_1_12 + sz_1_12, mask_1_13 = unchecked(((1 << sz_1_13) - 1) << loc_1_13);
+        private const int sz_1_14 = 15, loc_1_14 = loc_1_13 + sz_1_13, mask_1_14 = unchecked(((1 << sz_1_14) - 1) << loc_1_14);
+        public UInt32 Is3D
+        {
+            get => (UInt32)(Data1 & mask_1_0) >> loc_1_0;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_0 | (value << loc_1_0) & mask_1_0);
+        }
+        public UInt32 IsHidden
+        {
+            get => (UInt32)(Data1 & mask_1_1) >> loc_1_1;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_1 | (value << loc_1_1) & mask_1_1);
+        }
+        public UInt32 Dummy
+        {
+            get => (UInt32)(Data1 & mask_1_2) >> loc_1_2;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_2 | (value << loc_1_2) & mask_1_2);
+        }
+        public UInt32 IsNotInCellList
+        {
+            get => (UInt32)(Data1 & mask_1_3) >> loc_1_3;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_3 | (value << loc_1_3) & mask_1_3);
+        }
+        public UInt32 UseBackgroundColor
+        {
+            get => (UInt32)(Data1 & mask_1_4) >> loc_1_4;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_4 | (value << loc_1_4) & mask_1_4);
+        }
+        public UInt32 UseScale1
+        {
+            get => (UInt32)(Data1 & mask_1_5) >> loc_1_5;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_5 | (value << loc_1_5) & mask_1_5);
+        }
+        public UInt32 IsAnnotationCell
+        {
+            get => (UInt32)(Data1 & mask_1_6) >> loc_1_6;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_6 | (value << loc_1_6) & mask_1_6);
+        }
+        public UInt32 IsAutoUpdateFieldsOn
+        {
+            get => (UInt32)(Data1 & mask_1_7) >> loc_1_7;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_7 | (value << loc_1_7) & mask_1_7);
+        }
+        public UInt32 IsIndexed
+        {
+            get => (UInt32)(Data1 & mask_1_8) >> loc_1_8;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_8 | (value << loc_1_8) & mask_1_8);
+        }
+        public UInt32 IsMarkup
+        {
+            get => (UInt32)(Data1 & mask_1_9) >> loc_1_9;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_9 | (value << loc_1_9) & mask_1_9);
+        }
+        public UInt32 Dummy1
+        {
+            get => (UInt32)(Data1 & mask_1_10) >> loc_1_10;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_10 | (value << loc_1_10) & mask_1_10);
+        }
+        public UInt32 DrawMasterModelLastOn
+        {
+            get => (UInt32)(Data1 & mask_1_11) >> loc_1_11;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_11 | (value << loc_1_11) & mask_1_11);
+        }
+        public UInt32 PropagateAnnotationScale
+        {
+            get => (UInt32)(Data1 & mask_1_12) >> loc_1_12;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_12 | (value << loc_1_12) & mask_1_12);
+        }
+        public UInt32 UseScale2
+        {
+            get => (UInt32)(Data1 & mask_1_13) >> loc_1_13;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_13 | (value << loc_1_13) & mask_1_13);
+        }
+        public UInt32 Reserved
+        {
+            get => (UInt32)(Data1 & mask_1_14) >> loc_1_14;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_14 | (value << loc_1_14) & mask_1_14);
+        }
+
+        public ModelInfoProperties Read(BinaryReader br)
+        {
+            // read each field
+            Data1 = br.ReadUInt32();
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Is3D={Is3D}");
+            sw.WriteLine($"{ident}IsHidden={IsHidden}");
+            sw.WriteLine($"{ident}Dummy={Dummy}");
+            sw.WriteLine($"{ident}IsNotInCellList={IsNotInCellList}");
+            sw.WriteLine($"{ident}UseBackgroundColor={UseBackgroundColor}");
+            sw.WriteLine($"{ident}UseScale1={UseScale1}");
+            sw.WriteLine($"{ident}IsAnnotationCell={IsAnnotationCell}");
+            sw.WriteLine($"{ident}IsAutoUpdateFieldsOn={IsAutoUpdateFieldsOn}");
+            sw.WriteLine($"{ident}IsIndexed={IsIndexed}");
+            sw.WriteLine($"{ident}IsMarkup={IsMarkup}");
+            sw.WriteLine($"{ident}Dummy1={Dummy1}");
+            sw.WriteLine($"{ident}DrawMasterModelLastOn={DrawMasterModelLastOn}");
+            sw.WriteLine($"{ident}PropagateAnnotationScale={PropagateAnnotationScale}");
+            sw.WriteLine($"{ident}UseScale2={UseScale2}");
+            sw.WriteLine($"{ident}Reserved={Reserved}");
+        }
+    }
 }

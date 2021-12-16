@@ -40,11 +40,11 @@ namespace v8file.net
         public UInt32 Dummy3;                  // 0x28
         public UInt32 Dummy4;                  // 0x2c
         public UInt32 Dummy5;                  // 0x30
-        public UInt32 SettingFlags1;           // 0x34
-        public UInt32 SettingsFlags;           // 0x38
+        public ModelInfoSettings1 SettingFlags1;           // 0x34
+        public ModelInfoSettings SettingsFlags;           // 0x38
         public UInt32 GridPerReference;        // 0x3c
         public UnitFlags StorageUnitFlags;     // 0x40                   
-        public UInt32 PropertyFlags;           // 0x44
+        public ModelInfoProperties PropertyFlags;           // 0x44
         public UnitFlags MasterUnitFlags;      // 0x48
         public UnitFlags SubUnitFlags;         // 0x4c
         public double MuNumerator;             // 0x50
@@ -92,11 +92,11 @@ namespace v8file.net
             Dummy3 = br.ReadUInt32();
             Dummy4 = br.ReadUInt32();
             Dummy5 = br.ReadUInt32();
-            SettingFlags1 = br.ReadUInt32();
-            SettingsFlags = br.ReadUInt32();
+            SettingFlags1 = new ModelInfoSettings1().Read(br); //br.ReadUInt32();
+            SettingsFlags = new ModelInfoSettings().Read(br); //br.ReadUInt32();
             GridPerReference = br.ReadUInt32();
             StorageUnitFlags = new UnitFlags().Read(br);
-            PropertyFlags = br.ReadUInt32();
+            PropertyFlags = new ModelInfoProperties().Read(br); //br.ReadUInt32();
             MasterUnitFlags = new UnitFlags().Read(br);
             SubUnitFlags = new UnitFlags().Read(br);
             MuNumerator = br.ReadDouble();
@@ -126,8 +126,8 @@ namespace v8file.net
             LineStyleScale = br.ReadDouble();
             GridAngle = br.ReadDouble();
             BackgroundColor = new RgbColorDef().Read(br);
-            br.ReadByte();
-            br.ReadInt32();
+            Pad1 = br.ReadByte();
+            Pad2 = br.ReadInt32();
             AcsScale = br.ReadDouble();
             Transparency = br.ReadDouble();
             Azimuth = br.ReadDouble();
@@ -228,9 +228,9 @@ namespace v8file.net
         public double AcsScale;
         public int AcsType;
         public ACSType ACSType;
-        public UInt32 SettingFlags1;
-        public UInt32 SettingFlags;
-        public UInt32 PropertyFlags;
+        public ModelInfoSettings1 SettingFlags1;
+        public ModelInfoSettings SettingFlags;
+        public ModelInfoProperties PropertyFlags;
         public Int64 I1;
         public Int64 I2;
         public Int64 I3;
@@ -240,6 +240,7 @@ namespace v8file.net
         public int Dummy;
         public SheetDef SheetDef;
         public SheetScale SheetScale;
+        public string SheetName;
 
         public void Dump(StreamWriter sw, int level)
         {
@@ -315,6 +316,8 @@ namespace v8file.net
             using BinaryReader br = new(ms, System.Text.Encoding.Unicode);
             // read each field
             Dummy1 = br.ReadUInt32();
+            if (Dummy1 != 0xaa00ba11)
+                Debugger.Break();
             Dummy2 = br.ReadUInt32();
             NumModels = br.ReadUInt32();
             Dummy3 = br.ReadUInt32();
@@ -329,7 +332,8 @@ namespace v8file.net
 
     public struct ModelIndexItem
     {
-        public UInt32 Dummy;
+        public UInt16 ModelType;
+        public UInt16 Dummy1;
         public Int32 ModelId;
         public double LastSavedTime;
         public DgnModelType DgnModelType;
@@ -341,7 +345,7 @@ namespace v8file.net
         public UInt16 DescriptionLength;
         public UInt16 Dummy2;
         public UInt16 Dummy3;
-        public UInt16 Dummy4;
+        public UInt16 CellType;
         public UInt32 Dummy5;
         public UInt32 Dummy6;
         public UInt32 Dummy7;
@@ -353,7 +357,9 @@ namespace v8file.net
             // read each field
             var modelIndexPosition = br.BaseStream.Position;
 
-            Dummy = br.ReadUInt32();
+            ModelType = br.ReadUInt16();
+            DgnModelType = (DgnModelType)ModelType;
+            Dummy1 = br.ReadUInt16();
             ModelId = br.ReadInt32();
             LastSavedTime = br.ReadDouble();
             ModelIndexSize = br.ReadUInt16();
@@ -361,7 +367,8 @@ namespace v8file.net
             DescriptionLength = br.ReadUInt16();
             Dummy2 = br.ReadUInt16();
             Dummy3 = br.ReadUInt16();
-            Dummy4 = br.ReadUInt16();
+            CellType = br.ReadUInt16();
+            CellLibraryType = (CellLibraryType)CellType;
             Dummy5 = br.ReadUInt32();
 
             // read Name
@@ -383,6 +390,9 @@ namespace v8file.net
                 Dummy9 = br.ReadUInt16();
             }
 
+            br.BaseStream.Seek(modelIndexPosition, SeekOrigin.Begin);
+            var bytes = br.ReadBytes(ModelIndexSize);
+            Utils.WriteOutBytes(bytes, Path.GetFileNameWithoutExtension(V8FileManipulation.CMFileInfo.Files[V8FileManipulation.CMFileInfo.NumFiles - 1].FileName) + "_" + ModelId.ToString() + "_" + ModelName +".modelIndexItem");
             br.BaseStream.Seek(modelIndexPosition + ModelIndexSize, SeekOrigin.Begin);
         }
     }

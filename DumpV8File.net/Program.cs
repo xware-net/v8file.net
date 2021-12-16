@@ -44,7 +44,6 @@ namespace DumpV8File.net
             LogManager.Configuration = config;
         }
 
-
         static int Main(string[] args)
         {
             InitLogger();

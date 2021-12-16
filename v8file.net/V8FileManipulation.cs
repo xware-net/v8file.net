@@ -49,6 +49,8 @@ namespace v8file.net
                 V8DeleteFiles(".Embedded@.Index");
                 V8DeleteFiles("GSX_*.*");
                 V8DeleteFiles("*.bmp");
+                V8DeleteFiles("*.modelIndexItem");
+                V8DeleteFiles("*.modelIndex");
                 V8DeleteFiles("*.models");
                 V8DeleteFiles("*.model");
                 V8DeleteFiles("prefix@*.*");
@@ -130,7 +132,19 @@ namespace v8file.net
             string[] files = Directory.GetFiles(".", pattern);
             if (SaveToDir)
             {
-                if (pattern == "*.model")
+                if (pattern == "*.modelIndexItem")
+                {
+                    if (!Directory.Exists(Path.Combine(OutDir, "modelIndex")))
+                        Directory.CreateDirectory(Path.Combine(OutDir, "modelIndex"));
+                    Array.ForEach(files, f => File.Copy(f, Path.Combine(OutDir, "modelIndex", Path.GetFileName(f)), true));
+                }
+                else if (pattern == "*.modelIndex")
+                {
+                    if (!Directory.Exists(Path.Combine(OutDir, "modelIndex")))
+                        Directory.CreateDirectory(Path.Combine(OutDir, "modelIndex"));
+                    Array.ForEach(files, f => File.Copy(f, Path.Combine(OutDir, "modelIndex", Path.GetFileName(f)), true));
+                }
+                else if (pattern == "*.model")
                 {
                     if (!Directory.Exists(Path.Combine(OutDir, "model")))
                         Directory.CreateDirectory(Path.Combine(OutDir, "model"));

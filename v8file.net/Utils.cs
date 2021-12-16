@@ -225,6 +225,12 @@ namespace v8file.net
         public static Dictionary<Tuple<int, string, string>, List<string>> ElementsWithIdAndTypeAndLevel { get => elementsWithIdAndTypeAndLevel; set => elementsWithIdAndTypeAndLevel = value; }
         public static Dictionary<Tuple<int, string, string>, List<string>> LinkagesWithIdAndTypeAndLevel { get => linkagesWithIdAndTypeAndLevel; set => linkagesWithIdAndTypeAndLevel = value; }
 
+        public static void WriteOutBytes(byte[] bytes, string fileName)
+        {
+            using BinaryWriter bw = new(File.Open(fileName, FileMode.Create));
+            bw.Write(bytes, 0, bytes.Length);
+        }
+
         public static void WriteOut(byte[] bytes, string fileName, int elementType, string elementId, string levelId)
         {
             // get actual element id from bytes
@@ -368,7 +374,7 @@ namespace v8file.net
             }
 
             if (!linkagesWithIdAndTypeAndLevel[key].Contains(name))
-{
+            {
                 linkagesWithIdAndTypeAndLevel[key].Add(name);
             }
         }

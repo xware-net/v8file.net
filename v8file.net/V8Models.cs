@@ -15,6 +15,7 @@ namespace v8file.net
             byte[] bytes = File.ReadAllBytes(@"Dgn_Ix@Dgn~Mix");
             V8FileManipulation.CMFileInfo.Files[0].ModelIndex = new ModelIndex();
             V8FileManipulation.CMFileInfo.Files[0].ModelIndex.Read(bytes);
+            Utils.WriteOutBytes(bytes, Path.GetFileNameWithoutExtension(V8FileManipulation.CMFileInfo.Files[V8FileManipulation.CMFileInfo.NumFiles - 1].FileName) + ".modelIndex");
         }
 
         public static void V8DumpModelInformation(StreamWriter sw = null)
@@ -161,7 +162,8 @@ namespace v8file.net
             modelInfo.DgnModelType = (DgnModelType)modelInfo.ModelType;
             if (modelInfo.DgnModelType == DgnModelType.Sheet)
             {
-                // complete the SheetDef & SheetDefScale
+                // complete the SheetDef & SheetDefScale & SheetName
+                modelInfo.SheetName = V8Linkages.V8GetStringLinkage(modelHeaderElm.Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_SheetName);
             }
             modelInfo.AcsOrigin = modelHeaderElm.AcsOrigin;
             modelInfo.AcsRotMatrix.Form3d = new double[3, 3];

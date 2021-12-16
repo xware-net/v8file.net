@@ -108,7 +108,7 @@ namespace DumpV8FileParts.net
                     if (parser.Object.ElementType != "-1" && parser.Object.LevelId != "*")
                     {
                         // DumpV8FileAttributes.net -f fileName -o outputDir -t elementType -l levelId extracts element of type elementType on level levelId information parts
-                        // eg: -f "c:\temp\v8file.net\v8file.net\bin\Debug\net5.0\Animation.dgn" -o "n:\temp\outdir" -t 5 -l 3 (extract ACS information)
+                        // eg: -f "n:\temp\dgns\Animation.dgn" -o "n:\temp\outdir" -t 5 -l 3 (extract ACS information)
                         V8FileManipulation.V8DgnParse(parser.Object.ElementType, parser.Object.ElementId, parser.Object.LevelId);
                     }
                     else if (parser.Object.ElementType != "-1" && parser.Object.ElementId != "*")
@@ -116,15 +116,15 @@ namespace DumpV8FileParts.net
                         // DumpV8FileAttributes.net -f fileName -o outputDir -t elementType -e elementId extracts element of type elementType with elementId information parts
                         // elementid must be given in hex (upper case, 16 chars)
                         // we use it rarely !!!!!!!!!
-                        // eg: -f "c:\temp\v8file.net\v8file.net\bin\Debug\net5.0\Animation.dgn" -o "n:\temp\outdir" -t 95 -e 0000000000000180
+                        // eg: -f "n:\temp\dgns\Animation.dgn" -o "n:\temp\outdir" -t 95 -e 0000000000000180
                         V8FileManipulation.V8DgnParse(parser.Object.ElementType, parser.Object.ElementId);
                     }
                     else if (parser.Object.LevelId == "*" && parser.Object.ElementId == "*")
                     {
                         // DumpV8FileAttributes.net -f fileName -o outputDir extracts model information parts (elementType is -1)
-                        // eg: -f "c:\temp\v8file.net\v8file.net\bin\Debug\net5.0\Animation.dgn" (get all model infos)
+                        // eg: -f "n:\temp\dgns\Animation.dgn" -o "n:\temp\outdir" (get all model infos)
                         // DumpV8FileAttributes.net -f fileName -o outputDir -t elementType extracts element of type elementType information parts
-                        // eg: -f "c:\temp\v8file.net\v8file.net\bin\Debug\net5.0\Animation.dgn" -t 4 (get all line string infos)
+                        // eg: -f "n:\temp\dgns\Animation.dgn" -o "n:\temp\outdir" -t 4 (get all line string infos)
                         V8FileManipulation.V8DgnParse(parser.Object.ElementType);
                     }
                 }

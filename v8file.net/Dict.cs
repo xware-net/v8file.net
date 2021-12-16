@@ -30,6 +30,11 @@ namespace v8file.net
             DictType = dictType;
         }
 
+        public new DictType GetType()
+        {
+            return DictType;
+        }
+
         public bool Add(T entry)
         {
             return entries.Add(entry);
@@ -82,6 +87,11 @@ namespace v8file.net
                 }
             }
         }
+
+        public bool Contains(T t)
+        {
+            return entries.Contains(t);
+        }
     }
 
     // singleton
@@ -93,14 +103,21 @@ namespace v8file.net
         private Dict<UInt64> elements;
         private Dict<UInt32> models;
 
+        private readonly List<Dict<UInt64>> UInt64Dictionaries;
+        private readonly List<Dict<UInt32>> UInt32Dictionaries;
+
         private static readonly Lazy<Dict> lazy = new(() => new Dict());
 
         private Dict()
         {
+            UInt64Dictionaries = new List<Dict<UInt64>>();
+            UInt32Dictionaries = new List<Dict<UInt32>>();
             elements = new Dict<UInt64>();
             elements.SetNameAndType("elements", DictType.ElementId);
             models = new Dict<UInt32>();
             models.SetNameAndType("models", DictType.ModelId);
+            UInt64Dictionaries.Add(elements);
+            UInt32Dictionaries.Add(models);
         }
 
         public static Dict Instance => lazy.Value;
@@ -129,6 +146,35 @@ namespace v8file.net
             catch (Exception)
             {
             }
+        }
+        public List<DictType> Find(UInt64 value)
+        {
+            List<DictType> values = new();
+            foreach (Dict<UInt64> uint64dictionary in UInt64Dictionaries)
+            {
+                var dictType = uint64dictionary.GetType();
+                if (uint64dictionary.Contains(value) && !values.Contains(dictType))
+                {
+                    values.Add(dictType);
+                }
+            }
+
+            return values;
+        }
+
+        public List<DictType> Find(UInt32 value)
+        {
+            List<DictType> values = new();
+            foreach (Dict<UInt32> uint32dictionary in UInt32Dictionaries)
+            {
+                var dictType = uint32dictionary.GetType();
+                if (uint32dictionary.Contains(value) && !values.Contains(dictType))
+                {
+                    values.Add(dictType);
+                }
+            }
+
+            return values;
         }
     }
 }
