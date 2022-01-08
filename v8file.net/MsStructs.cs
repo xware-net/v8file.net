@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection.Emit;
 using System.Text;
 using ModelId = System.UInt32;
 using T_Adouble = System.Double;
@@ -35,7 +36,8 @@ namespace v8file.net
     public struct ModelHeaderElm
     {
         public Elm_hdr Ehdr;
-        public UInt32 Dummy1;                  // 0x20
+        public UInt16 Dummy0;                  // 0x20
+        public UInt16 ModelType;               // 0x22
         public UInt32 Dummy2;                  // 0x24
         public UInt32 Dummy3;                  // 0x28
         public UInt32 Dummy4;                  // 0x2c
@@ -87,7 +89,8 @@ namespace v8file.net
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
-            Dummy1 = br.ReadUInt32();
+            Dummy0 = br.ReadUInt16();
+            ModelType = br.ReadUInt16();
             Dummy2 = br.ReadUInt32();
             Dummy3 = br.ReadUInt32();
             Dummy4 = br.ReadUInt32();
@@ -145,47 +148,18 @@ namespace v8file.net
         public double Numerator;
         public double Denominator;
         public string Label;
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Base={Base}");
+            sw.WriteLine($"{ident}System={System}");
+            sw.WriteLine($"{ident}Numerator={Numerator}");
+            sw.WriteLine($"{ident}Denominator={Denominator}");
+            sw.WriteLine($"{ident}Label=\"{Label}\"");
+        }
     };
 
-
-    public struct SheetDef
-    {
-        public short Dummy10;
-        public short Dummy13;
-        public int Dummy12;
-        public DPoint2d Origin;
-        public double Rotation;
-        public double SheetWidth;
-        public double SheetHeight;
-        public int Color;
-        public int Dummy11;
-        public UnitDefinition UnitDefinition;
-        public double Dummy7;
-        public double DWGPaperOrientation;
-        public double TopMargin;
-        public double LeftMargin;
-        public double BottomMargin;
-        public double RightMargin;
-        public double PlotScaleFactor;
-        public double Dummy8;
-        public double Dummy9;
-        public UInt32 SheetNumber;
-        public int Dummy1;
-        public UInt64 BorderAttachmentId;
-        public double Dummy90;
-        public double Dummy91;
-        public double Dummy92;
-    };
-
-    public struct SheetScale
-    {
-        Int16 word0;
-        public DPoint3d Scale;
-        int dword20;
-        Int64 qword28;
-        Int64 qword30;
-        Int64 qword38;
-    };
 
     public struct ModelInfo
     {
@@ -238,9 +212,12 @@ namespace v8file.net
         public int Dummy0;
         public int Dummy3;
         public int Dummy;
-        public SheetDef SheetDef;
-        public SheetScale SheetScale;
+        public SheetModelLinkage SheetDef;
+        public SheetScaleLinkage SheetScale;
         public string SheetName;
+        public int LibraryType;
+        public CellLibraryType CellLibraryType;
+        public Linkage[] Linkages;
 
         public void Dump(StreamWriter sw, int level)
         {
@@ -249,6 +226,64 @@ namespace v8file.net
             sw.WriteLine($"{ident}ModelName=\"{ModelName}\"");
             sw.WriteLine($"{ident}ModelDescription=\"{ModelDescription}\"");
             sw.WriteLine($"{ident}DgnModelType={DgnModelType}");
+            sw.WriteLine($"{ident}CellLibraryType={CellLibraryType}");
+            sw.WriteLine($"{ident}StorageUnit >");
+            StorageUnit.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}MasterUnit >");
+            MasterUnit.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}SubUnit >");
+            SubUnit.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}...");
+            sw.WriteLine($"{ident}GlobalOrigin >");
+            GlobalOrigin.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}SolidExtent={SolidExtent}");
+            sw.WriteLine($"{ident}Rng >");
+            Rng.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}...");
+            sw.WriteLine($"{ident}GridPerReference={GridPerReference}");
+            sw.WriteLine($"{ident}GridRatio={GridRatio}");
+            sw.WriteLine($"{ident}GridAngle={GridAngle}");
+            sw.WriteLine($"{ident}GridBase >");
+            GridBase.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}...");
+            sw.WriteLine($"{ident}ACSType={ACSType}");
+            sw.WriteLine($"{ident}AcsOrigin >");
+            AcsOrigin.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}AcsRotMatrix >");
+            AcsRotMatrix.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}AcsElementId={AcsElementId}");
+            sw.WriteLine($"{ident}...");
+            sw.WriteLine($"{ident}RoundOffUnit={RoundOffUnit}");
+            sw.WriteLine($"{ident}RoundOffRatio={RoundOffRatio}");
+            sw.WriteLine($"{ident}Azimuth={Azimuth}");
+            sw.WriteLine($"{ident}LineStyleScale={LineStyleScale}");
+            sw.WriteLine($"{ident}DirectionBaseDir={DirectionBaseDir}");
+            sw.WriteLine($"{ident}Transparency={Transparency}");
+            sw.WriteLine($"{ident}BackgroundColor >");
+            BackgroundColor.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}LineStyleScale={LineStyleScale}");
+            sw.WriteLine($"{ident}InsertionBase >");
+            InsertionBase.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}SettingFlags >");
+            SettingFlags.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}SettingFlags1 >");
+            SettingFlags1.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}PropertyFlags >");
+            PropertyFlags.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}...");
+            if (DgnModelType == DgnModelType.Sheet)
+            {
+                sw.WriteLine($"{ident}SheetName={SheetName}");
+            }
+
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].Dump(sw, level + 1);
+                }
+            }
         }
     };
 

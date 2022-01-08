@@ -124,7 +124,7 @@ namespace v8file.net
             {
                 for (int j = 0; j < 4; j++)
                 {
-                    sw.WriteLine($"{ident}Coff={Coff[i, j]}");
+                    sw.WriteLine($"{ident}Coff[{i},{j}]={Coff[i, j]}");
                 }
             }
         }
@@ -155,7 +155,7 @@ namespace v8file.net
             {
                 for (int j = 0; j < 3; j++)
                 {
-                    sw.WriteLine($"{ident}Form3d={Form3d[i, j]}");
+                    sw.WriteLine($"{ident}Form3d[{i},{j}]={Form3d[i, j]}");
                 }
             }
         }
@@ -268,7 +268,7 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             for (int i = 0; i < 2; i++)
             {
-                sw.WriteLine($"{ident}Point >");
+                sw.WriteLine($"{ident}Point[{i}] >");
                 Point[i].Dump(sw, level + 1);
             }
         }
@@ -21830,4 +21830,36 @@ namespace v8file.net
             sw.WriteLine($"{ident}Reserved={Reserved}");
         }
     }
+
+    public struct SheetDef_Flags
+    {
+        private UInt16 Data1;
+        private const int sz_1_0 = 1, loc_1_0 = 0, mask_1_0 = unchecked(((1 << sz_1_0) - 1) << loc_1_0);
+        private const int sz_1_1 = 15, loc_1_1 = loc_1_0 + sz_1_0, mask_1_1 = unchecked(((1 << sz_1_1) - 1) << loc_1_1);
+        public UInt16 Enabled
+        {
+            get => (UInt16)((UInt16)(Data1 & mask_1_0) >> loc_1_0);
+            set => Data1 = (UInt16)(Data1 & ~mask_1_0 | (value << loc_1_0) & mask_1_0);
+        }
+        public UInt16 Unused
+        {
+            get => (UInt16)((UInt16)(Data1 & mask_1_1) >> loc_1_1);
+            set => Data1 = (UInt16)(Data1 & ~mask_1_1 | (value << loc_1_1) & mask_1_1);
+        }
+
+        public SheetDef_Flags Read(BinaryReader br)
+        {
+            // read each field
+            Data1 = br.ReadUInt16();
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Enabled={Enabled}");
+            sw.WriteLine($"{ident}Unused={Unused}");
+        }
+    }
+
 }

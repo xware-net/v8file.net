@@ -158,8 +158,10 @@ namespace v8file.net
             modelInfo.GridBase = modelHeaderElm.GridBase;
             modelInfo.GridRatio = modelHeaderElm.GridRatio;
             modelInfo.GridAngle = modelHeaderElm.GridAngle;
-            modelInfo.ModelType = (int)(modelHeaderElm.Dummy1 & 0xFFFF0000) >> 16;
+            modelInfo.ModelType = modelHeaderElm.ModelType;
             modelInfo.DgnModelType = (DgnModelType)modelInfo.ModelType;
+            modelInfo.LibraryType = 0;
+            modelInfo.CellLibraryType = (CellLibraryType)modelInfo.LibraryType;
             if (modelInfo.DgnModelType == DgnModelType.Sheet)
             {
                 // complete the SheetDef & SheetDefScale & SheetName
@@ -185,6 +187,8 @@ namespace v8file.net
             modelInfo.SettingFlags = modelHeaderElm.SettingsFlags;
             modelInfo.SettingFlags1 = modelHeaderElm.SettingFlags1;
             modelInfo.PropertyFlags = modelHeaderElm.PropertyFlags;
+
+            modelInfo.Linkages = modelHeaderElm.Linkages;
             return modelInfo;
         }
     }
