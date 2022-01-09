@@ -469,7 +469,50 @@ namespace v8file.net
                         linkage.Dump(sw, level + 1);
                     }
                     break;
+                case LinkageIds.LINKAGEID_XML:
+                    {
+                        XmlLinkage linkage = new(Data);
+                        linkage.Dump(sw, level + 1);
+                    }
+                    break;
             }
+        }
+    }
+
+    public class XmlLinkage // 56e3, size xxx
+    {
+        public UInt16 Dummy1;       // 0x00
+        public UInt16 Dummy2;       // 0x02
+        public UInt32 Dummy3;       // 0x04
+        public UInt32 Dummy4;       // 0x08
+        public UInt32 Dummy5;       // 0x0c
+        public UInt32 Dummy6;       // 0x10
+        public UInt32 Dummy7;       // 0x14
+        public Int32 NameLength;    // 0x18
+        public string Name;         
+        public Int32 XmlLength;     
+        public string XmlString;    
+
+        public XmlLinkage(byte[] data)
+        {
+            BinaryReader br = new(new MemoryStream(data));
+            Dummy1 = br.ReadUInt16();
+            Dummy2 = br.ReadUInt16();
+            Dummy3 = br.ReadUInt32();
+            Dummy4 = br.ReadUInt32();
+            Dummy5 = br.ReadUInt32();
+            Dummy6 = br.ReadUInt32();
+            Dummy7 = br.ReadUInt32();
+            NameLength = br.ReadInt32();
+            XmlString = System.Text.Encoding.Unicode.GetString(br.ReadBytes(NameLength));
+            XmlLength = br.ReadInt32();
+            XmlString = System.Text.Encoding.Unicode.GetString(br.ReadBytes(XmlLength));
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new string(' ', 2 * level);
+            sw.WriteLine($"{ident}Xml Linkage Dummy1={Dummy1}, Dummy2={Dummy2}, Dummy3={Dummy3}, Dummy4={Dummy4}, Dummy5={Dummy5}, Dummy6={Dummy6}, Dummy7={Dummy7}, NameLength={NameLength}, Name={Name}, XmlLength={XmlLength}, XmlString={XmlString}");
         }
     }
 
@@ -638,10 +681,10 @@ namespace v8file.net
 
     public class LineStyleModLinkage
     {
-        public UInt32 Dummy1;
+        public UInt32 Dummy1;   // 12 or 20 bytes
         public UInt32 Dummy2;
         public UInt32 Dummy3;
-        public UInt32 Dummy4;
+        public UInt32 Dummy4;   // not always !!!
         public UInt32 Dummy5;
 
         public LineStyleModLinkage(byte[] data)
