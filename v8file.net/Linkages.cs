@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace v8file.net
 {
@@ -475,7 +477,39 @@ namespace v8file.net
                         linkage.Dump(sw, level + 1);
                     }
                     break;
+                case LinkageIds.LINKAGEID_InfiniteLine:
+                    {
+                        InfiniteLineLinkage linkage = new(Data);
+                        linkage.Dump(sw, level + 1);
+                    }
+                    break;
             }
+        }
+    }
+
+    public enum InfiniteLineType : uint
+    {
+        LineSegment = 0,
+        FromStartPoint = 1,
+        FromEndPoint = 2,
+        InfiniteLine = 3
+    };
+
+    public class InfiniteLineLinkage // 56e9, size xxx
+    {
+        public InfiniteLineType InfiniteLineType;       // 0x00
+
+        public InfiniteLineLinkage(byte[] data)
+        {
+            BinaryReader br = new(new MemoryStream(data));
+            InfiniteLineType = (InfiniteLineType)br.ReadUInt32();
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new string(' ', 2 * level);
+            sw.WriteLine($"{ident}Infinite Line Linkage");
+            sw.WriteLine($"{ident}  InfiniteLineType={InfiniteLineType}");
         }
     }
 
@@ -489,9 +523,9 @@ namespace v8file.net
         public UInt32 Dummy6;       // 0x10
         public UInt32 Dummy7;       // 0x14
         public Int32 NameLength;    // 0x18
-        public string Name;         
-        public Int32 XmlLength;     
-        public string XmlString;    
+        public string Name;
+        public Int32 XmlLength;
+        public string XmlString;
 
         public XmlLinkage(byte[] data)
         {
@@ -512,7 +546,8 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
-            sw.WriteLine($"{ident}Xml Linkage Dummy1={Dummy1}, Dummy2={Dummy2}, Dummy3={Dummy3}, Dummy4={Dummy4}, Dummy5={Dummy5}, Dummy6={Dummy6}, Dummy7={Dummy7}, NameLength={NameLength}, Name={Name}, XmlLength={XmlLength}, XmlString={XmlString}");
+            sw.WriteLine($"{ident}Xml Linkage");
+            sw.WriteLine($"{ident}  Dummy1={Dummy1}, Dummy2={Dummy2}, Dummy3={Dummy3}, Dummy4={Dummy4}, Dummy5={Dummy5}, Dummy6={Dummy6}, Dummy7={Dummy7}, NameLength={NameLength}, Name={Name}, XmlLength={XmlLength}, XmlString={XmlString}");
         }
     }
 
@@ -535,7 +570,8 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
-            sw.WriteLine($"{ident}Sheet Def Linkage Dummy1={Dummy1}, Dummy2={Dummy2}, Dummy3={Dummy3}, Dummy4={Dummy4}");
+            sw.WriteLine($"{ident}Sheet Def Linkage");
+            sw.WriteLine($"{ident}  Dummy1={Dummy1}, Dummy2={Dummy2}, Dummy3={Dummy3}, Dummy4={Dummy4}");
         }
     };
 
@@ -598,7 +634,7 @@ namespace v8file.net
                 System = (UnitSystem)(UnitFlags.System),
                 Numerator = Numerator,
                 Denominator = Denominator,
-                Label = Label.Replace("\x00", "") 
+                Label = Label.Replace("\x00", "")
             };
             Dummy7 = br.ReadDouble();
             DWGPaperOrientation = br.ReadDouble();
@@ -662,7 +698,7 @@ namespace v8file.net
             Dummy1 = br.ReadUInt32();
             ArraySize = (data.Length - 8) / sizeof(double);
             Array = new double[ArraySize];
-            for (int i=0; i<ArraySize; i++)
+            for (int i = 0; i < ArraySize; i++)
             {
                 Array[i] = br.ReadDouble();
             }
@@ -671,10 +707,11 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
-            sw.WriteLine($"{ident}Double Array Linkage, ArraySize={ArraySize}");
+            sw.WriteLine($"{ident}Double Array Linkage");
+            sw.WriteLine($"{ident}  ArraySize={ArraySize}");
             for (int i = 0; i < ArraySize; i++)
             {
-                sw.WriteLine($"{ident}  Array[{i}]={Array[i]}");
+                sw.WriteLine($"{ident}    Array[{i}]={Array[i]}");
             }
         }
     }
@@ -896,17 +933,17 @@ namespace v8file.net
             {
                 0x0008 => _ = Dummy2 switch
                 {
-                    0x0000 => message = $"{ident}Fill Color Linkage, FillColor={FillColor}",
-                    0x0001 => message = $"{ident}Gradient Fill Linkage, GradientType={(GradientType)GradientType}, GradientAngle={GradientAngle}, WhiteIntensity={WhiteIntensity}, Shift={Shift}, InvertFlag={InvertFlag}, Keys=({Keys})",
+                    0x0000 => message = $"{ident}Fill Color Linkage\r\n{ident}  FillColor={FillColor}",
+                    0x0001 => message = $"{ident}Gradient Fill Linkage\r\n{ident}  GradientType={(GradientType)GradientType}, GradientAngle={GradientAngle}, WhiteIntensity={WhiteIntensity}, Shift={Shift}, InvertFlag={InvertFlag}, Keys=({Keys})",
                     _ => message = "???",
                 },
-                0x0009 => message = $"{ident}Transparency Linkage, Transparency={Transparency}",
-                0x000b => message = $"{ident}User Defined Color Book Linkage, UserDefinedColorBookEntry={UserDefinedColorBookEntry}",
-                0x000c => message = $"{ident}Internal Material Linkage, Linkage Type=LevelOverride, MaterialId=0x{MaterialId:X}",
-                0x000d => message = $"{ident}Internal Material Linkage, Linkage Type=ByLevelAssigned, MaterialId=0x{MaterialId:X}",
-                0x000e => message = $"{ident}Internal Material Linkage, Linkage Type=ElementAssigned, MaterialId=0x{MaterialId:X}",
-                0x0010 => message = $"{ident}Display Style Linkage, DisplayStyleId={DisplayStyleId}",
-                _ => message = $"{ident}Fill Style Linkage, Dummy1=0x{Dummy1:X4},  Dummy2=0x{Dummy2:X4}",
+                0x0009 => message = $"{ident}Transparency Linkage\r\n{ident}  Transparency={Transparency}",
+                0x000b => message = $"{ident}User Defined Color Book Linkage\r\n{ident}  UserDefinedColorBookEntry={UserDefinedColorBookEntry}",
+                0x000c => message = $"{ident}Internal Material Linkage\r\n{ident}  Linkage Type=LevelOverride, MaterialId=0x{MaterialId:X}",
+                0x000d => message = $"{ident}Internal Material Linkage\r\n{ident}  Linkage Type=ByLevelAssigned, MaterialId=0x{MaterialId:X}",
+                0x000e => message = $"{ident}Internal Material Linkage\r\n{ident}  Linkage Type=ElementAssigned, MaterialId=0x{MaterialId:X}",
+                0x0010 => message = $"{ident}Display Style Linkage\r\n{ident}  DisplayStyleId={DisplayStyleId}",
+                _ => message = $"{ident}Fill Style Linkage\r\n{ident}  Dummy1=0x{Dummy1:X4},  Dummy2=0x{Dummy2:X4}",
             };
 
             sw.WriteLine(message);
@@ -930,15 +967,16 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
-            sw.WriteLine($"{ident}BitMask Linkage, BitMaskId={BitMaskId}, BitCount={BitCount}, BitMaskSize={BitMask.Size}, BitMaskData={BitMask}");
+            sw.WriteLine($"{ident}BitMask Linkage");
+            sw.WriteLine($"{ident}  BitMaskId={BitMaskId}, BitCount={BitCount}, BitMaskSize={BitMask.Size}, BitMaskData={BitMask}");
         }
     }
 
     public class LevelMaskLinkage       // 0x5710
     {
-        public UInt16 Dummy1;
-        public UInt16 Dummy2;
-        public UInt32 Dummy3;
+        public UInt16 Dummy1;           // always 0x0001 ?
+        public UInt16 Dummy2;           // always 0x0002 ?
+        public UInt32 Dummy3;           // always 0x00000002 ?
         public UInt32 MaxLevelEntryId;
         public Bitmask BitMask;
 
@@ -955,7 +993,8 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
-            sw.WriteLine($"{ident}LevelMask Linkage, MaxLevelEntryId={MaxLevelEntryId}, BitMaskSize={BitMask.Size}, BitMaskData={BitMask}");
+            sw.WriteLine($"{ident}LevelMask Linkage");
+            sw.WriteLine($"{ident}  MaxLevelEntryId={MaxLevelEntryId}, BitMaskSize={BitMask.Size}, BitMaskData={BitMask}");
         }
     }
 
@@ -996,7 +1035,8 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
-            sw.WriteLine($"{ident}Filter Member Linkage, MemberId={MemberId}, MemberType={(FilterMemberType)MemberType}, NameString=\"{NameString}\", ExpressionString=\"{ExpressionString}\"");
+            sw.WriteLine($"{ident}Filter Member Linkage");
+            sw.WriteLine($"{ident}  MemberId={MemberId}, MemberType={(FilterMemberType)MemberType}, NameString=\"{NameString}\", ExpressionString=\"{ExpressionString}\"");
         }
     }
 
@@ -1018,7 +1058,8 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
-            sw.WriteLine($"{ident}Byte Array Linkage, ByteArrayId=0x{ByteArrayId:X}, ByteArraySize={ByteArraySize}");
+            sw.WriteLine($"{ident}Byte Array Linkage");
+            sw.WriteLine($"{ident}  ByteArrayId=0x{ByteArrayId:X}, ByteArraySize={ByteArraySize}");
         }
     }
 
@@ -1045,7 +1086,8 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
-            sw.WriteLine($"{ident}String Linkage, Key={Key}, Value=\"{String}\"");
+            sw.WriteLine($"{ident}String Linkage");
+            sw.WriteLine($"{ident}  Key={Key}, Value=\"{String}\"");
         }
     }
 
@@ -1062,28 +1104,29 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
-            sw.WriteLine($"{ident}Dependency Linkage, AppId=0x{DependencyLinkage.AppID:X4}, AppValue={DependencyLinkage.AppValue}, Root Data Type={(DependencyLinkageType)DependencyLinkage.U.F.RootDataType}, NRoots={DependencyLinkage.NRoots}, Roots >");
+            sw.WriteLine($"{ident}Dependency Linkage");
+            sw.WriteLine($"{ident}  AppId=0x{DependencyLinkage.AppID:X4}, AppValue={DependencyLinkage.AppValue}, Root Data Type={(DependencyLinkageType)DependencyLinkage.U.F.RootDataType}, NRoots={DependencyLinkage.NRoots}, Roots >");
             for (int i = 0; i < DependencyLinkage.NRoots; i++)
             {
                 switch ((DependencyLinkageType)DependencyLinkage.U.F.RootDataType)
                 {
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ELEM_ID:
-                        sw.WriteLine($"{ident}  Root[{i}]=0x{DependencyLinkage.Root.Elemid[i]:X16}");
+                        sw.WriteLine($"{ident}    Root[{i}]=0x{DependencyLinkage.Root.Elemid[i]:X16}");
                         break;
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ASSOC_POINT:
-                        sw.WriteLine($"{ident}  Root[{i}]={(AssocPointRootType)DependencyLinkage.Root.Assoc[i].Type}");
+                        sw.WriteLine($"{ident}    Root[{i}]={(AssocPointRootType)DependencyLinkage.Root.Assoc[i].Type}");
                         break;
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ASSOC_POINT_I:
-                        sw.WriteLine($"{ident}  Root[{i}]={(AssocPointRootType)DependencyLinkage.Root.Assoc_I[i].Assoc.Type}");
+                        sw.WriteLine($"{ident}    Root[{i}]={(AssocPointRootType)DependencyLinkage.Root.Assoc_I[i].Assoc.Type}");
                         break;
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_ELEM_ID_V:
-                        sw.WriteLine($"{ident}  Root[{i}]=0x{DependencyLinkage.Root.E_v[i].Elemid:X16}, Value={DependencyLinkage.Root.E_v[i].Value}");
+                        sw.WriteLine($"{ident}    Root[{i}]=0x{DependencyLinkage.Root.E_v[i].Elemid:X16}, Value={DependencyLinkage.Root.E_v[i].Value}");
                         break;
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_FAR_ELEM_ID:
-                        sw.WriteLine($"{ident}  Root[{i}]=0x{DependencyLinkage.Root.Far_elemid[i].Elemid:X16}, Refattid={DependencyLinkage.Root.Far_elemid[i].Refattid:X16}");
+                        sw.WriteLine($"{ident}    Root[{i}]=0x{DependencyLinkage.Root.Far_elemid[i].Elemid:X16}, Refattid={DependencyLinkage.Root.Far_elemid[i].Refattid:X16}");
                         break;
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_FAR_ELEM_ID_V:
-                        sw.WriteLine($"{ident}  Root[{i}]=0x{DependencyLinkage.Root.Far_e_v[i].S.Elemid:X16}, Value={DependencyLinkage.Root.Far_e_v[i].S.Value}, Refattid={DependencyLinkage.Root.Far_e_v[i]:X16}");
+                        sw.WriteLine($"{ident}    Root[{i}]=0x{DependencyLinkage.Root.Far_e_v[i].S.Elemid:X16}, Value={DependencyLinkage.Root.Far_e_v[i].S.Value}, Refattid={DependencyLinkage.Root.Far_e_v[i]:X16}");
                         break;
                     case DependencyLinkageType.DEPENDENCY_DATA_TYPE_PATH_V:
                         break;
@@ -1109,7 +1152,8 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
-            sw.WriteLine($"{ident}Text Annotation Scale Linkage, Value={Scale}");
+            sw.WriteLine($"{ident}Text Annotation Scale Linkage");
+            sw.WriteLine($"{ident}  Value={Scale}");
         }
     }
 
@@ -1130,7 +1174,8 @@ namespace v8file.net
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
-            sw.WriteLine($"{ident}String Linkage, Key={Key}, Value=\"{String}\"");
+            sw.WriteLine($"{ident}String Linkage");
+            sw.WriteLine($"{ident}  Key={Key}, Value=\"{String}\"");
         }
     }
 }
