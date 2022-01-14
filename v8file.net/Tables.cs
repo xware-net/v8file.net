@@ -36,7 +36,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -80,7 +80,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -124,7 +124,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -177,7 +177,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -221,7 +221,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -265,7 +265,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -309,7 +309,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -353,7 +353,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -397,7 +397,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -441,7 +441,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -485,7 +485,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -529,7 +529,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -573,7 +573,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -617,7 +617,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -661,7 +661,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -705,7 +705,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -749,7 +749,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -793,7 +793,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -837,7 +837,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -881,7 +881,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))

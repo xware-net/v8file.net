@@ -9,7 +9,7 @@ namespace v8file.net
 {
     public class V8Linkages
     {
-        public static Linkage[] V8GetLinkages(BinaryReader br, Elm_hdr ehdr)
+        public static Linkage[] V8GetLinkages(BinaryReader br, Elm_hdr ehdr, bool is3d = false)
         {
             Linkage[] linkages = Array.Empty<Linkage>();
 
@@ -30,7 +30,7 @@ namespace v8file.net
             do
             {
                 Array.Resize(ref linkages, linkages.Length + 1);
-                var linkage = new Linkage().Read(br);
+                var linkage = new Linkage().Read(br, is3d);
                 linkages[^1] = linkage;
                 int exponent = 0; // linkage.LinkageHeader.WdExponent;
                 int length = linkage.LinkageHeader.WdMantissa * Utils.V8Power2(exponent);

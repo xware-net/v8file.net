@@ -480,6 +480,9 @@ namespace v8file.net
                         case ColorTable t:
                             t.Dump(sw, level);
                             break;
+                        case Complex_shape t:
+                            t.Dump(sw, level);
+                            break;
                         case Complex_string t:
                             t.Dump(sw, level);
                             break;

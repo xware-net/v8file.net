@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
+using T_Adouble = System.Double;
+
 namespace v8file.net
 {
     public enum LinkageIds : int
@@ -348,9 +350,11 @@ namespace v8file.net
     {
         public LinkageHeader LinkageHeader;
         public byte[] Data;
+        public bool Is3d;
 
-        public Linkage Read(BinaryReader br)
+        public Linkage Read(BinaryReader br, bool is3d = false)
         {
+            Is3d = is3d;
             LinkageHeader = new LinkageHeader().Read(br);
             int exponent = 0; // LinkageHeader.WdExponent;
             if ((LinkageIds)LinkageHeader.PrimaryID == LinkageIds.LINKAGEID_DMRS)
@@ -375,7 +379,7 @@ namespace v8file.net
 
         public LinkageIds Type => (LinkageIds)LinkageHeader.PrimaryID;
 
-        public void Dump(StreamWriter sw, int level)
+        public void LinkageDump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
             sw.WriteLine($"{ident}PrimaryId=0x{LinkageHeader.PrimaryID:X4} ({(LinkageIds)LinkageHeader.PrimaryID}), DataSize={Data.Length}");
@@ -483,7 +487,130 @@ namespace v8file.net
                         linkage.Dump(sw, level + 1);
                     }
                     break;
+                case LinkageIds.LINKAGEID_Hatch:
+                    {
+                        HatchLinkage linkage = new(Data);
+                        linkage.Dump(sw, level + 1);
+                    }
+                    break;
             }
+        }
+    }
+
+    public class HatchLinkage : Linkage
+    {
+        PatternParamsModifierFlags PatternParamsModifierFlags;
+        PatternParams PatternParams = new PatternParams();
+        public T_Adouble[] Quat;
+
+        public HatchLinkage(byte[] data)
+        {
+            BinaryReader br = new(new MemoryStream(data));
+            PatternParamsModifierFlags = (PatternParamsModifierFlags)br.ReadUInt32();
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.Space1) != 0)
+            {
+                PatternParams.Space1 = br.ReadDouble();
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.Angle1) != 0)
+            {
+                PatternParams.Angle1 = br.ReadDouble();
+                if (PatternParams.Angle1 >= -6.283185307179586)
+                {
+                    if (PatternParams.Angle1 > 6.283185307179586)
+                        PatternParams.Angle1 = 6.283185307179586;
+                }
+                else
+                {
+                    PatternParams.Angle1 = -6.283185307179586;
+                }
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.Space2) != 0)
+            {
+                PatternParams.Space2 = br.ReadDouble();
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.Angle2) != 0)
+            {
+                PatternParams.Angle2 = br.ReadDouble();
+                if (PatternParams.Angle2 >= -6.283185307179586)
+                {
+                    if (PatternParams.Angle2 > 6.283185307179586)
+                        PatternParams.Angle2 = 6.283185307179586;
+                }
+                else
+                {
+                    PatternParams.Angle2 = -6.283185307179586;
+                }
+            } else
+            {
+                PatternParams.Angle2 = PatternParams.Angle1 + 1.570796326794897;
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.Scale) != 0)
+            {
+                PatternParams.Scale = br.ReadDouble();
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.Tolerance) != 0)
+            {
+                PatternParams.Tolerance = br.ReadDouble();
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.Style) != 0)
+            {
+                PatternParams.Style = br.ReadInt32();
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.Weight) != 0)
+            {
+                PatternParams.Weight = br.ReadUInt32();
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.Color) != 0)
+            {
+                PatternParams.Color = br.ReadUInt32();
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.RotMatrix) != 0)
+            {
+                Quat = new T_Adouble[4];
+                for (int i = 0; i < 4; i++)
+                {
+                    Quat[i] = br.ReadDouble();
+                }
+                // generate PatternParams.RotMatrix
+                if (Is3d)
+                {
+
+                } else
+                {
+
+                }
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.Offset) != 0)
+            {
+                PatternParams.Offset = new DPoint3d().Read(br);
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.Multiline) != 0)
+            {
+                PatternParams.MinLine = br.ReadInt32();
+                PatternParams.MaxLine = br.ReadInt32();
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.HoleStyle) != 0)
+            {
+                PatternParams.PatternParamsHoleStyleType = (PatternParamsHoleStyleType)br.ReadInt16();
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.DwgHatchDef) != 0)
+            {
+                PatternParams.DwgHatchDef = new DwgHatchDef().Read(br);
+            }
+            if ((PatternParamsModifierFlags & PatternParamsModifierFlags.AnnotationScale) != 0)
+            {
+                PatternParams.AnnotationScale = br.ReadDouble();
+            }
+
+            // we must get also the Origin, ...
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new string(' ', 2 * level);
+            sw.WriteLine($"{ident}Hatch Linkage");
+            sw.WriteLine($"{ident}  Pattern Params >");
+            PatternParams.Dump(sw, level + 2);
         }
     }
 
@@ -495,7 +622,7 @@ namespace v8file.net
         InfiniteLine = 3
     };
 
-    public class InfiniteLineLinkage // 56e9, size xxx
+    public class InfiniteLineLinkage : Linkage // 56e9, size xxx
     {
         public InfiniteLineType InfiniteLineType;       // 0x00
 
@@ -513,7 +640,7 @@ namespace v8file.net
         }
     }
 
-    public class XmlLinkage // 56e3, size xxx
+    public class XmlLinkage : Linkage // 56e3, size xxx
     {
         public UInt16 Dummy1;       // 0x00
         public UInt16 Dummy2;       // 0x02
@@ -551,7 +678,7 @@ namespace v8file.net
         }
     }
 
-    public class SheetModelExLinkage // 5701, size 20
+    public class SheetModelExLinkage : Linkage // 5701, size 20
     {
         public UInt32 Dummy1;
         public UInt32 Dummy2;
@@ -575,7 +702,7 @@ namespace v8file.net
         }
     };
 
-    public class SheetModelLinkage // 56ed, size 312 (0x138)
+    public class SheetModelLinkage : Linkage // 56ed, size 312 (0x138)
     {
         public UInt16 Dummy10;                  // 0x00
         public SheetDef_Flags Flags;            // 0x02
@@ -660,7 +787,7 @@ namespace v8file.net
         }
     };
 
-    public class SheetScaleLinkage // 56ee, size 40
+    public class SheetScaleLinkage : Linkage // 56ee, size 40
     {
         public UInt32 Dummy1;
         public UInt32 Dummy2;
@@ -684,7 +811,7 @@ namespace v8file.net
         }
     };
 
-    public class DoubleArrayLinkage
+    public class DoubleArrayLinkage : Linkage
     {
         public UInt32 ArrayId;
         public UInt32 Dummy1;
@@ -716,22 +843,225 @@ namespace v8file.net
         }
     }
 
-    public class LineStyleModLinkage
+    public enum LsMultilineDataType : uint
     {
-        public UInt32 Dummy1;   // 12 or 20 bytes
-        public UInt32 Dummy2;
-        public UInt32 Dummy3;
-        public UInt32 Dummy4;   // not always !!!
-        public UInt32 Dummy5;
+        LsMultilineTypeLine = 0,
+        LsMultilineTypeStartCap = 1,
+        LsMultilineTypeEndCap = 2,
+        LsMultilineTypeJoints = 3
+    };
+
+    public enum LsModWidthMode : uint
+    {
+        LsModNoWidth = 0,
+        LsModConstantWidth = 1,
+        LsModTaperedWidth = 2
+    };
+
+    public enum LsModShiftMode : uint
+    {
+        LsModNoShift = 0,
+        LsModDistance = 1,
+        LsModFraction = 2,
+        LsModCentered = 3
+    };
+
+    public enum LsModCornerMode : uint
+    {
+        LsModFromLineStyle = 0,
+        LsModBreakAtCorners = 1,
+        LsModRunThroughCorners = 2
+    };
+
+    public struct LineStyleModProperties
+    {
+        private UInt32 Data1;
+        private const int sz_1_0 = 1, loc_1_0 = 0, mask_1_0 = unchecked(((1 << sz_1_0) - 1) << loc_1_0);
+        private const int sz_1_1 = 1, loc_1_1 = loc_1_0 + sz_1_0, mask_1_1 = unchecked(((1 << sz_1_1) - 1) << loc_1_1);
+        private const int sz_1_2 = 1, loc_1_2 = loc_1_1 + sz_1_1, mask_1_2 = unchecked(((1 << sz_1_2) - 1) << loc_1_2);
+        private const int sz_1_3 = 1, loc_1_3 = loc_1_2 + sz_1_2, mask_1_3 = unchecked(((1 << sz_1_3) - 1) << loc_1_3);
+        private const int sz_1_4 = 1, loc_1_4 = loc_1_3 + sz_1_3, mask_1_4 = unchecked(((1 << sz_1_4) - 1) << loc_1_4);
+        private const int sz_1_5 = 1, loc_1_5 = loc_1_4 + sz_1_4, mask_1_5 = unchecked(((1 << sz_1_5) - 1) << loc_1_5);
+        private const int sz_1_6 = 1, loc_1_6 = loc_1_5 + sz_1_5, mask_1_6 = unchecked(((1 << sz_1_6) - 1) << loc_1_6);
+        private const int sz_1_7 = 1, loc_1_7 = loc_1_6 + sz_1_6, mask_1_7 = unchecked(((1 << sz_1_7) - 1) << loc_1_7);
+        private const int sz_1_8 = 1, loc_1_8 = loc_1_7 + sz_1_7, mask_1_8 = unchecked(((1 << sz_1_8) - 1) << loc_1_8);
+        private const int sz_1_9 = 1, loc_1_9 = loc_1_8 + sz_1_8, mask_1_9 = unchecked(((1 << sz_1_9) - 1) << loc_1_9);
+        private const int sz_1_10 = 1, loc_1_10 = loc_1_9 + sz_1_9, mask_1_10 = unchecked(((1 << sz_1_10) - 1) << loc_1_10);
+        private const int sz_1_11 = 1, loc_1_11 = loc_1_10 + sz_1_10, mask_1_11 = unchecked(((1 << sz_1_11) - 1) << loc_1_11);
+        private const int sz_1_12 = 1, loc_1_12 = loc_1_11 + sz_1_11, mask_1_12 = unchecked(((1 << sz_1_12) - 1) << loc_1_12);
+        private const int sz_1_13 = 1, loc_1_13 = loc_1_12 + sz_1_12, mask_1_13 = unchecked(((1 << sz_1_13) - 1) << loc_1_13);
+        private const int sz_1_14 = 16, loc_1_14 = loc_1_13 + sz_1_13, mask_1_14 = unchecked(((1 << sz_1_14) - 1) << loc_1_14);
+        private const int sz_1_15 = 1, loc_1_15 = loc_1_14 + sz_1_14, mask_1_15 = unchecked(((1 << sz_1_15) - 1) << loc_1_15);
+        private const int sz_1_16 = 1, loc_1_16 = loc_1_15 + sz_1_15, mask_1_16 = unchecked(((1 << sz_1_16) - 1) << loc_1_16);
+        public UInt32 STYLEMOD_Scale
+        {
+            get => (UInt32)(Data1 & mask_1_0) >> loc_1_0;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_0 | (value << loc_1_0) & mask_1_0);
+        }
+        public UInt32 STYLEMOD_DScale
+        {
+            get => (UInt32)(Data1 & mask_1_1) >> loc_1_1;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_1 | (value << loc_1_1) & mask_1_1);
+        }
+        public UInt32 STYLEMOD_GScale
+        {
+            get => (UInt32)(Data1 & mask_1_2) >> loc_1_2;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_2 | (value << loc_1_2) & mask_1_2);
+        }
+        public UInt32 STYLEMOD_SWidth
+        {
+            get => (UInt32)(Data1 & mask_1_3) >> loc_1_3;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_3 | (value << loc_1_3) & mask_1_3);
+        }
+        public UInt32 STYLEMOD_EWidth
+        {
+            get => (UInt32)(Data1 & mask_1_4) >> loc_1_4;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_4 | (value << loc_1_4) & mask_1_4);
+        }
+        public UInt32 STYLEMOD_DistPhase
+        {
+            get => (UInt32)(Data1 & mask_1_5) >> loc_1_5;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_5 | (value << loc_1_5) & mask_1_5);
+        }
+        public UInt32 STYLEMOD_FractPhase
+        {
+            get => (UInt32)(Data1 & mask_1_6) >> loc_1_6;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_6 | (value << loc_1_6) & mask_1_6);
+        }
+        public UInt32 STYLEMOD_CenterPhase
+        {
+            get => (UInt32)(Data1 & mask_1_7) >> loc_1_7;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_7 | (value << loc_1_7) & mask_1_7);
+        }
+        public UInt32 STYLEMOD_Normal
+        {
+            get => (UInt32)(Data1 & mask_1_8) >> loc_1_8;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_8 | (value << loc_1_8) & mask_1_8);
+        }
+        public UInt32 STYLEMOD_RMatrix
+        {
+            get => (UInt32)(Data1 & mask_1_9) >> loc_1_9;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_9 | (value << loc_1_9) & mask_1_9);
+        }
+        public UInt32 Reserved
+        {
+            get => (UInt32)(Data1 & mask_1_10) >> loc_1_10;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_10 | (value << loc_1_10) & mask_1_10);
+        }
+        public UInt32 STYLEMOD_LineMask
+        {
+            get => (UInt32)(Data1 & mask_1_11) >> loc_1_11;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_11 | (value << loc_1_11) & mask_1_11);
+        }
+        public UInt32 STYLEMOD_MLineFlags
+        {
+            get => (UInt32)(Data1 & mask_1_12) >> loc_1_12;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_12 | (value << loc_1_12) & mask_1_12);
+        }
+        public UInt32 STYLEMOD_TrueWidth
+        {
+            get => (UInt32)(Data1 & mask_1_13) >> loc_1_13;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_13 | (value << loc_1_13) & mask_1_13);
+        }
+        public UInt32 Reserved1
+        {
+            get => (UInt32)(Data1 & mask_1_14) >> loc_1_14;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_14 | (value << loc_1_14) & mask_1_14);
+        }
+        public UInt32 STYLEMOD_SegMode
+        {
+            get => (UInt32)(Data1 & mask_1_15) >> loc_1_15;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_15 | (value << loc_1_15) & mask_1_15);
+        }
+        public UInt32 STYLEMOD_NoSegMode
+        {
+            get => (UInt32)(Data1 & mask_1_16) >> loc_1_16;
+            set => Data1 = (UInt32)(Data1 & ~mask_1_16 | (value << loc_1_16) & mask_1_16);
+        }
+
+        public LineStyleModProperties Read(BinaryReader br)
+        {
+            // read each field
+            Data1 = br.ReadUInt32();
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}STYLEMOD_Scale={STYLEMOD_Scale}");
+            sw.WriteLine($"{ident}STYLEMOD_DScale={STYLEMOD_DScale}");
+            sw.WriteLine($"{ident}STYLEMOD_GScale={STYLEMOD_GScale}");
+            sw.WriteLine($"{ident}STYLEMOD_SWidth={STYLEMOD_SWidth}");
+            sw.WriteLine($"{ident}STYLEMOD_EWidth={STYLEMOD_EWidth}");
+            sw.WriteLine($"{ident}STYLEMOD_DistPhase={STYLEMOD_DistPhase}");
+            sw.WriteLine($"{ident}STYLEMOD_FractPhase={STYLEMOD_FractPhase}");
+            sw.WriteLine($"{ident}STYLEMOD_CenterPhase={STYLEMOD_CenterPhase}");
+            sw.WriteLine($"{ident}STYLEMOD_Normal={STYLEMOD_Normal}");
+            sw.WriteLine($"{ident}STYLEMOD_RMatrix={STYLEMOD_RMatrix}");
+            sw.WriteLine($"{ident}Reserved={Reserved}");
+            sw.WriteLine($"{ident}STYLEMOD_LineMask={STYLEMOD_LineMask}");
+            sw.WriteLine($"{ident}STYLEMOD_MLineFlags={STYLEMOD_MLineFlags}");
+            sw.WriteLine($"{ident}STYLEMOD_TrueWidth={STYLEMOD_TrueWidth}");
+            sw.WriteLine($"{ident}Reserved1={Reserved1}");
+            sw.WriteLine($"{ident}STYLEMOD_SegMode={STYLEMOD_SegMode}");
+            sw.WriteLine($"{ident}STYLEMOD_NoSegMode={STYLEMOD_NoSegMode}");
+        }
+    }
+
+    public class LineStyleModLinkage : Linkage   // 0x79f9
+    {
+        public LineStyleModProperties LineStyleModProperties;   // 12 or 20 bytes
+        public double LineStyleScale;
+        public double DashScale;
+        public double GapScale;
+        public double StartWidth;
+        public double EndWidth;
+        public double DistPhase;
+        public double FractPhase;
+        public double ShiftDistance;
+        public DPoint3d Normal;
+        public T_Adouble[] Quat;
+        public UInt32 LineMask;
+        public UInt32 MLineFlags;
 
         public LineStyleModLinkage(byte[] data)
         {
             BinaryReader br = new(new MemoryStream(data));
-            Dummy1 = br.ReadUInt32();
-            Dummy2 = br.ReadUInt32();
-            Dummy3 = br.ReadUInt32();
-            Dummy4 = br.ReadUInt32();
-            Dummy5 = br.ReadUInt32();
+            LineStyleModProperties = new LineStyleModProperties().Read(br);
+            if (LineStyleModProperties.STYLEMOD_Scale != 0)
+                LineStyleScale = br.ReadDouble();
+            if (LineStyleModProperties.STYLEMOD_DScale != 0)
+                DashScale = br.ReadDouble();
+            if (LineStyleModProperties.STYLEMOD_GScale != 0)
+                GapScale = br.ReadDouble();
+            if (LineStyleModProperties.STYLEMOD_SWidth != 0)
+                StartWidth = br.ReadDouble();
+            if (LineStyleModProperties.STYLEMOD_EWidth != 0)
+                EndWidth = br.ReadDouble();
+            if (LineStyleModProperties.STYLEMOD_DistPhase != 0)
+                DistPhase = br.ReadDouble();
+            if (LineStyleModProperties.STYLEMOD_FractPhase != 0)
+                FractPhase = br.ReadDouble();
+            if (LineStyleModProperties.STYLEMOD_Normal != 0)
+                Normal = new DPoint3d().Read(br);
+            if (LineStyleModProperties.STYLEMOD_RMatrix != 0)
+            {
+                Quat = new T_Adouble[4];
+                for (int i = 0; i < 4; i++)
+                {
+                    Quat[i] = br.ReadDouble();
+                }
+            }
+            if (LineStyleModProperties.STYLEMOD_LineMask != 0)
+                LineMask = br.ReadUInt32();
+            if (LineStyleModProperties.STYLEMOD_MLineFlags != 0)
+                MLineFlags = br.ReadUInt32();
+
+            //LineStyleScale = br.ReadDouble();
+            //StartWidth = br.ReadDouble();
+            //EndWidth = br.ReadDouble();
+            //ShiftDistance = br.ReadDouble();
         }
 
         public void Dump(StreamWriter sw, int level)
@@ -741,7 +1071,7 @@ namespace v8file.net
         }
     }
 
-    public class DMRSLinkage
+    public class DMRSLinkage : Linkage
     {
         public DMRSLinkage(byte[] data)
         {
@@ -818,7 +1148,7 @@ namespace v8file.net
         }
     }
 
-    public class FillStyleLinkage   // 0x0041
+    public class FillStyleLinkage : Linkage  // 0x0041
     {
         public UInt16 Dummy1;       // 0x000c (LevelOverride), 0x000d (ByLevelAssigned), 0x000e (ElementAssigned) - InternalMaterialLinkage
                                     // 0x0009 - TransparencyLinkage
@@ -950,7 +1280,7 @@ namespace v8file.net
         }
     }
 
-    public class BitMaskLinkage         // 0x56d3
+    public class BitMaskLinkage : Linkage        // 0x56d3
     {
         public UInt32 BitMaskId;
         public UInt32 BitCount;
@@ -972,7 +1302,7 @@ namespace v8file.net
         }
     }
 
-    public class LevelMaskLinkage       // 0x5710
+    public class LevelMaskLinkage : Linkage      // 0x5710
     {
         public UInt16 Dummy1;           // always 0x0001 ?
         public UInt16 Dummy2;           // always 0x0002 ?
@@ -998,7 +1328,7 @@ namespace v8file.net
         }
     }
 
-    public class FilterMemberLinkage    // 0x56dd
+    public class FilterMemberLinkage : Linkage   // 0x56dd
     {
         public UInt32 MemberId;
         public UInt32 MemberType;
@@ -1040,7 +1370,7 @@ namespace v8file.net
         }
     }
 
-    public class ByteArrayLinkage
+    public class ByteArrayLinkage : Linkage
     {
         public UInt32 ByteArrayId;
         public Int32 ByteArraySize;
@@ -1063,7 +1393,7 @@ namespace v8file.net
         }
     }
 
-    public class StringLinkage
+    public class StringLinkage : Linkage
     {
         public LinkageKeyValuesString Key;
         public int Length;
@@ -1091,7 +1421,7 @@ namespace v8file.net
         }
     }
 
-    public class DepLinkage
+    public class DepLinkage : Linkage
     {
         DependencyLinkage DependencyLinkage;
 
@@ -1137,7 +1467,7 @@ namespace v8file.net
         }
     }
 
-    public class TextAnnotationScaleLinkage
+    public class TextAnnotationScaleLinkage : Linkage
     {
         public double Scale;
 
@@ -1157,25 +1487,31 @@ namespace v8file.net
         }
     }
 
-    public class ThicknessLinkage
+    public class ThicknessLinkage : Linkage  // 0x56d4
     {
-        public LinkageKeyValuesString Key;
-        public int Length;
-        public string String;
+        public UInt32 Dummy1;           // 0x00
+        public UInt32 Dummy2;           // 0x04
+        public UInt32 Dummy3;           // 0x08
+        public UInt32 Dummy4;           // 0x0c
+        public UInt32 Dummy5;           // 0x10
+        public double Thickness;        // 0x14
 
         public ThicknessLinkage(byte[] data)
         {
             BinaryReader br = new(new MemoryStream(data), Encoding.UTF8);
-            Key = (LinkageKeyValuesString)br.ReadInt32();
-            Length = br.ReadInt32();
-            String = System.Text.Encoding.UTF8.GetString(br.ReadBytes(Length));
+            Dummy1 = br.ReadUInt32();
+            Dummy2 = br.ReadUInt32();
+            Dummy3 = br.ReadUInt32();
+            Dummy4 = br.ReadUInt32();
+            Dummy5 = br.ReadUInt32();
+            Thickness = br.ReadDouble();
         }
 
         public void Dump(StreamWriter sw, int level)
         {
             var ident = new string(' ', 2 * level);
-            sw.WriteLine($"{ident}String Linkage");
-            sw.WriteLine($"{ident}  Key={Key}, Value=\"{String}\"");
+            sw.WriteLine($"{ident}Thickness Linkage");
+            sw.WriteLine($"{ident}  Dummy1={Dummy1}, Dummy2={Dummy2}, Dummy3={Dummy3}, Dummy4={Dummy4}, Dummy5={Dummy5}, Thickness={Thickness}");
         }
     }
 }

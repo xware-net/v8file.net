@@ -281,7 +281,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
         }
@@ -465,7 +465,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -512,7 +512,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -624,7 +624,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -688,7 +688,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -779,7 +779,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -841,7 +841,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -918,7 +918,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -1047,7 +1047,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -1136,7 +1136,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -1193,7 +1193,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -1234,7 +1234,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -1275,7 +1275,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -1442,7 +1442,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -1513,7 +1513,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -1588,7 +1588,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -1739,7 +1739,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -1862,7 +1862,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -1980,7 +1980,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -2042,7 +2042,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -2108,7 +2108,7 @@ namespace v8file.net
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
                 for (int i = 0; i < Linkages.Length; i++)
                 {
-                    Linkages[i].Dump(sw, level + 1);
+                    Linkages[i].LinkageDump(sw, level + 1);
                 }
             }
             if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
@@ -2125,4 +2125,123 @@ namespace v8file.net
             }
         }
     }
+
+    public class PatternParams
+    {
+        public RotMatrix Orientation;
+        public DPoint3d Offset;
+        public double Space1;
+        public double Angle1;
+        public double Space2;
+        public double Angle2;
+        public double Scale;
+        public double Tolerance;
+        public double AnnotationScale;
+        public string CellName;
+        public UInt64 CellId;
+        public PatternParamsModifierFlags PatternParamsModifierFlags;
+        public int MinLine;
+        public int MaxLine;
+        public UInt32 Color;
+        public UInt32 Weight;
+        public int Style;
+        public PatternParamsHoleStyleType PatternParamsHoleStyleType;
+        public int Gap_4b8;
+        public DwgHatchDef DwgHatchDef;
+        public DPoint3d Origin;
+
+        public PatternParams()
+        {
+            Orientation = new RotMatrix();
+            Orientation.Form3d = new T_Adouble[3, 3];
+            Orientation.Form3d[0, 0] = 1;
+            Orientation.Form3d[1, 1] = 1;
+            Orientation.Form3d[2, 2] = 1;
+            Offset = new DPoint3d();
+            Space1 = 0.0;
+            Angle1 = 0.0;
+            Space2 = 0.0;
+            Angle2 = 0.0;
+            Scale = 1.0;
+            AnnotationScale = 1.0;
+            Tolerance = 0.0;
+            CellName = string.Empty;
+            CellId = 0;
+            PatternParamsModifierFlags = PatternParamsModifierFlags.None;
+            MinLine = -1;
+            MaxLine = -1;
+            Color = 0;
+            Weight = 0;
+            Style = 0;
+            PatternParamsHoleStyleType = 0;
+            DwgHatchDef.NDefLines = 0;
+            DwgHatchDef.PixelSize = 0.0;
+            DwgHatchDef.IslandStyle = 0;
+        }
+
+        public PatternParams Read(BinaryReader br)
+        {
+            // read each field
+            //Orientation = new RotMatrix().Read(br);
+            //Offset = new DPoint3d().Read(br);
+            //Space1 = br.ReadDouble();
+            //Angle1 = br.ReadDouble();
+            //Space2 = br.ReadDouble();
+            //Angle2 = br.ReadDouble();
+            //Scale = br.ReadDouble();
+            //Tolerance = br.ReadDouble();
+            //AnnotationScale = br.ReadDouble();
+            //CellName = string.Empty;
+            //CellId = br.ReadUInt64();
+            //PatternParamsModifierFlags = new PatternParamsModifierFlags().Read(br);
+            //MinLine = br.ReadInt32();
+            //MaxLine = br.ReadInt32();
+            //Color = br.ReadUInt32();
+            //Weight = br.ReadUInt32();
+            //Style = br.ReadInt32();
+            //PatternParamsHoleStyleType = new PatternParamsHoleStyleType().Read(br);
+            //Gap_4b8 = new BYTE[4];
+            //for (int i = 0; i < 4; i++)
+            //{
+            //    Gap_4b8[i] = new BYTE().Read(br);
+            //}
+            //DwgHatchDef = new DwgHatchDef().Read(br);
+            //Origin = new DPoint3d().Read(br);
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Orientation >");
+            Orientation.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Offset >");
+            Offset.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Space1={Space1}");
+            sw.WriteLine($"{ident}Angle1={Angle1}");
+            sw.WriteLine($"{ident}Space2={Space2}");
+            sw.WriteLine($"{ident}Angle2={Angle2}");
+            sw.WriteLine($"{ident}Scale={Scale}");
+            sw.WriteLine($"{ident}Tolerance={Tolerance}");
+            sw.WriteLine($"{ident}AnnotationScale={AnnotationScale}");
+            sw.WriteLine($"{ident}CellName={CellName}");
+            sw.WriteLine($"{ident}CellId={CellId}");
+            sw.WriteLine($"{ident}PatternParamsModifierFlags={PatternParamsModifierFlags}");
+            sw.WriteLine($"{ident}MinLine={MinLine}");
+            sw.WriteLine($"{ident}MaxLine={MaxLine}");
+            sw.WriteLine($"{ident}Color={Color}");
+            sw.WriteLine($"{ident}Weight={Weight}");
+            sw.WriteLine($"{ident}Style={Style}");
+            sw.WriteLine($"{ident}PatternParamsHoleStyleType={PatternParamsHoleStyleType}");
+            //for (int i = 0; i < 4; i++)
+            //{
+            //    sw.WriteLine($"{ident}Gap_4b8={Gap_4b8[i]}");
+            //}
+            sw.WriteLine($"{ident}DwgHatchDef >");
+            DwgHatchDef.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}Origin >");
+            Origin.Dump(sw, level + 1);
+        }
+    }
+
 }
