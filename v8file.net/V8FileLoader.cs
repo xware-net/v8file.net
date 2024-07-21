@@ -45,10 +45,15 @@ namespace v8file.net
                 }
 
                 if (sw != StreamWriter.Null)
-                    sw.Write("ElementId={0} (0x{0:X16}", elementId);
+                {
+                    sw.Write($"ElementId={elementId} (0x{elementId:X16})");
+                }
                 Int32 numXAttributes = br.ReadInt32();
                 if (sw != StreamWriter.Null)
-                    sw.WriteLine(" has {0} XAttributes", numXAttributes);
+                {
+                    sw.WriteLine($" has {numXAttributes} XAttributes");
+                    sw.Flush();
+                }
                 for (int i = 0; i < numXAttributes; i++)
                 {
                     var xAttribute = ReadXAttribute(sw, br);
@@ -57,19 +62,28 @@ namespace v8file.net
                         (xAttribute.XAttributeHandler == 0x570b0005))
                     {
                         if (sw != StreamWriter.Null)
-                            sw.WriteLine("\t xattribute {0}, handler={1:X8}, size={2} is {3}", i, xAttribute.XAttributeHandler, xAttribute.Size, xAttribute.Data);
+                            sw.WriteLine($"\t xattribute {i}, handler={xAttribute.XAttributeHandler:X8}, size={xAttribute.Size} is {xAttribute.Data}");
                     }
                     else
                     {
                         if (sw != StreamWriter.Null)
-                            sw.WriteLine("\t xattribute {0}, handler={1:X8}, size={2}", i, xAttribute.XAttributeHandler, xAttribute.Size);
+                            sw.WriteLine($"\t xattribute {i}, handler={xAttribute.XAttributeHandler:X8}, size={xAttribute.Size}");
                     }
 
                     Xattributes[elementId].Add(xAttribute);
                     sw.WriteLine();
                     sw.WriteLine(Utils.HexDump(xAttribute.Bytes));
                     sw.WriteLine();
-                    sw.WriteLine(xAttribute.Data);
+                    if ((xAttribute.XAttributeHandler == 0x570b0003) ||
+                        (xAttribute.XAttributeHandler == 0x570b0004) ||
+                        (xAttribute.XAttributeHandler == 0x570b0005) ||
+                        (xAttribute.XAttributeHandler == 0x56df0005)
+                        )
+                    {
+                        sw.WriteLine(xAttribute.Data);
+                    }
+
+                    sw.Flush();
                 }
 
                 Int64 dummy4 = br.ReadInt32();

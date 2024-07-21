@@ -2,7 +2,7 @@
   "profiles": {
     "DumpV8File.net": {
       "commandName": "Project",
-      "commandLineArgs": "-f \"n:\\temp\\dgns\\Animation.dgn\" -o \"n:\\temp\\outdir\" -d \"Animation.dgn.out\""
+      "commandLineArgs": "-f \"Visualization_Master1.dgn\" -o \".\\out\" -d \"Visualization_Master1.dgn.out\""
     }
   }
 }

@@ -19,7 +19,7 @@ namespace DumpV8File.net
         public string LevelId { get; set; }
     }
 
-    class Program
+    static class Program
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -87,7 +87,7 @@ namespace DumpV8File.net
                         return -2;
                     }
 
-                    V8FileOLEStorage.V8DgnGetProperties(parser.Object.FileName);
+                    V8FileOLEStorage.V8DgnGetProperties();
                     V8FileManipulation.V8DgnLoad(parser.Object.FileName);
                     if (!string.IsNullOrEmpty(parser.Object.DumpFileName) && !string.IsNullOrEmpty(parser.Object.OutDir))
                     {

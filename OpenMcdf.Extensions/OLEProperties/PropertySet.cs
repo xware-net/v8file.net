@@ -7,9 +7,8 @@ using System.IO;
 
 namespace OpenMcdf.Extensions.OLEProperties
 {
-    internal class PropertySet
+    public class PropertySet
     {
-
         public PropertyContext PropertyContext
         {
             get;  set;

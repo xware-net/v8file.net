@@ -4,7 +4,7 @@ namespace OpenMcdf.Extensions.OLEProperties.Interfaces
 {
     public interface IDictionaryProperty : IProperty
     {
-        void Read(BinaryReader br);
-        void Write(BinaryWriter bw);
+        new void Read(BinaryReader br);
+        new void Write(BinaryWriter bw);
     }
 }

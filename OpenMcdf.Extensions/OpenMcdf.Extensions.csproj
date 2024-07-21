@@ -74,9 +74,4 @@
   <ItemGroup>
     <None Include="OpenMcdf.snk" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\OpenMcdf\OpenMcdf.csproj">
-      <CopyLocalSatelliteAssemblies>true</CopyLocalSatelliteAssemblies>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

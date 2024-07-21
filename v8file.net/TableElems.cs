@@ -1,3 +1,4 @@
+using NLog.Filters;
 using System;
 using System.IO;
 using System.Text;
@@ -249,7 +250,8 @@ namespace v8file.net
                 // skip UTF32 LE BOM
                 br.BaseStream.Seek(namePosition + 4, SeekOrigin.Begin);
                 TextStyleNameLength -= 4;
-            } else
+            }
+            else
             {
                 br.BaseStream.Seek(namePosition, SeekOrigin.Begin);
             }
@@ -469,12 +471,22 @@ namespace v8file.net
     public class LStyleNameTableElm
     {
         public Elm_hdr Ehdr;
+        public UInt32[] Dummy;
+        public UInt32 LineStyleEntryId;
+        public string LineStyleName;
         public Linkage[] Linkages;
 
         public LStyleNameTableElm Read(BinaryReader br)
         {
             // read each field
             Ehdr = new Elm_hdr().Read(br);
+            Dummy = new UInt32[15];
+            for (int i = 0; i < 15; i++)
+            {
+                Dummy[i] = br.ReadUInt32();
+            }
+            LineStyleEntryId = br.ReadUInt32();
+            LineStyleName = System.Text.Encoding.UTF8.GetString(br.ReadBytes(0x80));
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
         }
@@ -484,6 +496,8 @@ namespace v8file.net
             var ident = new String(' ', 2 * level);
             sw.WriteLine($"{ident}Ehdr >");
             Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}LineStyleEntryId={LineStyleEntryId}");
+            sw.WriteLine($"{ident}LineStyleName={LineStyleName.Replace("\x00", "")}");
             if (Linkages.Length > 0)
             {
                 sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");

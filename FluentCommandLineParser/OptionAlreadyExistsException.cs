@@ -43,7 +43,7 @@ namespace Fclp
 		/// </summary>
 		/// <param name="optionName"></param>
 		public OptionAlreadyExistsException(string optionName) : base(optionName) { }
-		
+
 		/// <summary>
 		/// Initialises a new instance of the <see cref="OptionAlreadyExistsException"/> class.
 		/// </summary>
@@ -51,7 +51,7 @@ namespace Fclp
 		/// <param name="context"></param>
 		public OptionAlreadyExistsException(SerializationInfo info, StreamingContext context)
 			: base(info, context) { }
-		
+
 		/// <summary>
 		/// Initialises a new instance of the <see cref="OptionAlreadyExistsException"/> class.
 		/// </summary>

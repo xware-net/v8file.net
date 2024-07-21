@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenMcdf.Extensions.OLEProperties;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,6 +38,38 @@ namespace v8file.net
             {
                 yield return child;
             }
+        }
+
+        public static String GetDescription(this uint identifier, ContainerType map, Dictionary<uint, string> customDict = null)
+        {
+            Dictionary<uint, string> NameDictionary = new Dictionary<uint, string>();
+
+            if (customDict == null)
+            {
+                switch (map)
+                {
+                    case ContainerType.SummaryInfo:
+                        NameDictionary = CommonIdentifiers.PropertyIdentifiersSummaryInfo;
+                        break;
+                    case ContainerType.DocumentSummaryInfo:
+                        NameDictionary = CommonIdentifiers.PropertyIdentifiersDocumentSummaryInfo;
+                        break;
+                    case ContainerType.AppSpecific:
+                        NameDictionary = CommonIdentifiers.PropertyIdentifiersAppSpecificInfo;
+                        break;
+                }
+            }
+            else
+            {
+                NameDictionary = customDict;
+            }
+
+            if (NameDictionary.ContainsKey(identifier))
+            {
+                return NameDictionary[identifier];
+            }
+
+            return "0x" + identifier.ToString("x8");
         }
     }
 }

@@ -15,27 +15,27 @@ namespace v8file.net
 {
     public enum LinkageIds : int
     {
-        LINKAGEID_DMRS = 0, // 0x0000, fictive value for DMRS linkages as only non-DMRS linkages can have any primaryId
-        LINKAGEID_FillStyle = 65, // 0x0041
-        LINKAGEID_RefExtractor = 13333, // 0x3415
-        LINKAGEID_DDE_LINK = 20285,        //  0x4f3d
-        LINKAGEID_ExternalMaterial = 20314,        //  0x4f5a
-        LINKAGEID_Node = 20357,        /* 0x4f85 */
-        //LINKAGEID_CellDef = 20371,        /* 0x4f93 */
-        LINKAGEID_CellDef = 20372,        /* 0x4f94 */
-        LINKAGEID_ACS = 20389,        /* 0x4fa5 */
-        LINKAGEID_AssociatedElements = 20394,        /* 0x4faa */
-        LINKAGEID_UvVertex = 20799,        // 0x513f
-        LINKAGEID_RenderVertex = 20899,        // 0x51a3
-        LINKAGEID_AnimatorCompressionCell = 20904,        /* 0x51a8 */
-        LINKAGEID_Feature = 21033,        /* 0x5229 */
+        LINKAGEID_DMRS = 0,                             // 0x0000, fictive value for DMRS linkages as only non-DMRS linkages can have any primaryId
+        LINKAGEID_FillStyle = 65,                       // 0x0041
+        LINKAGEID_RefExtractor = 13333,                 // 0x3415
+        LINKAGEID_DDE_LINK = 20285,                     // 0x4f3d
+        LINKAGEID_ExternalMaterial = 20314,             // 0x4f5a
+        LINKAGEID_Node = 20357,                         // 0x4f85
+        //LINKAGEID_CellDef = 20371,                    // 0x4f93
+        LINKAGEID_CellDef = 20372,                      // 0x4f94
+        LINKAGEID_ACS = 20389,                          // 0x4fa5
+        LINKAGEID_AssociatedElements = 20394,           // 0x4faa
+        LINKAGEID_UvVertex = 20799,                     // 0x513f
+        LINKAGEID_RenderVertex = 20899,                 // 0x51a3
+        LINKAGEID_AnimatorCompressionCell = 20904,      // 0x51a8
+        LINKAGEID_Feature = 21033,                      // 0x5229
         LINKAGEID_EmbeddedBRep = 21038,        /* 0x522e */
         LINKAGEID_Profile = 21041,        /* 0x5231 */
         LINKAGEID_Compression = 21047,        /* 0x5237 */
         LINKAGEID_NoteLinkage = 22062,        /* 0x562e */
         TEXTNODE_Linkage = 22220,        /* 0x56CC */
         TEXT_Linkage = 22221,        /* 0x56CD */
-        LINKAGEID_Dependency = 22224,        // 0x56d0 */
+        LINKAGEID_Dependency = 22224,                   // 0x56d0 */
         LINKAGEID_String = 22226,        /* 0x56d2 XATTRIBUTEID_String */
         LINKAGEID_BitMask = 22227,        /* 0x56d3 */
         LINKAGEID_Thickness = 22228,        /* 0x56d4 */
@@ -104,17 +104,17 @@ namespace v8file.net
         LINKAGEID_TextStyle = 32980,        /* 0x80d4 */
         LINKAGEID_OLE = 45086,        /* 0xb01e */
 
-        FRAMME_ID = 0x0020,   // DB Linkage - FRAMME tag data signature
-        BSI_ID = 0x0F81,   // DB Linkage - secondary id link (BSI radix 50)
-        XBASE_ID = 0x1971,   // DB Linkage - XBase (DBase)
-        INFORMIX_ID = 0x3948,   // DB Linkage - Informix
-        INGRES_ID = 0x3A77,   // DB Linkage - INGRES
-        SYBASE_ID = 0x4F58,   // DB Linkage - Sybase
-        ODBC_ID = 0x5E62,   // DB Linkage - ODBC
-        OLEDB_ID = 0x5800,   // DB Linkage - OLEDB
-        ORACLE_ID = 0x6091,   // DB Linkage - Oracle
-        RIS_ID = 0x71FB,   // DB Linkage - RIS
-        BUDBC_ID = 0x5834, // DB Linkage - BUDBC
+        FRAMME_ID = 0x0020,                             // DB Linkage - FRAMME tag data signature
+        BSI_ID = 0x0F81,                                // DB Linkage - secondary id link (BSI radix 50)
+        XBASE_ID = 0x1971,                              // DB Linkage - XBase (DBase)
+        INFORMIX_ID = 0x3948,                           // DB Linkage - Informix
+        INGRES_ID = 0x3A77,                             // DB Linkage - INGRES
+        SYBASE_ID = 0x4F58,                             // DB Linkage - Sybase
+        ODBC_ID = 0x5E62,                               // DB Linkage - ODBC
+        OLEDB_ID = 0x5800,                              // DB Linkage - OLEDB
+        ORACLE_ID = 0x6091,                             // DB Linkage - Oracle
+        RIS_ID = 0x71FB,                                // DB Linkage - RIS
+        BUDBC_ID = 0x5834,                              // DB Linkage - BUDBC
     };
 
     public enum FilterMemberType : int
@@ -481,6 +481,12 @@ namespace v8file.net
                         linkage.Dump(sw, level + 1);
                     }
                     break;
+                case LinkageIds.LINKAGEID_LevelLibrary:
+                    {
+                        LevelLibraryLinkage linkage = new(Data);
+                        linkage.Dump(sw, level + 1);
+                    }
+                    break;
                 case LinkageIds.LINKAGEID_InfiniteLine:
                     {
                         InfiniteLineLinkage linkage = new(Data);
@@ -540,7 +546,8 @@ namespace v8file.net
                 {
                     PatternParams.Angle2 = -6.283185307179586;
                 }
-            } else
+            }
+            else
             {
                 PatternParams.Angle2 = PatternParams.Angle1 + 1.570796326794897;
             }
@@ -575,7 +582,8 @@ namespace v8file.net
                 if (Is3d)
                 {
 
-                } else
+                }
+                else
                 {
 
                 }
@@ -611,6 +619,47 @@ namespace v8file.net
             sw.WriteLine($"{ident}Hatch Linkage");
             sw.WriteLine($"{ident}  Pattern Params >");
             PatternParams.Dump(sw, level + 2);
+        }
+    }
+
+    public class LevelLibraryLinkage : Linkage // 56e8, size xxx
+    {
+        public UInt16 Dummy1;                               // 0x00
+        public LevelLibraryFormat LevelLibraryFormat;       // 0x02
+        public UInt64 Dummy2;
+        public UInt32 Dummy3;
+        public UInt32 Dummy4;
+        public Int32 LevelLibraryNameLength;
+        public string LevelLibraryName;
+
+        public LevelLibraryLinkage(byte[] data)
+        {
+            BinaryReader br = new(new MemoryStream(data));
+            Dummy1 = br.ReadUInt16();
+            LevelLibraryFormat = (LevelLibraryFormat)br.ReadUInt16();
+            Dummy2 = br.ReadUInt64();
+            Dummy3 = br.ReadUInt32();
+            Dummy4 = br.ReadUInt32();
+            LevelLibraryNameLength = br.ReadInt32();
+            if ((data[24] == 0xff) && (data[25] == 0xfe) && (data[26] == 0x01) && (data[27] == 0x00))
+            {
+                // skip UTF32 LE BOM
+                br.ReadInt32();
+                LevelLibraryNameLength -= 4;
+            }
+            LevelLibraryName = System.Text.Encoding.UTF8.GetString(br.ReadBytes(LevelLibraryNameLength));
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new string(' ', 2 * level);
+            sw.WriteLine($"{ident}Level Library Linkage");
+            sw.WriteLine($"{ident}  Dummy1={Dummy1}");
+            sw.WriteLine($"{ident}  LevelLibraryFormat={LevelLibraryFormat}");
+            sw.WriteLine($"{ident}  Dummy2={Dummy2}");
+            sw.WriteLine($"{ident}  Dummy3={Dummy3}");
+            sw.WriteLine($"{ident}  Dummy4={Dummy4}");
+            sw.WriteLine($"{ident}  LevelLibraryName={LevelLibraryName}");
         }
     }
 

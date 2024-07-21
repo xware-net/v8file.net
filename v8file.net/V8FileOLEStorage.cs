@@ -1,21 +1,21 @@
 ﻿using Ionic.Zlib;
 using NLog;
-using OpenMcdf;
-using OpenMcdf.Extensions;
 using OpenMcdf.Extensions.OLEProperties;
-using RedBlackTree;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
 using static OpenMcdf.Extensions.OLEProperties.OLEPropertiesContainer;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static v8file.net.V8FileOLEStorage;
 
 namespace v8file.net
 {
-    public class V8FileOLEStorage
+    public static class V8FileOLEStorage
     {
         [Flags]
         public enum Stgm : int
@@ -203,6 +203,7 @@ namespace v8file.net
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static SummaryInfoProperties summaryInfoProperties;
         private static DocumentSummaryInfoProperties documentSummaryInfoProperties;
+        private static List<OLEPropertiesContainer> olePropertiesContainers = new List<OLEPropertiesContainer>();
         private static string FileName;
 
         public const int MSuccess = 0;
@@ -214,6 +215,7 @@ namespace v8file.net
 
         public static int V8DgnBreak(string fileName)
         {
+            FileName = fileName;
             System.Runtime.InteropServices.ComTypes.STATSTG[] entry = new System.Runtime.InteropServices.ComTypes.STATSTG[1];
             uint numReturned;
             int start = 0, b1 = 0, b2 = 0;
@@ -318,6 +320,11 @@ namespace v8file.net
                                 else
                                 {
                                     ((OLETag)Node.Tag).Compressed = false;
+                                }
+
+                                if (pwzStream.StartsWith("$"))
+                                {
+                                    V8ReadPropertySetStream(pwzStream, buf, cbRead);
                                 }
 
                                 OLETree.Nodes.Add(Node);
@@ -469,6 +476,11 @@ namespace v8file.net
                                     ((OLETag)Node.Tag).Compressed = false;
                                 }
 
+                                if (pwzStream.StartsWith("$"))
+                                {
+                                    V8ReadPropertySetStream(pwzStream, buf, cbRead);
+                                }
+
                                 node.Nodes.Add(Node);
                                 Marshal.ReleaseComObject(stream);
                             }
@@ -486,6 +498,15 @@ namespace v8file.net
             GC.Collect();
             GC.Collect();  // call twice for good measure
             GC.WaitForPendingFinalizers();
+        }
+
+        private static void V8ReadPropertySetStream(string pwzStream, byte[] buf, uint cbRead)
+        {
+            BinaryReader br = new(new MemoryStream(buf));
+            PropertySetStream propertySetStream = new PropertySetStream();
+            propertySetStream.Read(br);
+            OLEPropertiesContainer olePropertiesContainer = new OLEPropertiesContainer(propertySetStream);
+            olePropertiesContainers.Add(olePropertiesContainer);
         }
 
         private static StoragePart BuildStorageFromOLETree(Tree oleTree)
@@ -679,24 +700,17 @@ namespace v8file.net
         private static string Dump(byte[] bytes)
         {
             return "\r\n" + Utils.HexDump(bytes);
-            //return BitConverter.ToString(bytes).Replace("-", ", ");
         }
 
-        public static void V8DgnGetProperties(string fileName)
+        public static void V8DgnGetProperties()
         {
             try
             {
-                FileName = fileName;
-                using var fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
-                var cf = new CompoundFile(fs);
-
-                static void va(CFItem target)
+                foreach (var c in olePropertiesContainers)
                 {
-                    if (target.IsStream)
+                    switch (c.ContainerType)
                     {
-                        if (target.Name == "\u0005SummaryInformation")
-                        {
-                            OLEPropertiesContainer c = ((CFStream)target).AsOLEPropertiesContainer();
+                        case ContainerType.SummaryInfo:
                             var thumbnail = GetThumbnailePropertyValue(c, "PIDSI_THUMBNAIL");
                             summaryInfoProperties = new SummaryInfoProperties
                             {
@@ -716,33 +730,21 @@ namespace v8file.net
                                 Security = GetPropertyValue(c, "PIDSI_DOC_SECURITY"),
                                 Thumbnail = thumbnail != null ? (byte[])thumbnail.Clone() : null,
                             };
-                        }
-                        else if (target.Name == "\u0005DocumentSummaryInformation")
-                        {
-                            OLEPropertiesContainer c = ((CFStream)target).AsOLEPropertiesContainer();
+                            break;
+                        case ContainerType.DocumentSummaryInfo:
                             documentSummaryInfoProperties = new DocumentSummaryInfoProperties
                             {
                                 Category = GetPropertyValue(c, "PIDDSI_CATEGORY"),
                                 Manager = GetPropertyValue(c, "PIDDSI_MANAGER"),
                                 Company = GetPropertyValue(c, "PIDDSI_COMPANY"),
-                                BentleyProjectProperties = GetUserDeefinedPropertyValue(c, "BentleyProjectProperties"),
-                                BentleyWorkSetProperties = GetUserDeefinedPropertyValue(c, "BentleyWorkSetProperties"),
+                                BentleyProjectProperties = GetUserDefinedPropertyValue(c, "BentleyProjectProperties"),
+                                BentleyWorkSetProperties = GetUserDefinedPropertyValue(c, "BentleyWorkSetProperties"),
                             };
-                        }
-                        else if (target.Name == "\u0005SebiesnrMkudrfcoIaamtykdDa")
-                        {
-
-                        }
-                        else
-                        {
-
-                        }
+                            break;
+                        default:
+                            break;
                     }
                 }
-
-                // iterate over storage & streams
-                cf.RootStorage.VisitEntries(va, true);
-                cf.Close();
             }
             catch (Exception ex)
             {
@@ -750,7 +752,7 @@ namespace v8file.net
             }
         }
 
-        private static byte[] GetUserDeefinedPropertyValue(OLEPropertiesContainer c, string propertyName)
+        private static byte[] GetUserDefinedPropertyValue(OLEPropertiesContainer c, string propertyName)
         {
             if (c.HasUserDefinedProperties)
             {
@@ -780,7 +782,7 @@ namespace v8file.net
             OLEProperty property = c.Properties.FirstOrDefault(p => p.PropertyName == propertyName);
             if (property != null)
             {
-                if (property.VTType == VTPropertyType.VT_FILETIME)
+                if (property.VTType == (OpenMcdf.Extensions.OLEProperties.VTPropertyType)VTPropertyType.VT_FILETIME)
                 {
                     DateTime time = (DateTime)property.Value;
                     Int64 filetime = time.ToFileTime();

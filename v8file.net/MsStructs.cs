@@ -1325,7 +1325,7 @@ namespace v8file.net
         public UInt32 Dummy24;  // 0xec     
         public double Dummy25;  // 0xf0
         public double Dummy26;  // 0xf8
-        public T_Adouble[] Quat;    // ßx100
+        public T_Adouble[] Quat;    // 0x100
         public UInt32 Dummy27;  // 0x120    
         public UInt32 Dummy28;  // 0x124     
         public UInt32 Dummy29;  // 0x128    
