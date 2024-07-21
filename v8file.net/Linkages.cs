@@ -20,15 +20,15 @@ namespace v8file.net
         LINKAGEID_RefExtractor = 13333,                 // 0x3415
         LINKAGEID_DDE_LINK = 20285,                     // 0x4f3d
         LINKAGEID_ExternalMaterial = 20314,             // 0x4f5a
-        LINKAGEID_Node = 20357,                         // 0x4f85
-        //LINKAGEID_CellDef = 20371,                    // 0x4f93
-        LINKAGEID_CellDef = 20372,                      // 0x4f94
-        LINKAGEID_ACS = 20389,                          // 0x4fa5
-        LINKAGEID_AssociatedElements = 20394,           // 0x4faa
+        LINKAGEID_Node = 20357,        /* 0x4f85 */
+        //LINKAGEID_CellDef = 20371,        /* 0x4f93 */
+        LINKAGEID_CellDef = 20372,        /* 0x4f94 */
+        LINKAGEID_ACS = 20389,        /* 0x4fa5 */
+        LINKAGEID_AssociatedElements = 20394,        /* 0x4faa */
         LINKAGEID_UvVertex = 20799,                     // 0x513f
         LINKAGEID_RenderVertex = 20899,                 // 0x51a3
-        LINKAGEID_AnimatorCompressionCell = 20904,      // 0x51a8
-        LINKAGEID_Feature = 21033,                      // 0x5229
+        LINKAGEID_AnimatorCompressionCell = 20904,        /* 0x51a8 */
+        LINKAGEID_Feature = 21033,        /* 0x5229 */
         LINKAGEID_EmbeddedBRep = 21038,        /* 0x522e */
         LINKAGEID_Profile = 21041,        /* 0x5231 */
         LINKAGEID_Compression = 21047,        /* 0x5237 */
@@ -387,115 +387,109 @@ namespace v8file.net
             {
                 case LinkageIds.LINKAGEID_String:
                     {
-                        StringLinkage linkage = new(Data);
+                        StringLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_TextAnnotation:
                     {
-                        TextAnnotationScaleLinkage linkage = new(Data);
+                        TextAnnotationScaleLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_Thickness:
                     {
-                        ThicknessLinkage linkage = new(Data);
+                        ThicknessLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_Dependency:
                     {
-                        DepLinkage linkage = new(Data);
+                        DepLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_ByteArray:
                     {
-                        ByteArrayLinkage linkage = new(Data);
+                        ByteArrayLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_DoubleArray:
                     {
-                        DoubleArrayLinkage linkage = new(Data);
+                        DoubleArrayLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_FilterMember:
                     {
-                        FilterMemberLinkage linkage = new(Data);
+                        FilterMemberLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_FillStyle:
                     {
-                        FillStyleLinkage linkage = new(Data);
+                        FillStyleLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_BitMask:
                     {
-                        BitMaskLinkage linkage = new(Data);
+                        BitMaskLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_LevelMask:
                     {
-                        LevelMaskLinkage linkage = new(Data);
+                        LevelMaskLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_DMRS:
                     {
-                        DMRSLinkage linkage = new(Data);
+                        DMRSLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_LineStyleMod:
                     {
-                        LineStyleModLinkage linkage = new(Data);
+                        LineStyleModLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_SheetModel:
                     {
-                        SheetModelLinkage linkage = new(Data);
+                        SheetModelLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_SheetModelEx:
                     {
-                        SheetModelExLinkage linkage = new(Data);
+                        SheetModelExLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_SheetScale:
                     {
-                        SheetScaleLinkage linkage = new(Data);
+                        SheetScaleLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_XML:
                     {
-                        XmlLinkage linkage = new(Data);
-                        linkage.Dump(sw, level + 1);
-                    }
-                    break;
-                case LinkageIds.LINKAGEID_LevelLibrary:
-                    {
-                        LevelLibraryLinkage linkage = new(Data);
+                        XmlLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_InfiniteLine:
                     {
-                        InfiniteLineLinkage linkage = new(Data);
+                        InfiniteLineLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
                 case LinkageIds.LINKAGEID_Hatch:
                     {
-                        HatchLinkage linkage = new(Data);
+                        HatchLinkage linkage = new(this, Data);
                         linkage.Dump(sw, level + 1);
                     }
                     break;
@@ -509,8 +503,11 @@ namespace v8file.net
         PatternParams PatternParams = new PatternParams();
         public T_Adouble[] Quat;
 
-        public HatchLinkage(byte[] data)
+        public HatchLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             PatternParamsModifierFlags = (PatternParamsModifierFlags)br.ReadUInt32();
             if ((PatternParamsModifierFlags & PatternParamsModifierFlags.Space1) != 0)
@@ -546,8 +543,7 @@ namespace v8file.net
                 {
                     PatternParams.Angle2 = -6.283185307179586;
                 }
-            }
-            else
+            } else
             {
                 PatternParams.Angle2 = PatternParams.Angle1 + 1.570796326794897;
             }
@@ -582,8 +578,7 @@ namespace v8file.net
                 if (Is3d)
                 {
 
-                }
-                else
+                } else
                 {
 
                 }
@@ -632,8 +627,11 @@ namespace v8file.net
         public Int32 LevelLibraryNameLength;
         public string LevelLibraryName;
 
-        public LevelLibraryLinkage(byte[] data)
+        public LevelLibraryLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             Dummy1 = br.ReadUInt16();
             LevelLibraryFormat = (LevelLibraryFormat)br.ReadUInt16();
@@ -675,8 +673,11 @@ namespace v8file.net
     {
         public InfiniteLineType InfiniteLineType;       // 0x00
 
-        public InfiniteLineLinkage(byte[] data)
+        public InfiniteLineLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             InfiniteLineType = (InfiniteLineType)br.ReadUInt32();
         }
@@ -703,8 +704,11 @@ namespace v8file.net
         public Int32 XmlLength;
         public string XmlString;
 
-        public XmlLinkage(byte[] data)
+        public XmlLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             Dummy1 = br.ReadUInt16();
             Dummy2 = br.ReadUInt16();
@@ -734,8 +738,11 @@ namespace v8file.net
         public UInt64 Dummy3;
         public UInt32 Dummy4;
 
-        public SheetModelExLinkage(byte[] data)
+        public SheetModelExLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             Dummy1 = br.ReadUInt32();
             Dummy2 = br.ReadUInt32();
@@ -786,8 +793,11 @@ namespace v8file.net
         public UnitDefinition UnitDefinition;
         public string Label;
 
-        public SheetModelLinkage(byte[] data)
+        public SheetModelLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             Dummy10 = br.ReadUInt16();
             Flags = new SheetDef_Flags().Read(br);
@@ -838,13 +848,16 @@ namespace v8file.net
 
     public class SheetScaleLinkage : Linkage // 56ee, size 40
     {
-        public UInt32 Dummy1;
-        public UInt32 Dummy2;
-        public DPoint3d Scale;
-        public UInt64 Dummy3;
+        public UInt32 Dummy1;   // 0x00
+        public UInt32 Dummy2;   // 0x04
+        public DPoint3d Scale;  // 0x08
+        public UInt64 Dummy3;   // 0x20
 
-        public SheetScaleLinkage(byte[] data)
+        public SheetScaleLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             Dummy1 = br.ReadUInt32();
             Dummy2 = br.ReadUInt32();
@@ -867,8 +880,11 @@ namespace v8file.net
         private int ArraySize;
         public double[] Array;
 
-        public DoubleArrayLinkage(byte[] data)
+        public DoubleArrayLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             ArrayId = br.ReadUInt32();
             Dummy1 = br.ReadUInt32();
@@ -1074,8 +1090,11 @@ namespace v8file.net
         public UInt32 LineMask;
         public UInt32 MLineFlags;
 
-        public LineStyleModLinkage(byte[] data)
+        public LineStyleModLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             LineStyleModProperties = new LineStyleModProperties().Read(br);
             if (LineStyleModProperties.STYLEMOD_Scale != 0)
@@ -1122,8 +1141,11 @@ namespace v8file.net
 
     public class DMRSLinkage : Linkage
     {
-        public DMRSLinkage(byte[] data)
+        public DMRSLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data), Encoding.UTF8);
         }
 
@@ -1220,8 +1242,11 @@ namespace v8file.net
         public string Keys;
         public UInt32 UserDefinedColorBookEntry;
 
-        public FillStyleLinkage(byte[] data)
+        public FillStyleLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             Dummy1 = br.ReadUInt16();
             Dummy2 = br.ReadUInt16();
@@ -1335,8 +1360,11 @@ namespace v8file.net
         public UInt32 BitCount;
         public Bitmask BitMask;
 
-        public BitMaskLinkage(byte[] data)
+        public BitMaskLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             BitMaskId = br.ReadUInt32();
             BitCount = br.ReadUInt32();
@@ -1359,8 +1387,11 @@ namespace v8file.net
         public UInt32 MaxLevelEntryId;
         public Bitmask BitMask;
 
-        public LevelMaskLinkage(byte[] data)
+        public LevelMaskLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             Dummy1 = br.ReadUInt16();
             Dummy2 = br.ReadUInt16();
@@ -1387,8 +1418,11 @@ namespace v8file.net
         public string NameString;
         public string ExpressionString;
 
-        public FilterMemberLinkage(byte[] data)
+        public FilterMemberLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             MemberId = br.ReadUInt32();
             MemberType = br.ReadUInt32();
@@ -1425,8 +1459,11 @@ namespace v8file.net
         public Int32 ByteArraySize;
         public byte[] ByteArrayData;
 
-        public ByteArrayLinkage(byte[] data)
+        public ByteArrayLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             ByteArrayId = br.ReadUInt32();
             ByteArraySize = br.ReadInt32();
@@ -1448,8 +1485,11 @@ namespace v8file.net
         public int Length;
         public string String;
 
-        public StringLinkage(byte[] data)
+        public StringLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data), Encoding.UTF8);
             Key = (LinkageKeyValuesString)br.ReadInt32();
             Length = br.ReadInt32();
@@ -1474,8 +1514,11 @@ namespace v8file.net
     {
         DependencyLinkage DependencyLinkage;
 
-        public DepLinkage(byte[] data)
+        public DepLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             DependencyLinkage = new DependencyLinkage().Read(br);
         }
@@ -1520,8 +1563,11 @@ namespace v8file.net
     {
         public double Scale;
 
-        public TextAnnotationScaleLinkage(byte[] data)
+        public TextAnnotationScaleLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data));
             // skip 4 bytes
             br.ReadInt32();
@@ -1545,8 +1591,11 @@ namespace v8file.net
         public UInt32 Dummy5;           // 0x10
         public double Thickness;        // 0x14
 
-        public ThicknessLinkage(byte[] data)
+        public ThicknessLinkage(Linkage linkage, byte[] data)
         {
+            this.LinkageHeader = linkage.LinkageHeader;
+            this.Is3d = linkage.Is3d;
+            this.Data = linkage.Data;
             BinaryReader br = new(new MemoryStream(data), Encoding.UTF8);
             Dummy1 = br.ReadUInt32();
             Dummy2 = br.ReadUInt32();

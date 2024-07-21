@@ -54,7 +54,7 @@ namespace v8file.net
             {
                 if (linkage.Type == LinkageIds.LINKAGEID_String)
                 {
-                    StringLinkage stringLinkage = new(linkage.Data);
+                    StringLinkage stringLinkage = new(linkage, linkage.Data);
                     if (stringLinkage.Key == key)
                         return stringLinkage.String;
                 }
