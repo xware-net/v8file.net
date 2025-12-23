@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -7,7 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="NLog" Version="5.3.2" />
+    <PackageReference Include="DotNetZip.Original" Version="2025.2.15" />
+    <PackageReference Include="NLog" Version="6.0.7" />
   </ItemGroup>
 
   <ItemGroup>
