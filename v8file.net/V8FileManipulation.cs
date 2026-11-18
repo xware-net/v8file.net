@@ -257,7 +257,7 @@ namespace v8file.net
             br.BaseStream.Seek(0x128, SeekOrigin.Begin);
             CMFileInfo.Files[0].HighestElementId = br.ReadUInt64();
 
-            // at 0x130 we have last saved ti,e
+            // at 0x130 we have last saved time
             br.BaseStream.Seek(0x130, SeekOrigin.Begin);
             CMFileInfo.Files[0].LastSavedTime = br.ReadDouble();
 
@@ -549,6 +549,30 @@ namespace v8file.net
                         case LightSetupTableElm t:
                             t.Dump(sw, level);
                             break;
+                        case Point_string_2d t:
+                            t.Dump(sw, level);
+                            break;
+                        case Point_string_3d t:
+                            t.Dump(sw, level);
+                            break;
+                        case Curve_2d t:
+                            t.Dump(sw, level);
+                            break;
+                        case Curve_3d t:
+                            t.Dump(sw, level);
+                            break;
+                        case Conic_2d t:
+                            t.Dump(sw, level);
+                            break;
+                        case Conic_3d t:
+                            t.Dump(sw, level);
+                            break;
+                        case Solid t:
+                            t.Dump(sw, level);
+                            break;
+                        case Bsurf_boundary t:
+                            t.Dump(sw, level);
+                            break;
                         case Line_2d t:
                             t.Dump(sw, level);
                             break;
@@ -679,6 +703,9 @@ namespace v8file.net
                             t.Dump(sw, level);
                             break;
                         case Elm_hdr t:
+                            t.Dump(sw, level);
+                            break;
+                        case DgnStoreHdrElm t:
                             t.Dump(sw, level);
                             break;
                         default:
@@ -849,7 +876,7 @@ namespace v8file.net
                     // dgnstore component
                     38 => null,
                     // dgnstore header
-                    39 => null,
+                    39 => new DgnStoreHdrElm().Read(br),
                     // microstation application element
                     66 => null,
                     // raster reference attachment

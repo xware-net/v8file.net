@@ -119,7 +119,7 @@ namespace v8file.net
                 }
 
                 if (sw != StreamWriter.Null)
-                    sw.Write("ElementId={0} (0x{0:X16}", elementId);
+                    sw.Write("ElementId={0} (0x{0:X16}", elementId, elementId);
                 Int32 numXAttributes = br.ReadInt32();
                 if (sw != StreamWriter.Null)
                     sw.WriteLine(" has {0} XAttributes", numXAttributes);

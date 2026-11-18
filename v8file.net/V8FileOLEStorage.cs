@@ -7,11 +7,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 using static OpenMcdf.Extensions.OLEProperties.OLEPropertiesContainer;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static v8file.net.V8FileOLEStorage;
+//using static v8file.net.V8FileOLEStorage;
 
 namespace v8file.net
 {
@@ -314,7 +311,7 @@ namespace v8file.net
                                 pwzStream = pwzStream.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_');
                                 if (V8DecodeAndWrite(pwzStream, buf, cbRead, ref start, ref b1, ref b2) == MSuccess)
                                 {
-                                    ((OLETag)Node.Tag).Compressed = true;
+                                        ((OLETag)Node.Tag).Compressed = true;
                                     Logger.Info("                   start={0}, b1={1} (0x{1:X8}), b2={2} (0x{2:X8})", start, b1, b2);
                                 }
                                 else

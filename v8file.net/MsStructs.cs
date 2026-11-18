@@ -1,10 +1,7 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection.Emit;
-using System.Text;
+using System.Linq;
 using ModelId = System.UInt32;
 using T_Adouble = System.Double;
 
@@ -159,7 +156,6 @@ namespace v8file.net
             sw.WriteLine($"{ident}Label=\"{Label}\"");
         }
     };
-
 
     public struct ModelInfo
     {
@@ -427,7 +423,7 @@ namespace v8file.net
 
             br.BaseStream.Seek(modelIndexPosition, SeekOrigin.Begin);
             var bytes = br.ReadBytes(ModelIndexSize);
-            Utils.WriteOutBytes(bytes, Path.GetFileNameWithoutExtension(V8FileManipulation.CMFileInfo.Files[V8FileManipulation.CMFileInfo.NumFiles - 1].FileName) + "_" + ModelId.ToString() + "_" + ModelName +".modelIndexItem");
+            Utils.WriteOutBytes(bytes, Path.GetFileNameWithoutExtension(V8FileManipulation.CMFileInfo.Files[V8FileManipulation.CMFileInfo.NumFiles - 1].FileName) + "_" + ModelId.ToString() + "_" + ModelName + ".modelIndexItem");
             br.BaseStream.Seek(modelIndexPosition + ModelIndexSize, SeekOrigin.Begin);
         }
     }
@@ -1293,7 +1289,69 @@ namespace v8file.net
         }
     }
 
-    public class AttributeElm
+    public class DgnStoreHdrElm        // 39 (0x27)
+    {
+        private const uint TagsetIdTSet = 0x74536574;   // 'tSet' as little-endian UInt32
+        private const uint TagIdBsiTagset = 0x00000f81;
+
+        public Elm_hdr Ehdr;
+        public UInt32 Dummy1;       // 0x20
+        public UInt32 Dummy2;       // 0x24
+        public UInt32 TagsetId;     // 0x28     // 'tSet' = 0x74536574
+        public UInt32 TagIdBsi;     // 0x2C     // 0x00000f81
+
+        public string TagsetName;
+        public Linkage[] Linkages = Array.Empty<Linkage>();
+
+        public DgnStoreHdrElm Read(BinaryReader br)
+        {
+            Ehdr = new Elm_hdr().Read(br);
+            Dummy1 = br.ReadUInt32();
+            Dummy2 = br.ReadUInt32();
+            TagsetId = br.ReadUInt32();
+            TagIdBsi = br.ReadUInt32();
+            if ((TagsetId == TagsetIdTSet) && (TagIdBsi == TagIdBsiTagset))
+            {
+                // this is a tagset header, read the tagset definition and linkages to get the tagset name
+                Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
+                TagsetName = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Name);
+            }
+            return this;
+        }
+
+        public void Dump(StreamWriter sw, int level)
+        {
+            var ident = new String(' ', 2 * level);
+            sw.WriteLine($"{ident}Ehdr >");
+            Ehdr.Dump(sw, level + 1);
+            sw.WriteLine($"{ident}TagsetId='{new string(BitConverter.GetBytes(TagsetId).Reverse().Select(b => (char)b).ToArray())}'");
+            sw.WriteLine($"{ident}TagIdBsi={TagIdBsi} ({TagIdBsi:X8})");
+            sw.WriteLine($"{ident}TagsetName={TagsetName}");
+
+            if (Linkages.Length > 0)
+            {
+                sw.WriteLine($"{ident}Attribute Linkages > ({Linkages.Length} items)");
+                for (int i = 0; i < Linkages.Length; i++)
+                {
+                    Linkages[i].LinkageDump(sw, level + 1);
+                }
+            }
+            if (V8FileLoader.Xattributes.ContainsKey(Ehdr.UniqueId))
+            {
+                var xattributes = V8FileLoader.Xattributes[Ehdr.UniqueId];
+                if (xattributes != null)
+                {
+                    sw.WriteLine($"{ident}XAttribute Linkages > ({xattributes.Count} items)");
+                    foreach (var xattribute in xattributes)
+                    {
+                        xattribute.Dump(sw, level + 1);
+                    }
+                }
+            }
+        }
+    }
+
+    public class AttributeElm       // 37 (0x25)
     {
         public Elm_hdr Ehdr;
         public Disp_hdr Dhdr;
@@ -2073,7 +2131,7 @@ namespace v8file.net
         public Elm_hdr Ehdr;
         public RotMatrix RotMatrix;
         public DPoint3d Origin;
-        public AcsType Dummy1;
+        public AcsType AcsElmType;
         public UInt32 Dummy2;
         public string Name;
         public Linkage[] Linkages;
@@ -2084,7 +2142,7 @@ namespace v8file.net
             Ehdr = new Elm_hdr().Read(br);
             RotMatrix = new RotMatrix().Read(br);
             Origin = new DPoint3d().Read(br);
-            Dummy1 = (AcsType)br.ReadUInt32();
+            AcsElmType = (AcsType)br.ReadUInt32();
             Dummy2 = br.ReadUInt32();
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             Name = V8Linkages.V8GetStringLinkage(Linkages, LinkageKeyValuesString.STRING_LINKAGE_KEY_Name);
@@ -2100,7 +2158,7 @@ namespace v8file.net
             RotMatrix.Dump(sw, level + 1);
             sw.WriteLine($"{ident}Origin >");
             Origin.Dump(sw, level + 1);
-            sw.WriteLine($"{ident}AcsType={Dummy1}");
+            sw.WriteLine($"{ident}AcsType={AcsElmType}");
             sw.WriteLine($"{ident}Dummy2={Dummy2}");
             sw.WriteLine($"{ident}Name={Name}");
             if (Linkages.Length > 0)
