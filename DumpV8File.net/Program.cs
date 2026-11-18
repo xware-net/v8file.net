@@ -88,6 +88,7 @@ namespace DumpV8File.net
                     }
 
                     V8FileOLEStorage.V8DgnGetProperties();
+                    
                     V8FileManipulation.V8DgnLoad(parser.Object.FileName);
                     if (!string.IsNullOrEmpty(parser.Object.DumpFileName) && !string.IsNullOrEmpty(parser.Object.OutDir))
                     {

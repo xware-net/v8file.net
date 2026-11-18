@@ -203,6 +203,9 @@ namespace v8file.net
         private static List<OLEPropertiesContainer> olePropertiesContainers = new List<OLEPropertiesContainer>();
         private static string FileName;
 
+        private static readonly Dictionary<string, V8CacheInfo> validCaches = new();
+        public static IReadOnlyDictionary<string, V8CacheInfo> ValidCaches => validCaches;
+
         public const int MSuccess = 0;
         public const int MError = 0x8000;
 
@@ -213,9 +216,10 @@ namespace v8file.net
         public static int V8DgnBreak(string fileName)
         {
             FileName = fileName;
+            validCaches.Clear();
             System.Runtime.InteropServices.ComTypes.STATSTG[] entry = new System.Runtime.InteropServices.ComTypes.STATSTG[1];
             uint numReturned;
-            int start = 0, b1 = 0, b2 = 0;
+            int start = 0, numElementsInCache = 0, isEOFCache = 0;
             string[] typnam = { "STGTY_STORAGE", "STGTY_STREAM", "STGTY_LOCKBYTES", "STGTY_PROPERTY" };
             bool v8Dgn = false;
 
@@ -309,14 +313,20 @@ namespace v8file.net
                                 storage.OpenStream(entry[0].pwcsName, IntPtr.Zero, (uint)(Stgm.Read | Stgm.ShareExclusive), 0, out IStream stream);
                                 stream.Read(buf, cbSize, out var cbRead);
                                 pwzStream = pwzStream.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_');
-                                if (V8DecodeAndWrite(pwzStream, buf, cbRead, ref start, ref b1, ref b2) == MSuccess)
+                                if (V8DecodeAndWrite(pwzStream, buf, cbRead, ref start, ref numElementsInCache, ref isEOFCache) == MSuccess)
                                 {
-                                        ((OLETag)Node.Tag).Compressed = true;
-                                    Logger.Info("                   start={0}, b1={1} (0x{1:X8}), b2={2} (0x{2:X8})", start, b1, b2);
+                                    ((OLETag)Node.Tag).Compressed = true;
+                                    Logger.Info("                   start={0}, numElementsInCache={1} (0x{1:X8}), isEOFCache={2} (0x{2:X8})", start, numElementsInCache, isEOFCache);
                                 }
                                 else
                                 {
                                     ((OLETag)Node.Tag).Compressed = false;
+                                }
+
+                                if (V8IsValidCache(pwzStream, entry[0].pwcsName, buf, cbRead, out V8CacheInfo cacheInfo))
+                                {
+                                    validCaches[pwzStream] = cacheInfo;
+                                    Logger.Debug("Valid cache: {0}", cacheInfo);
                                 }
 
                                 if (pwzStream.StartsWith("$"))
@@ -345,11 +355,39 @@ namespace v8file.net
             return MSuccess;
         }
 
-        private static int V8DecodeAndWrite(string streamName, byte[] buf, uint length, ref int start, ref int b1, ref int b2)
+        // A cache stream is named "$<number>" and starts with an 8-byte header:
+        //   int32 numElements, int32 flags (2 = more data follows, 3 = end of cache data).
+        private static bool V8IsValidCache(string streamPath, string rawName, byte[] buf, uint length, out V8CacheInfo cacheInfo)
+        {
+            cacheInfo = null;
+
+            if (string.IsNullOrEmpty(rawName) || rawName.Length < 2 || rawName[0] != '$')
+                return false;
+            for (int i = 1; i < rawName.Length; i++)
+            {
+                if (!char.IsDigit(rawName[i]))
+                    return false;
+            }
+
+            if (buf == null || length < 8)
+                return false;
+
+            int numElements = BitConverter.ToInt32(buf, 0);
+            int flags = BitConverter.ToInt32(buf, 4);
+            if (numElements < 0 || (flags != 2 && flags != 3))
+                return false;
+
+            int lastSeparator = streamPath.LastIndexOf('@');
+            string path = lastSeparator >= 0 ? streamPath[..(lastSeparator + 1)] : string.Empty;
+            cacheInfo = new V8CacheInfo(path, rawName, numElements, flags == 3 ? 1 : 0);
+            return true;
+        }
+
+        private static int V8DecodeAndWrite(string streamName, byte[] buf, uint length, ref int start, ref int numElementsInCache, ref int isEOFCache)
         {
             start = 0;
-            b1 = 0;
-            b2 = 0;
+            numElementsInCache = 0;
+            isEOFCache = 0;
             for (int i = 0; i < length - 1; i++)
             {
                 if (buf[i] == 0x78 && buf[i + 1] == 0x5E)
@@ -362,8 +400,8 @@ namespace v8file.net
                     if (i != 0)
                     {
                         start = i;
-                        b1 = BitConverter.ToInt32(buf);
-                        b2 = BitConverter.ToInt32(buf, 4);
+                        numElementsInCache = BitConverter.ToInt32(buf);
+                        isEOFCache = BitConverter.ToInt32(buf, 4);
                         using BinaryWriter bw1 = new(File.Open("prefix@" + streamName, FileMode.Create));
                         bw1.Write(buf, 0, i);
                     }
@@ -381,7 +419,7 @@ namespace v8file.net
         {
             System.Runtime.InteropServices.ComTypes.STATSTG[] entry = new System.Runtime.InteropServices.ComTypes.STATSTG[1];
             uint numReturned;
-            int start = 0, b1 = 0, b2 = 0;
+            int start = 0, numElementsInCache = 0, isEOFCache = 0;
             string[] typnam = { "STGTY_STORAGE", "STGTY_STREAM", "STGTY_LOCKBYTES", "STGTY_PROPERTY" };
 
             pStorage.OpenStorage(name, null, (uint)(Stgm.Read | Stgm.ShareExclusive), IntPtr.Zero, 0, out IStorage storage);
@@ -463,14 +501,20 @@ namespace v8file.net
                                 storage.OpenStream(entry[0].pwcsName, IntPtr.Zero, (uint)(Stgm.Read | Stgm.ShareExclusive), 0, out IStream stream);
                                 stream.Read(buf, cbSize, out var cbRead);
                                 pwzStream = pwzStream.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_');
-                                if (V8DecodeAndWrite(pwzStream, buf, cbRead, ref start, ref b1, ref b2) == MSuccess)
+                                if (V8DecodeAndWrite(pwzStream, buf, cbRead, ref start, ref numElementsInCache, ref isEOFCache) == MSuccess)
                                 {
                                     ((OLETag)Node.Tag).Compressed = true;
-                                    Logger.Info("                   start={0}, b1={1} (0x{1:X8}), b2={2} (0x{2:X8})", start, b1, b2);
+                                    Logger.Info("                   start={0}, numElementsInCache={1} (0x{1:X8}), isEOFCache={2} (0x{2:X8})", start, numElementsInCache, isEOFCache);
                                 }
                                 else
                                 {
                                     ((OLETag)Node.Tag).Compressed = false;
+                                }
+
+                                if (V8IsValidCache(pwzStream, entry[0].pwcsName, buf, cbRead, out V8CacheInfo cacheInfo))
+                                {
+                                    validCaches[pwzStream] = cacheInfo;
+                                    Logger.Debug("Valid cache: {0}", cacheInfo);
                                 }
 
                                 if (pwzStream.StartsWith("$"))
@@ -830,5 +874,25 @@ namespace v8file.net
 
         public Dictionary<string, StoragePart> SubStorage = new();
         public Dictionary<string, byte[]> DataStreams = new();
+    }
+
+    public sealed class V8CacheInfo
+    {
+        public string Path { get; }
+        public string Name { get; }
+        public int NumElementsInCache { get; }
+        public int IsEOFCache { get; }
+
+        public V8CacheInfo(string path, string name, int numElements, int isEOF)
+        {
+            Path = path;
+            Name = name;
+            NumElementsInCache = numElements;
+            IsEOFCache = isEOF;
+        }
+
+        public string FullName => Path + Name;
+
+        public override string ToString() => $"{Path},{Name},{NumElementsInCache},{IsEOFCache}";
     }
 }

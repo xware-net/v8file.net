@@ -15,6 +15,27 @@ namespace v8file.net
 
         public static Dictionary<ulong, List<XAttribute>> Xattributes => xattributes;
 
+        private static int FindNumCaches(string prefix)
+        {
+            int num = 0;
+            foreach (var cache in V8FileOLEStorage.ValidCaches.Values)
+            {
+                if (string.Equals(cache.Path, prefix, StringComparison.OrdinalIgnoreCase))
+                    num++;
+            }
+
+            return num;
+        }
+
+        private static IEnumerable<V8CacheInfo> FindCaches(string prefix)
+        {
+            foreach (var cache in V8FileOLEStorage.ValidCaches.Values)
+            {
+                if (string.Equals(cache.Path, prefix, StringComparison.OrdinalIgnoreCase))
+                    yield return cache;
+            }
+        }
+
         public static void V8ParseAttributeCache(string fileName, string cacheType, int modelNum, int cacheNum, Cache cache)
         {
             if (cache.Bytes == null)
@@ -266,24 +287,15 @@ namespace v8file.net
 
         private static void V8LoadGraphicAttributesCaches(ref DgnCache dgnCache, int modelNum)
         {
-            var pattern = $"Dgn-Md@#{modelNum:X6}@Dgn_GA@$*";
-            string[] fileNames = Directory.GetFiles(".", pattern);
-            int max = 0;
-            foreach (var fileName in fileNames)
-            {
-                var num = Convert.ToInt32(fileName[25..]);
-                if (num > max)
-                    max = num;
-            }
-
-            dgnCache.NumGraphicAttributesCaches = max;
-
+            string prefix = $"Dgn-Md@#{modelNum:X6}@Dgn_GA@";
+            dgnCache.NumGraphicAttributesCaches = FindNumCaches(prefix);
             Array.Resize(ref dgnCache.GraphicAttributesCaches, dgnCache.NumGraphicAttributesCaches);
-            foreach (var fileName in fileNames)
+
+            int num = 1;
+            foreach (var cache in FindCaches(prefix))
             {
-                // get non model num
-                var num = Convert.ToInt32(fileName[25..]);
-                V8LoadGraphicAttributeCache(ref dgnCache, fileName, num);
+                V8LoadGraphicAttributeCache(ref dgnCache, cache.FullName, num);
+                num++;
             }
         }
 
@@ -295,24 +307,15 @@ namespace v8file.net
 
         private static void V8LoadControlAttributesCaches(ref DgnCache dgnCache, int modelNum)
         {
-            var pattern = $"Dgn-Md@#{modelNum:X6}@Dgn_CA@$*";
-            string[] fileNames = Directory.GetFiles(".", pattern);
-            int max = 0;
-            foreach (var fileName in fileNames)
-            {
-                var num = Convert.ToInt32(fileName[25..]);
-                if (num > max)
-                    max = num;
-            }
-
-            dgnCache.NumControlAttributesCaches = max;
-
+            string prefix = $"Dgn-Md@#{modelNum:X6}@Dgn_CA@";
+            dgnCache.NumControlAttributesCaches = FindNumCaches(prefix);
             Array.Resize(ref dgnCache.ControlAttributesCaches, dgnCache.NumControlAttributesCaches);
-            foreach (var fileName in fileNames)
+
+            int num = 1;
+            foreach (var cache in FindCaches(prefix))
             {
-                // get non model num
-                var num = Convert.ToInt32(fileName[25..]);
-                V8LoadControlAttributeCache(ref dgnCache, fileName, num);
+                V8LoadControlAttributeCache(ref dgnCache, cache.FullName, num);
+                num++;
             }
         }
 
@@ -324,22 +327,15 @@ namespace v8file.net
 
         private static void V8LoadGraphicCaches(ref DgnCache dgnCache, int modelNum)
         {
-            int num;
-            string pattern;
-
-            pattern = String.Format("Dgn-Md@#{0:X6}@Dgn_G@$*", modelNum);
-            string[] fileNames = Directory.GetFiles(".", pattern);
-            foreach (var fileName in fileNames)
-            {
-                dgnCache.NumGraphicCaches++;
-            }
-
+            string prefix = $"Dgn-Md@#{modelNum:X6}@Dgn_G@";
+            dgnCache.NumGraphicCaches = FindNumCaches(prefix);
             Array.Resize(ref dgnCache.GraphicCaches, dgnCache.NumGraphicCaches);
-            foreach (var fileName in fileNames)
+
+            int num = 1;
+            foreach (var cache in FindCaches(prefix))
             {
-                // get non model num
-                num = Convert.ToInt32(fileName[24..]);
-                V8LoadGraphicCache(ref dgnCache, fileName, num);
+                V8LoadGraphicCache(ref dgnCache, cache.FullName, num);
+                num++;
             }
         }
 
@@ -351,22 +347,15 @@ namespace v8file.net
 
         private static void V8LoadControlCaches(ref DgnCache dgnCache, int modelNum)
         {
-            int num;
-            string pattern;
-
-            pattern = String.Format("Dgn-Md@#{0:X6}@Dgn_C@$*", modelNum);
-            string[] fileNames = Directory.GetFiles(".", pattern);
-            foreach (var fileName in fileNames)
-            {
-                dgnCache.NumControlCaches++;
-            }
-
+            string prefix = $"Dgn-Md@#{modelNum:X6}@Dgn_C@";
+            dgnCache.NumControlCaches = FindNumCaches(prefix);
             Array.Resize(ref dgnCache.ControlCaches, dgnCache.NumControlCaches);
-            foreach (var fileName in fileNames)
+
+            int num = 1;
+            foreach (var cache in FindCaches(prefix))
             {
-                // get non model num
-                num = Convert.ToInt32(fileName[24..]);
-                V8LoadControlCache(ref dgnCache, fileName, num);
+                V8LoadControlCache(ref dgnCache, cache.FullName, num);
+                num++;
             }
         }
 
@@ -394,26 +383,15 @@ namespace v8file.net
 
         private static void V8LoadNonModelAttributesCaches(ref DgnFileObj dgnFileObj)
         {
-            var header = "Dgn_NmA@_AH";
-            if (!File.Exists(header))
-                return;
-
-            // read from file
-            using (FileStream fileStream = new(header, FileMode.Open))
-            {
-                using BinaryReader br = new(fileStream);
-                dgnFileObj.NumNonModelAttributesCaches = br.ReadInt32();
-            }
-
+            string prefix = "Dgn_NmA@";
+            dgnFileObj.NumNonModelAttributesCaches = FindNumCaches(prefix);
             Array.Resize(ref dgnFileObj.NonModelAttributesCaches, dgnFileObj.NumNonModelAttributesCaches);
 
-            var pattern = "Dgn_NmA@$*";
-            string[] fileNames = Directory.GetFiles(".", pattern);
-            foreach (var fileName in fileNames)
+            int num = 1;
+            foreach (var cache in FindCaches(prefix))
             {
-                // get non model num
-                var num = Convert.ToInt32(fileName[11..]);
-                V8LoadNonModelAttributesCache(ref dgnFileObj, fileName, num);
+                V8LoadNonModelAttributesCache(ref dgnFileObj, cache.FullName, num);
+                num++;
             }
         }
 
@@ -425,22 +403,15 @@ namespace v8file.net
 
         private static void V8LoadNonModelCaches(ref DgnFileObj dgnFileObj)
         {
-            int num;
-            string pattern;
-
-            pattern = "Dgn_Nm@$*";
-            string[] fileNames = Directory.GetFiles(".", pattern);
-            foreach (var fileName in fileNames)
-            {
-                dgnFileObj.NumNonModelCaches++;
-            }
-
+            string prefix = "Dgn_Nm@";
+            dgnFileObj.NumNonModelCaches = FindNumCaches(prefix);
             Array.Resize(ref dgnFileObj.NonModelCaches, dgnFileObj.NumNonModelCaches);
-            foreach (var fileName in fileNames)
+
+            int num = 1;
+            foreach (var cache in FindCaches(prefix))
             {
-                // get non model num
-                num = Convert.ToInt32(fileName[10..]);
-                V8LoadNonModelCache(ref dgnFileObj, fileName, num);
+                V8LoadNonModelCache(ref dgnFileObj, cache.FullName, num);
+                num++;
             }
         }
 
@@ -452,3 +423,5 @@ namespace v8file.net
 
     }
 }
+
+// dotnet 'C:\temp\v8file.net\DumpV8File.net\bin\Debug\net8.0-windows\DumpV8File.net.dll' -f 'N:\drive n\harry\dgns\last\121-E-17985_7.dgn' -o 'C:\Users\mirce\AppData\Local\Temp\opencode\v8probe\out' -d 'dump1.out'
