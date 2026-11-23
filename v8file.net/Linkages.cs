@@ -356,12 +356,20 @@ namespace v8file.net
         {
             Is3d = is3d;
             LinkageHeader = new LinkageHeader().Read(br);
-            int exponent = 0; // LinkageHeader.WdExponent;
+            int exponent = LinkageHeader.WdExponent;
             if ((LinkageIds)LinkageHeader.PrimaryID == LinkageIds.LINKAGEID_DMRS)
             {
                 LinkageHeader.WdMantissa = 3;
             }
             int length = LinkageHeader.WdMantissa * Utils.V8Power2(exponent);
+            if (length == 0)
+            {
+                // A zero word count is not a real linkage: V8 pads the remaining
+                // attribute area with zero words, which ends the linkage list.
+                // Consume nothing beyond the header and keep the data empty.
+                Data = Array.Empty<byte>();
+                return this;
+            }
             if (exponent == 0)
             {
                 Data = new byte[2 * (length - 1)];

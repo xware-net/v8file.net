@@ -27,22 +27,21 @@ namespace v8file.net
             // seek at beginning of attributes
             br.BaseStream.Seek(ehdr.HeaderPosition + 2 * ehdr.AttrOffset, SeekOrigin.Begin);
             int i = 0;
-            do
+            while (i < attributesSize)
             {
-                Array.Resize(ref linkages, linkages.Length + 1);
                 var linkage = new Linkage().Read(br, is3d);
+                if (linkage.LinkageHeader.WdMantissa == 0)
+                {
+                    // V8 zero padding ends the linkage area; the rest of the
+                    // attribute words are not linkages.
+                    break;
+                }
+                Array.Resize(ref linkages, linkages.Length + 1);
                 linkages[^1] = linkage;
-                int exponent = 0; // linkage.LinkageHeader.WdExponent;
+                int exponent = linkage.LinkageHeader.WdExponent;
                 int length = linkage.LinkageHeader.WdMantissa * Utils.V8Power2(exponent);
-                if (exponent == 0)
-                {
-                    i += length + 1;
-                }
-                else
-                {
-                    i += length;
-                }
-            } while (i < attributesSize);
+                i += exponent == 0 ? length + 1 : length;
+            }
 
             br.BaseStream.Seek(currentReaderPosition, SeekOrigin.Begin);
             return linkages;
