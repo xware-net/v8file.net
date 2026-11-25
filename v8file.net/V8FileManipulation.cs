@@ -1089,7 +1089,7 @@ namespace v8file.net
                 {
                     // invalid element
                     // skip it
-                    ehdr.ElementSize = (uint)(Marshal.SizeOf(typeof(Elm_hdr)) - sizeof(long) / 2);
+                    ehdr.ElementSize = (uint)((Marshal.SizeOf(typeof(Elm_hdr)) - sizeof(long)) / 2);
                 }
 
                 // do we have a Disp_hdr ??
@@ -1134,18 +1134,18 @@ namespace v8file.net
                     sw.WriteLine($"{Utils.HexDump(bytes, level)}");
                     Utils.WriteOut(bytes, streamName, ElementType, ElementId, LevelId);
 
+                    Linkage[] linkages = V8Linkages.V8GetLinkages(br, ehdr);
+                    for (int i = 0; i < linkages?.Length; i++)
                     {
-                        Linkage[] linkages = V8Linkages.V8GetLinkages(br, ehdr);
-                        for (int i = 0; i < linkages?.Length; i++)
-                        {
-                            Utils.WriteOutAttr(bytes, streamName, ElementType, ElementId, LevelId, linkages[i]);
-                        }
+                        Utils.WriteOutAttr(bytes, streamName, ElementType, ElementId, LevelId, linkages[i]);
                     }
 
                     // dump the linkages
                     if (attributes.Length > 0)
                     {
                         sw.WriteLine($"{Utils.HexDump(attributes, level)}");
+                        if (linkages.Length > 0)
+                            sw.WriteLine(Utils.HexLinkageDump(linkages, level));
                     }
 
                     // restore stream position
@@ -1202,18 +1202,18 @@ namespace v8file.net
                     sw.WriteLine($"{Utils.HexDump(bytes, level)}");
                     Utils.WriteOut(bytes, streamName, ElementType, ElementId, LevelId);
 
+                    Linkage[] linkages = V8Linkages.V8GetLinkages(br, ehdr);
+                    for (int i = 0; i < linkages?.Length; i++)
                     {
-                        Linkage[] linkages = V8Linkages.V8GetLinkages(br, ehdr);
-                        for (int i = 0; i < linkages?.Length; i++)
-                        {
-                            Utils.WriteOutAttr(bytes, streamName, ElementType, ElementId, LevelId, linkages[i]);
-                        }
+                        Utils.WriteOutAttr(bytes, streamName, ElementType, ElementId, LevelId, linkages[i]);
                     }
 
                     // dump the linkages
                     if (attributes.Length > 0)
                     {
                         sw.WriteLine($"{Utils.HexDump(attributes, level)}");
+                        if (linkages.Length > 0)
+                            sw.WriteLine(Utils.HexLinkageDump(linkages, level));
                     }
 
                     // restore stream position
@@ -1332,7 +1332,7 @@ namespace v8file.net
                 {
                     // invalid element
                     // skip it
-                    ehdr.ElementSize = (uint)(Marshal.SizeOf(typeof(Elm_hdr)) - sizeof(long) / 2);
+                    ehdr.ElementSize = (uint)((Marshal.SizeOf(typeof(Elm_hdr)) - sizeof(long)) / 2);
                 }
 
                 // do we have a Disp_hdr ??
@@ -1382,18 +1382,18 @@ namespace v8file.net
                 sw.WriteLine($"{Utils.HexDump(bytes, level)}");
                 Utils.WriteOut(bytes, (sw.BaseStream as FileStream)?.Name, ElementType, ElementId, LevelId);
 
+                Linkage[] linkages = V8Linkages.V8GetLinkages(br, ehdr);
+                for (int i = 0; i < linkages?.Length; i++)
                 {
-                    Linkage[] linkages = V8Linkages.V8GetLinkages(br, ehdr);
-                    for (int i = 0; i < linkages?.Length; i++)
-                    {
-                        Utils.WriteOutAttr(bytes, (sw.BaseStream as FileStream)?.Name, ElementType, ElementId, LevelId, linkages[i]);
-                    }
+                    Utils.WriteOutAttr(bytes, (sw.BaseStream as FileStream)?.Name, ElementType, ElementId, LevelId, linkages[i]);
                 }
 
                 // dump the linkages
                 if (attributes.Length > 0)
                 {
                     sw.WriteLine($"{Utils.HexDump(attributes, level)}");
+                    if (linkages.Length > 0)
+                        sw.WriteLine(Utils.HexLinkageDump(linkages, level));
                 }
 
                 // restore stream position

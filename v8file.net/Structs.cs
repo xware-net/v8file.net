@@ -4676,9 +4676,12 @@ namespace v8file.net
             Origin = new DPoint2d().Read(br);
             Edflds = br.ReadUInt16();
             String = new VariChar[6];
-            for (int i = 0; i < 6; i++)
+            // ReadBytes returns a short buffer for a truncated final element;
+            // pad the inline string so the cache can still be dumped.
+            byte[] stringBytes = br.ReadBytes(String.Length);
+            for (int i = 0; i < String.Length; i++)
             {
-                String[i] = br.ReadByte();
+                String[i] = i < stringBytes.Length ? stringBytes[i] : (byte)0;
             }
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
@@ -4766,9 +4769,12 @@ namespace v8file.net
             Origin = new Dpoint3d().Read(br);
             Edflds = br.ReadUInt16();
             String = new VariChar[6];
-            for (int i = 0; i < 6; i++)
+            // ReadBytes returns a short buffer for a truncated final element;
+            // pad the inline string so the cache can still be dumped.
+            byte[] stringBytes = br.ReadBytes(String.Length);
+            for (int i = 0; i < String.Length; i++)
             {
-                String[i] = br.ReadByte();
+                String[i] = i < stringBytes.Length ? stringBytes[i] : (byte)0;
             }
             Linkages = V8Linkages.V8GetLinkages(br, Ehdr);
             return this;
@@ -7462,6 +7468,20 @@ namespace v8file.net
             set => Data1 = (UInt16)(Data1 & ~mask_1_5 | (value << loc_1_5) & mask_1_5);
         }
         public UInt16 PrimaryID;
+
+        // V8 pads the end of the attribute area with zero words.
+        public bool IsEmpty => Data1 == 0 && PrimaryID == 0;
+
+        public byte[] GetBytes()
+        {
+            return new byte[]
+            {
+                (byte)(Data1 & 0xFF),
+                (byte)(Data1 >> 8),
+                (byte)(PrimaryID & 0xFF),
+                (byte)(PrimaryID >> 8)
+            };
+        }
 
         public LinkageHeader Read(BinaryReader br)
         {

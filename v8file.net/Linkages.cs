@@ -352,40 +352,62 @@ namespace v8file.net
         public byte[] Data;
         public bool Is3d;
 
+        // Mirrors the length calculation in v8file.cpp:
+        //   no User flag  -> DMRS linkage, always 4 words
+        //   no Remote flag -> short linkage, mantissa + 1 words
+        //   otherwise      -> extended linkage, mantissa * 4^exponent words
+        public static int GetTotalWordCount(LinkageHeader header)
+        {
+            if (header.User == 0)
+                return 4;
+            if (header.Remote == 0)
+                return header.WdMantissa + 1;
+            return header.WdMantissa * Utils.V8Power2(header.WdExponent);
+        }
+
         public Linkage Read(BinaryReader br, bool is3d = false)
         {
             Is3d = is3d;
             LinkageHeader = new LinkageHeader().Read(br);
-            int exponent = LinkageHeader.WdExponent;
+            if (LinkageHeader.IsEmpty)
+            {
+                // V8 zero padding ends the linkage area. Consume only the
+                // header word pair and leave the data empty.
+                Data = Array.Empty<byte>();
+                return this;
+            }
+
             if ((LinkageIds)LinkageHeader.PrimaryID == LinkageIds.LINKAGEID_DMRS)
             {
                 LinkageHeader.WdMantissa = 3;
             }
-            int length = LinkageHeader.WdMantissa * Utils.V8Power2(exponent);
-            if (length == 0)
+
+            int totalWords = GetTotalWordCount(LinkageHeader);
+            int dataWords = totalWords - 2;
+            if (dataWords <= 0)
             {
-                // A zero word count is not a real linkage: V8 pads the remaining
-                // attribute area with zero words, which ends the linkage list.
-                // Consume nothing beyond the header and keep the data empty.
                 Data = Array.Empty<byte>();
                 return this;
             }
-            if (exponent == 0)
-            {
-                Data = new byte[2 * (length - 1)];
-                for (int i = 0; i < 2 * (length - 1); i++)
-                    Data[i] = br.ReadByte();
-            }
-            else
-            {
-                Data = new byte[2 * (length - 2)];
-                for (int i = 0; i < 2 * (length - 2); i++)
-                    Data[i] = br.ReadByte();
-            }
+
+            Data = new byte[2 * dataWords];
+            for (int i = 0; i < Data.Length; i++)
+                Data[i] = br.ReadByte();
             return this;
         }
 
         public LinkageIds Type => (LinkageIds)LinkageHeader.PrimaryID;
+
+        // Header words followed by the linkage payload, i.e. the raw V8 bytes.
+        public byte[] GetBytes()
+        {
+            byte[] header = LinkageHeader.GetBytes();
+            byte[] data = Data ?? Array.Empty<byte>();
+            byte[] bytes = new byte[header.Length + data.Length];
+            Array.Copy(header, 0, bytes, 0, header.Length);
+            Array.Copy(data, 0, bytes, header.Length, data.Length);
+            return bytes;
+        }
 
         public void LinkageDump(StreamWriter sw, int level)
         {

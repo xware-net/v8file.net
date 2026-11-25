@@ -86,6 +86,8 @@ namespace v8file.net
             return bt;
         }
 
+        // Mirrors v8Power2() in v8file.cpp: despite the name, the V8 linkage
+        // exponent is base 4.
         public static int V8Power2(int x)
         {
             int pwr = 1;
@@ -93,7 +95,7 @@ namespace v8file.net
 
             while (xx > 0)
             {
-                pwr *= 2;
+                pwr *= 4;
                 xx--;
             }
 
@@ -377,6 +379,22 @@ namespace v8file.net
             {
                 linkagesWithIdAndTypeAndLevel[key].Add(name);
             }
+        }
+
+        public static string HexLinkageDump(Linkage[] linkages, int level = 0, int bytesPerLine = 16)
+        {
+            if (linkages == null || linkages.Length == 0)
+                return string.Empty;
+
+            var ident = new String(' ', 2 * level);
+            StringBuilder result = new();
+            for (int i = 0; i < linkages.Length; i++)
+            {
+                byte[] bytes = linkages[i].GetBytes();
+                result.AppendLine($"{ident}Linkage[{i}] PrimaryId=0x{linkages[i].LinkageHeader.PrimaryID:X4} ({(LinkageIds)linkages[i].LinkageHeader.PrimaryID}), DataSize={linkages[i].Data?.Length ?? 0}, TotalSize={bytes.Length}");
+                result.Append(HexDump(bytes, level + 1, bytesPerLine));
+            }
+            return result.ToString();
         }
 
         public static string HexDump(byte[] bytes, int level = 0, int bytesPerLine = 16)

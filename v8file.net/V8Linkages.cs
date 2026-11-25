@@ -29,18 +29,28 @@ namespace v8file.net
             int i = 0;
             while (i < attributesSize)
             {
-                var linkage = new Linkage().Read(br, is3d);
-                if (linkage.LinkageHeader.WdMantissa == 0)
+                // Peek the linkage header first. C++ stops at the element's
+                // attribute-word bound (na), so a linkage that claims more
+                // words than remain must not be read as a linkage.
+                var headerPosition = br.BaseStream.Position;
+                var probe = new LinkageHeader().Read(br);
+                br.BaseStream.Seek(headerPosition, SeekOrigin.Begin);
+
+                if (probe.IsEmpty)
                 {
                     // V8 zero padding ends the linkage area; the rest of the
                     // attribute words are not linkages.
                     break;
                 }
+
+                int length = Linkage.GetTotalWordCount(probe);
+                if (length <= 0 || i + length > attributesSize)
+                    break;
+
+                var linkage = new Linkage().Read(br, is3d);
                 Array.Resize(ref linkages, linkages.Length + 1);
                 linkages[^1] = linkage;
-                int exponent = linkage.LinkageHeader.WdExponent;
-                int length = linkage.LinkageHeader.WdMantissa * Utils.V8Power2(exponent);
-                i += exponent == 0 ? length + 1 : length;
+                i += length;
             }
 
             br.BaseStream.Seek(currentReaderPosition, SeekOrigin.Begin);
