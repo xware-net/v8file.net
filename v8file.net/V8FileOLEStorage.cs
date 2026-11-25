@@ -258,6 +258,8 @@ namespace v8file.net
             if (!v8Dgn)
                 return MError;
 
+            bool pastLastValidCache = false;
+
             OLETree = new();
             OLETree.PathSeparator = "@";
 
@@ -289,6 +291,7 @@ namespace v8file.net
                                 };
                                 OLETree.Nodes.Add(Node);
                                 V8RecurseStorage(storage, "", entry[0].pwcsName, 1, Node);
+                                pastLastValidCache = false;
                             }
                             break;
                         case (int)Stgty.StgtyStream:
@@ -313,6 +316,12 @@ namespace v8file.net
                                 storage.OpenStream(entry[0].pwcsName, IntPtr.Zero, (uint)(Stgm.Read | Stgm.ShareExclusive), 0, out IStream stream);
                                 stream.Read(buf, cbSize, out var cbRead);
                                 pwzStream = pwzStream.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_');
+
+                                // v8file.cpp validates the cache before decoding it,
+                                // and only records caches up to the first end-of-cache
+                                // stream in this storage.
+                                bool validCache = V8IsValidCache(pwzStream, entry[0].pwcsName, buf, cbRead, out V8CacheInfo cacheInfo);
+
                                 if (V8DecodeAndWrite(pwzStream, buf, cbRead, ref start, ref numElementsInCache, ref isEOFCache) == MSuccess)
                                 {
                                     ((OLETag)Node.Tag).Compressed = true;
@@ -323,10 +332,14 @@ namespace v8file.net
                                     ((OLETag)Node.Tag).Compressed = false;
                                 }
 
-                                if (V8IsValidCache(pwzStream, entry[0].pwcsName, buf, cbRead, out V8CacheInfo cacheInfo))
+                                if (validCache && !pastLastValidCache)
                                 {
                                     validCaches[pwzStream] = cacheInfo;
                                     Logger.Debug("Valid cache: {0}", cacheInfo);
+                                }
+                                if (validCache && cacheInfo.IsEOFCache != 0)
+                                {
+                                    pastLastValidCache = true;
                                 }
 
                                 if (pwzStream.StartsWith("$"))
@@ -355,27 +368,21 @@ namespace v8file.net
             return MSuccess;
         }
 
-        // A cache stream is named "$<number>" and starts with an 8-byte header:
-        //   int32 numElements, int32 flags (2 = more data follows, 3 = end of cache data).
+        // Mirrors v8IsValidCache() in v8file.cpp: a cache stream's raw name
+        // starts with '$' and its first 8 bytes hold numElements and flags;
+        // flags == 3 marks the last valid cache in that storage.
         private static bool V8IsValidCache(string streamPath, string rawName, byte[] buf, uint length, out V8CacheInfo cacheInfo)
         {
             cacheInfo = null;
 
-            if (string.IsNullOrEmpty(rawName) || rawName.Length < 2 || rawName[0] != '$')
+            if (string.IsNullOrEmpty(rawName) || rawName[0] != '$')
                 return false;
-            for (int i = 1; i < rawName.Length; i++)
-            {
-                if (!char.IsDigit(rawName[i]))
-                    return false;
-            }
 
             if (buf == null || length < 8)
                 return false;
 
             int numElements = BitConverter.ToInt32(buf, 0);
             int flags = BitConverter.ToInt32(buf, 4);
-            if (numElements < 0 || (flags != 2 && flags != 3))
-                return false;
 
             int lastSeparator = streamPath.LastIndexOf('@');
             string path = lastSeparator >= 0 ? streamPath[..(lastSeparator + 1)] : string.Empty;
@@ -394,7 +401,20 @@ namespace v8file.net
                 {
                     byte[] compressed = new byte[length - i];
                     Array.Copy(buf, i, compressed, 0, length - i);
-                    byte[] decompressed = ZlibStream.UncompressBuffer(compressed);
+                    byte[] decompressed;
+                    try
+                    {
+                        decompressed = ZlibStream.UncompressBuffer(compressed);
+                    }
+                    catch (Exception ex) when (ex is Ionic.Zlib.ZlibException or InvalidDataException)
+                    {
+                        // v8file.cpp calls uncompress() and ignores its return code:
+                        // a false-positive 0x78 0x5E in a non-cache stream leaves an
+                        // empty output file instead of aborting the whole dump.
+                        Logger.Debug("Stream {0}: zlib decode failed at offset {1}: {2}", streamName, i, ex.Message);
+                        using FileStream fs = File.Create(streamName);
+                        return MError;
+                    }
                     using BinaryWriter bw = new(File.Open(streamName, FileMode.Create));
                     bw.Write(decompressed, 0, decompressed.Length);
                     if (i != 0)
@@ -420,6 +440,7 @@ namespace v8file.net
             System.Runtime.InteropServices.ComTypes.STATSTG[] entry = new System.Runtime.InteropServices.ComTypes.STATSTG[1];
             uint numReturned;
             int start = 0, numElementsInCache = 0, isEOFCache = 0;
+            bool pastLastValidCache = false;
             string[] typnam = { "STGTY_STORAGE", "STGTY_STREAM", "STGTY_LOCKBYTES", "STGTY_PROPERTY" };
 
             pStorage.OpenStorage(name, null, (uint)(Stgm.Read | Stgm.ShareExclusive), IntPtr.Zero, 0, out IStorage storage);
@@ -463,6 +484,7 @@ namespace v8file.net
 
                                 pwzStream += name;
                                 V8RecurseStorage(storage, pwzStream, entry[0].pwcsName, level + 1, Node);
+                                pastLastValidCache = false;
                             }
                             break;
                         case (int)Stgty.StgtyStream:
@@ -501,6 +523,12 @@ namespace v8file.net
                                 storage.OpenStream(entry[0].pwcsName, IntPtr.Zero, (uint)(Stgm.Read | Stgm.ShareExclusive), 0, out IStream stream);
                                 stream.Read(buf, cbSize, out var cbRead);
                                 pwzStream = pwzStream.Replace(Convert.ToChar(Convert.ToUInt32("0x05", 16)), '$').Replace('^', '_');
+
+                                // v8file.cpp validates the cache before decoding it,
+                                // and only records caches up to the first end-of-cache
+                                // stream in this storage.
+                                bool validCache = V8IsValidCache(pwzStream, entry[0].pwcsName, buf, cbRead, out V8CacheInfo cacheInfo);
+
                                 if (V8DecodeAndWrite(pwzStream, buf, cbRead, ref start, ref numElementsInCache, ref isEOFCache) == MSuccess)
                                 {
                                     ((OLETag)Node.Tag).Compressed = true;
@@ -511,10 +539,14 @@ namespace v8file.net
                                     ((OLETag)Node.Tag).Compressed = false;
                                 }
 
-                                if (V8IsValidCache(pwzStream, entry[0].pwcsName, buf, cbRead, out V8CacheInfo cacheInfo))
+                                if (validCache && !pastLastValidCache)
                                 {
                                     validCaches[pwzStream] = cacheInfo;
                                     Logger.Debug("Valid cache: {0}", cacheInfo);
+                                }
+                                if (validCache && cacheInfo.IsEOFCache != 0)
+                                {
+                                    pastLastValidCache = true;
                                 }
 
                                 if (pwzStream.StartsWith("$"))
